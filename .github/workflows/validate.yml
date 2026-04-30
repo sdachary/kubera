@@ -1,0 +1,38 @@
+name: Validate Installer
+
+on:
+  push:
+    paths:
+      - 'install.sh'
+  pull_request:
+    paths:
+      - 'install.sh'
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          additional_files: 'install.sh'
+          severity: warning
+
+  syntax:
+    name: Bash syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check bash syntax
+        run: bash -n install.sh && echo "✓ Syntax OK"
+
+  compose-validate:
+    name: Validate compose.yml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file
+        run: docker compose -f compose.yml config --quiet && echo "✓ compose.yml valid"

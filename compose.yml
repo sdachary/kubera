@@ -1,0 +1,166 @@
+# ===========================================================================
+# Kubera — Docker Compose
+# ===========================================================================
+#
+# Zero is better than negative.
+# github.com/deepakachary/kubera
+#
+# Quick start (auto-configured):
+#   curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash
+#
+# Manual start:
+#   cp .env.example .env   # then fill in your values
+#   docker compose up -d
+#   open http://localhost:3000
+#
+# ===========================================================================
+
+x-db-env: &db_env
+  POSTGRES_USER: ${POSTGRES_USER:-kubera_user}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kubera_password}
+  POSTGRES_DB: ${POSTGRES_DB:-kubera_production}
+
+x-app-env: &app_env
+  <<: *db_env
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE:-changeme_run_installer_or_set_manually}
+  SELF_HOSTED: "true"
+  RAILS_FORCE_SSL: "false"
+  RAILS_ASSUME_SSL: ${RAILS_ASSUME_SSL:-false}
+  DB_HOST: db
+  DB_PORT: 5432
+  REDIS_URL: redis://redis:6379/1
+  PORT: ${PORT:-3000}
+  ONBOARDING_STATE: ${ONBOARDING_STATE:-open}
+
+  # AI Assistant — OpenAI-compatible endpoint
+  # Works with OpenRouter (free models), Anthropic, OpenAI, Ollama, or any compatible API
+  OPENAI_URI_BASE: ${OPENAI_URI_BASE:-}
+  OPENAI_ACCESS_TOKEN: ${OPENAI_ACCESS_TOKEN:-}
+  OPENAI_MODEL: ${OPENAI_MODEL:-}
+
+  # Data providers (Yahoo Finance = free, no key needed)
+  EXCHANGE_RATE_PROVIDER: ${EXCHANGE_RATE_PROVIDER:-yahoo_finance}
+  SECURITIES_PROVIDER: ${SECURITIES_PROVIDER:-yahoo_finance}
+
+  # Optional: Twelve Data for more reliable price data
+  TWELVE_DATA_API_KEY: ${TWELVE_DATA_API_KEY:-}
+
+  # Optional: SMTP for email (password reset etc.)
+  SMTP_ADDRESS: ${SMTP_ADDRESS:-}
+  SMTP_PORT: ${SMTP_PORT:-465}
+  SMTP_USERNAME: ${SMTP_USERNAME:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_TLS_ENABLED: ${SMTP_TLS_ENABLED:-true}
+  EMAIL_SENDER: ${EMAIL_SENDER:-}
+
+  # Branding
+  PRODUCT_NAME: ${PRODUCT_NAME:-Kubera}
+  BRAND_NAME: ${BRAND_NAME:-Kubera}
+
+  # App domain (only needed for public deployments)
+  APP_DOMAIN: ${APP_DOMAIN:-}
+
+services:
+  web:
+    image: ghcr.io/we-promise/sure:stable
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      <<: *app_env
+    volumes:
+      - app-storage:/rails/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - kubera_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/up || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  worker:
+    image: ghcr.io/we-promise/sure:stable
+    command: bundle exec sidekiq
+    restart: unless-stopped
+    environment:
+      <<: *app_env
+    volumes:
+      - app-storage:/rails/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - kubera_net
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      <<: *db_env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kubera_user} -d ${POSTGRES_DB:-kubera_production}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kubera_net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kubera_net
+
+  # Optional backup service — enable with: docker compose --profile backup up -d
+  backup:
+    profiles:
+      - backup
+    image: prodrigestivill/postgres-backup-local
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=${POSTGRES_DB:-kubera_production}
+      - POSTGRES_USER=${POSTGRES_USER:-kubera_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-kubera_password}
+      - SCHEDULE=@daily
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      - db
+    networks:
+      - kubera_net
+
+volumes:
+  app-storage:
+  postgres-data:
+  redis-data:
+
+networks:
+  kubera_net:
+    driver: bridge
