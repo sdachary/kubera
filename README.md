@@ -43,11 +43,16 @@ Built on top of [Sure](https://github.com/we-promise/sure), Kubera adds:
 - 📊 **NSE/BSE support** — built with Indian markets in mind
 
 ---
+## Acknowledgements
+
+Kubera is built on [Sure](https://github.com/we-promise/sure),
+which is itself a fork of [Maybe Finance](https://github.com/maybe-finance/maybe).
+Both are licensed under AGPL-3.0.
 
 ## Install in one line
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash
 ```
 
 The installer is an interactive TUI — no documentation reading required:
@@ -62,16 +67,16 @@ The installer is an interactive TUI — no documentation reading required:
 
 ```bash
 # Update to latest
-curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash -s update
+curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s update
 
 # View logs
-curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash -s logs
+curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s logs
 
 # Check status
-curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash -s status
+curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s status
 
 # Uninstall
-curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash -s uninstall
+curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s uninstall
 ```
 
 ---
@@ -113,7 +118,7 @@ You define the goal: *"₹25,000/month passive income by 2030."* Kubera reverse-
 Prefer to set it up yourself? See [docs/manual-setup.md](docs/manual-setup.md).
 
 ```bash
-git clone https://github.com/deepakachary/kubera.git
+git clone https://github.com/sdachary/kubera.git
 cd kubera
 cp .env.example .env
 # Edit .env — set SECRET_KEY_BASE and POSTGRES_PASSWORD at minimum
