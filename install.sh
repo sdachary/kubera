@@ -5,7 +5,7 @@
 # github.com/deepakachary/kubera
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/deepakachary/kubera/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash
 #   bash install.sh [install|update|uninstall|logs|status]
 # ===========================================================================
 
@@ -23,7 +23,7 @@ else
 fi
 
 # ─── Constants ──────────────────────────────────────────────────
-KUBERA_REPO="https://raw.githubusercontent.com/deepakachary/kubera/main"
+KUBERA_REPO="https://raw.githubusercontent.com/sdachary/kubera/main"
 KUBERA_IMAGE="ghcr.io/we-promise/sure:stable"
 LOG_FILE="/tmp/kubera-install-$$.log"
 
