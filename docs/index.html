@@ -1,564 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Kubera - Personal Finance OS. Self-hosted, open source, zero-knowledge architecture. Take control of your finances.">
+    <meta name="description" content="Kubera - Personal Finance OS. Self-hosted, open source, zero-knowledge architecture. Take control of your finances.">
     <meta name="keywords" content="kubera, personal finance, budgeting, open source, self-hosted">
+    <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#1d9e75">
+    <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)">
+    <meta name="color-scheme" content="light dark">
+    
+    <!-- DNS Prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://github.com">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Kubera - Personal Finance OS">
+    <meta property="og:description" content="Take control of your finances with Kubera — the self-hosted, open source personal finance OS with zero-knowledge architecture.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/sdachary/kubera">
+    <meta property="og:image" content="https://github.com/sdachary/kubera/raw/main/docs/preview.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kubera - Personal Finance OS">
+    <meta name="twitter:description" content="Self-hosted, open source personal finance OS with zero-knowledge architecture.">
+    <meta name="twitter:image" content="https://github.com/sdachary/kubera/raw/main/docs/preview.png">
+    
     <title>Kubera - Personal Finance OS</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #1d9e75;
-            --primary-light: #5dcaa5;
-            --primary-dark: #0f6e56;
-            --accent: #d85a30;
-            --dark: #0f1419;
-            --light: #f5f7fa;
-            --text-dark: #1a1a1a;
-            --text-light: #666;
-            --border: #e0e0e0;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --dark: #0f1419;
-                --light: #1a1f2e;
-                --text-dark: #e8e8e8;
-                --text-light: #999;
-                --border: #333;
-            }
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: var(--dark);
-            overflow-x: hidden;
-        }
-
-        /* Header & Navigation */
-        header {
-            background: rgba(15, 20, 25, 0.95);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-dark);
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .cta-button {
-            background: var(--primary);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            border: 2px solid var(--primary);
-        }
-
-        .cta-button:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 6rem 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 4rem;
-            flex-wrap: wrap;
-        }
-
-        .primary-btn {
-            background: var(--primary);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid var(--primary);
-            cursor: pointer;
-        }
-
-        .primary-btn:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .secondary-btn {
-            background: transparent;
-            color: var(--primary);
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid var(--primary);
-            cursor: pointer;
-        }
-
-        .secondary-btn:hover {
-            background: rgba(29, 158, 117, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .hero-image {
-            max-width: 800px;
-            margin: 0 auto;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero-image img {
-            width: 100%;
-            display: block;
-        }
-
-        /* Features Section */
-        .features {
-            background: var(--light);
-            padding: 6rem 2rem;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-header h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-dark);
-        }
-
-        .section-header p {
-            font-size: 1.1rem;
-            color: var(--text-light);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .feature-card {
-                background: #1a1f2e;
-            }
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(29, 158, 117, 0.15);
-            border-color: var(--primary);
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
-            color: var(--text-dark);
-        }
-
-        .feature-card p {
-            color: var(--text-light);
-            line-height: 1.8;
-        }
-
-        /* Deployment Section */
-        .deployment {
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .deployment h2 {
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-
-        .deployment-steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .step {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .step-number {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            font-weight: 700;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .step-content h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .step-content p {
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-
-        .step-content code {
-            background: var(--light);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .step-content code {
-                background: #0f1419;
-            }
-        }
-
-        /* Testimonials Section */
-        .testimonials {
-            background: var(--light);
-            padding: 6rem 2rem;
-        }
-
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .testimonial {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .testimonial {
-                background: #1a1f2e;
-            }
-        }
-
-        .testimonial-text {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            font-style: italic;
-            color: var(--text-dark);
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .testimonial-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .testimonial-info h4 {
-            margin: 0;
-            font-size: 0.95rem;
-        }
-
-        .testimonial-info p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        /* CTA Section */
-        .cta-section {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            padding: 5rem 2rem;
-            text-align: center;
-            color: white;
-        }
-
-        .cta-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        /* Footer */
-        footer {
-            background: rgba(0, 0, 0, 0.8);
-            color: var(--text-light);
-            padding: 3rem 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            color: white;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--primary);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            nav {
-                padding: 1rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-                font-size: 0.85rem;
-            }
-
-            .section-header h2 {
-                font-size: 1.75rem;
-            }
-
-            .hero {
-                padding: 3rem 1rem;
-            }
-
-            .features,
-            .deployment,
-            .testimonials {
-                padding: 3rem 1rem;
-            }
-
-            .hero-cta {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .primary-btn,
-            .secondary-btn {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 1.25rem;
-            }
-
-            .nav-links {
-                gap: 0.5rem;
-            }
-
-            .nav-links a {
-                display: none;
-            }
-
-            .cta-button {
-                display: inline-block;
-            }
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero,
-        .section-header,
-        .feature-card {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .feature-card {
-            animation-delay: calc(var(--index, 0) * 0.1s);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Kubera",
+        "description": "Self-hosted, open source personal finance OS with zero-knowledge architecture. Take control of your finances with complete privacy.",
+        "url": "https://github.com/sdachary/kubera",
+        "applicationCategory": "https://schema.org/FinancialApplication",
+        "operatingSystem": "Web, Self-hosted",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "sdachary",
+            "url": "https://github.com/sdachary"
+        }
+    }
+    </script>
 </head>
-
 <body>
+    <!-- Accessibility: Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
     <!-- Navigation -->
     <header>
-        <nav>
+        <nav aria-label="Main navigation">
             <a href="#" class="logo">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <rect width="32" height="32" rx="8" fill="currentColor" />
-                    <path d="M10 12v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-8" stroke="white" stroke-width="1.5"
-                        stroke-linecap="round" />
+                    <path d="M10 12v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-8" stroke="white" stroke-width="1.5" stroke-linecap="round" />
                     <circle cx="16" cy="10" r="1.5" fill="white" />
                 </svg>
                 Kubera
@@ -568,258 +72,215 @@
                 <li><a href="#deployment">Deploy</a></li>
                 <li><a href="#testimonials">Community</a></li>
             </ul>
-            <a href="https://github.com/sdachary/kubera" target="_blank" class="cta-button">GitHub</a>
+            <div class="nav-actions">
+                <button data-theme-toggle aria-label="Toggle theme" aria-pressed="false">🌓</button>
+                <a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer" class="cta-button">GitHub</a>
+            </div>
         </nav>
     </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1>Zero is better than negative</h1>
-        <p>Take control of your finances with Kubera — the personal finance OS that puts privacy first. Self-hosted,
-            open source, and beautifully simple.</p>
-        <div class="hero-cta">
-            <a href="#deployment" class="primary-btn">Get Started</a>
-            <a href="https://github.com/sdachary/kubera" target="_blank" class="secondary-btn">View on GitHub</a>
-        </div>
-        <div class="hero-image">
-            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#1d9e75;stop-opacity:0.1" />
-                        <stop offset="100%" style="stop-color:#d85a30;stop-opacity:0.1" />
-                    </linearGradient>
-                </defs>
-                <rect width="800" height="400" fill="url(#grad)" rx="12" />
-                <rect x="50" y="50" width="700" height="300" fill="white" rx="8" />
-                <text x="400" y="150" font-size="32" font-weight="bold" text-anchor="middle" fill="#1d9e75">Dashboard
-                    Preview</text>
-                <text x="400" y="200" font-size="16" text-anchor="middle" fill="#999">Your financial overview at a
-                    glance</text>
-                <circle cx="150" cy="80" r="6" fill="#1d9e75" />
-                <circle cx="650" cy="80" r="6" fill="#d85a30" />
-                <line x1="50" y1="330" x2="750" y2="330" stroke="#e0e0e0" stroke-width="1" />
-            </svg>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="section-header">
-            <h2>Powerful Features</h2>
-            <p>Everything you need to manage your personal finances with complete control and privacy</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card" style="--index: 0;">
-                <div class="feature-icon">🔒</div>
-                <h3>Privacy First</h3>
-                <p>Self-hosted architecture means your financial data never leaves your server. Complete zero-knowledge
-                    guarantee.</p>
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-heading">
+            <h1 id="hero-heading">Zero is better than negative</h1>
+            <p>Take control of your finances with Kubera — the personal finance OS that puts privacy first. Self-hosted, open source, and beautifully simple.</p>
+            <div class="hero-cta">
+                <a href="#deployment" class="primary-btn">Get Started</a>
+                <a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer" class="secondary-btn">View on GitHub</a>
             </div>
-            <div class="feature-card" style="--index: 1;">
-                <div class="feature-icon">📊</div>
-                <h3>Advanced Analytics</h3>
-                <p>Deep insights into your spending patterns with interactive charts, trends, and predictive analytics.
-                </p>
+            <div class="hero-image">
+                <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubera dashboard preview showing financial overview">
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1d9e75;stop-opacity:0.1" />
+                            <stop offset="100%" style="stop-color:#d85a30;stop-opacity:0.1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="800" height="400" fill="url(#grad)" rx="12" />
+                    <rect x="50" y="50" width="700" height="300" fill="white" rx="8" />
+                    <text x="400" y="150" font-size="32" font-weight="bold" text-anchor="middle" fill="#1d9e75">Dashboard Preview</text>
+                    <text x="400" y="200" font-size="16" text-anchor="middle" fill="#999">Your financial overview at a glance</text>
+                    <circle cx="150" cy="80" r="6" fill="#1d9e75" />
+                    <circle cx="650" cy="80" r="6" fill="#d85a30" />
+                    <line x1="50" y1="330" x2="750" y2="330" stroke="#e0e0e0" stroke-width="1" />
+                </svg>
             </div>
-            <div class="feature-card" style="--index: 2;">
-                <div class="feature-icon">🏦</div>
-                <h3>Multi-Account Support</h3>
-                <p>Track multiple bank accounts, credit cards, and investment accounts in one unified dashboard.</p>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features" id="features" aria-labelledby="features-heading">
+            <div class="section-header">
+                <h2 id="features-heading">Powerful Features</h2>
+                <p>Everything you need to manage your personal finances with complete control and privacy</p>
             </div>
-            <div class="feature-card" style="--index: 3;">
-                <div class="feature-icon">💰</div>
-                <h3>Smart Budgeting</h3>
-                <p>Create and track budgets with automatic categorization and real-time alerts when you're overspending.
-                </p>
-            </div>
-            <div class="feature-card" style="--index: 4;">
-                <div class="feature-icon">🤖</div>
-                <h3>AI Assistant</h3>
-                <p>Optional AI-powered insights to help you make better financial decisions. Integrate your favorite AI
-                    provider.</p>
-            </div>
-            <div class="feature-card" style="--index: 5;">
-                <div class="feature-icon">🌍</div>
-                <h3>Open Source</h3>
-                <p>Built on open source technologies. Audit the code, contribute improvements, and customize to your
-                    needs.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Deployment Section -->
-    <section class="deployment" id="deployment">
-        <div class="section-header">
-            <h2>Deploy in Minutes</h2>
-            <p>Get Kubera running on your infrastructure with our simple installer</p>
-        </div>
-        <div class="deployment-steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h3>Download Installer</h3>
-                    <p>Get the automated installer script from our repository</p>
+            <div class="features-grid">
+                <div class="feature-card" style="--index: 0;">
+                    <div class="feature-icon" aria-hidden="true">🔒</div>
+                    <h3>Privacy First</h3>
+                    <p>Self-hosted architecture means your financial data never leaves your server. Complete zero-knowledge guarantee.</p>
+                </div>
+                <div class="feature-card" style="--index: 1;">
+                    <div class="feature-icon" aria-hidden="true">📊</div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Deep insights into your spending patterns with interactive charts, trends, and predictive analytics.</p>
+                </div>
+                <div class="feature-card" style="--index: 2;">
+                    <div class="feature-icon" aria-hidden="true">🏦</div>
+                    <h3>Multi-Account Support</h3>
+                    <p>Track multiple bank accounts, credit cards, and investment accounts in one unified dashboard.</p>
+                </div>
+                <div class="feature-card" style="--index: 3;">
+                    <div class="feature-icon" aria-hidden="true">💰</div>
+                    <h3>Smart Budgeting</h3>
+                    <p>Create and track budgets with automatic categorization and real-time alerts when you're overspending.</p>
+                </div>
+                <div class="feature-card" style="--index: 4;">
+                    <div class="feature-icon" aria-hidden="true">🤖</div>
+                    <h3>AI Assistant</h3>
+                    <p>Optional AI-powered insights to help you make better financial decisions. Integrate your favorite AI provider.</p>
+                </div>
+                <div class="feature-card" style="--index: 5;">
+                    <div class="feature-icon" aria-hidden="true">🌍</div>
+                    <h3>Open Source</h3>
+                    <p>Built on open source technologies. Audit the code, contribute improvements, and customize to your needs.</p>
                 </div>
             </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h3>Run the Script</h3>
-                    <p>Execute the installer with <code>bash install.sh</code></p>
-                </div>
+        </section>
+        
+        <!-- Deployment Section -->
+        <section class="deployment" id="deployment" aria-labelledby="deployment-heading">
+            <div class="section-header">
+                <h2 id="deployment-heading">Deploy in Minutes</h2>
+                <p>Get Kubera running on your infrastructure with our simple installer</p>
             </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h3>Configure Settings</h3>
-                    <p>Answer a few simple questions about your setup and preferences</p>
+            <div class="deployment-steps">
+                <div class="step" style="--step-index: 0;">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Download Installer</h3>
+                        <p>Get the automated installer script from our repository</p>
+                    </div>
                 </div>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <h3>Start Using</h3>
-                    <p>Access your Kubera instance at <code>localhost:3000</code></p>
+                <div class="step" style="--step-index: 1;">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Run the Script</h3>
+                        <p>Execute the installer with <code>bash install.sh</code></p>
+                    </div>
                 </div>
-            </div>
-            <div class="step">
-                <div class="step-number">5</div>
-                <div class="step-content">
-                    <h3>Customize</h3>
-                    <p>Set up your accounts, budgets, and AI preferences</p>
+                <div class="step" style="--step-index: 2;">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Configure Settings</h3>
+                        <p>Answer a few simple questions about your setup and preferences</p>
+                    </div>
                 </div>
-            </div>
-            <div class="step">
-                <div class="step-number">6</div>
-                <div class="step-content">
-                    <h3>Enjoy</h3>
-                    <p>Take control of your finances with complete privacy</p>
+                <div class="step" style="--step-index: 3;">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Start Using</h3>
+                        <p>Access your Kubera instance at <code>localhost:3000</code></p>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials" id="testimonials">
-        <div class="section-header">
-            <h2>Loved by the Community</h2>
-            <p>See what users are saying about Kubera</p>
-        </div>
-        <div class="testimonials-grid">
-            <div class="testimonial">
-                <div class="testimonial-text">"Finally, a finance app that respects my privacy. Kubera runs on my
-                    server, and I have complete control."</div>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">SA</div>
-                    <div class="testimonial-info">
-                        <h4>Sarah Anderson</h4>
-                        <p>Privacy Advocate</p>
+                <div class="step" style="--step-index: 4;">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Customize</h3>
+                        <p>Set up your accounts, budgets, and AI preferences</p>
+                    </div>
+                </div>
+                <div class="step" style="--step-index: 5;">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Enjoy</h3>
+                        <p>Take control of your finances with complete privacy</p>
                     </div>
                 </div>
             </div>
-            <div class="testimonial">
-                <div class="testimonial-text">"The UI is intuitive and the deployment process was painless. Kudos to the
-                    team!"</div>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">JM</div>
-                    <div class="testimonial-info">
-                        <h4>James Miller</h4>
-                        <p>Developer</p>
+        </section>
+        
+        <!-- Testimonials Section -->
+        <section class="testimonials" id="testimonials" aria-labelledby="testimonials-heading">
+            <div class="section-header">
+                <h2 id="testimonials-heading">Loved by the Community</h2>
+                <p>See what users are saying about Kubera</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <div class="testimonial-text">"Finally, a finance app that respects my privacy. Kubera runs on my server, and I have complete control."</div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" aria-hidden="true">SA</div>
+                        <div class="testimonial-info">
+                            <h4>Sarah Anderson</h4>
+                            <p>Privacy Advocate</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">"The UI is intuitive and the deployment process was painless. Kudos to the team!"</div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" aria-hidden="true">JM</div>
+                        <div class="testimonial-info">
+                            <h4>James Miller</h4>
+                            <p>Developer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">"Being able to self-host means I'm not dependent on any third party. Exactly what I was looking for!"</div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" aria-hidden="true">PR</div>
+                        <div class="testimonial-info">
+                            <h4>Priya Raj</h4>
+                            <p>SaaS Founder</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="testimonial">
-                <div class="testimonial-text">"Being able to self-host means I'm not dependent on any third party.
-                    Exactly what I was looking for!"</div>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">PR</div>
-                    <div class="testimonial-info">
-                        <h4>Priya Raj</h4>
-                        <p>SaaS Founder</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <h2>Ready to take control?</h2>
-        <p>Deploy Kubera today and manage your finances with complete privacy and security</p>
-        <a href="https://github.com/sdachary/kubera" target="_blank" class="primary-btn"
-            style="background: white; color: var(--primary); border-color: white;">Get Started Now</a>
-    </section>
-
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="cta-section" aria-labelledby="cta-heading">
+            <h2 id="cta-heading">Ready to take control?</h2>
+            <p>Deploy Kubera today and manage your finances with complete privacy and security</p>
+            <a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer" class="primary-btn" style="background: white; color: var(--primary); border-color: white;">Get Started Now</a>
+        </section>
+    </main>
+    
     <!-- Footer -->
-    <footer>
-        <footer-content>
+    <footer aria-label="Site footer">
+        <div class="footer-content">
             <div class="footer-section">
                 <h3>Kubera</h3>
                 <ul>
-                    <li><a href="https://github.com/sdachary/kubera" target="_blank">GitHub</a></li>
-                    <li><a href="https://github.com/sdachary/kubera/issues" target="_blank">Issues</a></li>
-                    <li><a href="https://github.com/sdachary/kubera/discussions" target="_blank">Discussions</a></li>
+                <li><a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/sdachary/kubera/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                    <li><a href="https://github.com/sdachary/kubera/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Documentation</h3>
                 <ul>
-                    <li><a href="https://github.com/sdachary/kubera#readme" target="_blank">Getting Started</a></li>
-                    <li><a href="https://github.com/sdachary/kubera/wiki" target="_blank">Wiki</a></li>
-                    <li><a href="https://github.com/sdachary/kubera/blob/main/CONTRIBUTING.md"
-                            target="_blank">Contributing</a></li>
+                    <li><a href="https://github.com/sdachary/kubera#readme" target="_blank" rel="noopener noreferrer">Getting Started</a></li>
+                    <li><a href="https://github.com/sdachary/kubera/wiki" target="_blank" rel="noopener noreferrer">Wiki</a></li>
+                    <li><a href="https://github.com/sdachary/kubera/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Community</h3>
                 <ul>
-                    <li><a href="https://github.com/sdachary/kubera/discussions" target="_blank">Discussions</a></li>
-                    <li><a href="https://github.com/sdachary/kubera/issues" target="_blank">Report Bug</a></li>
-                    <li><a href="https://github.com/sdachary/kubera/discussions" target="_blank">Request Feature</a>
-                    </li>
+                    <li><a href="https://github.com/sdachary/kubera/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/sdachary/kubera/issues" target="_blank" rel="noopener noreferrer">Report Bug</a></li>
+                    <li><a href="https://github.com/sdachary/kubera/discussions" target="_blank" rel="noopener noreferrer">Request Feature</a></li>
                 </ul>
             </div>
-        </footer-content>
+        </div>
         <div class="footer-bottom">
             <p>&copy; 2024 Kubera. Zero is better than negative. Built with ❤️ by the community.</p>
         </div>
     </footer>
-
-    <script>
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#') {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            });
-        });
-
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.feature-card, .testimonial').forEach(el => {
-            el.style.opacity = '0';
-            observer.observe(el);
-        });
-    </script>
+    
+    <script src="script.js" defer></script>
 </body>
-
 </html>
