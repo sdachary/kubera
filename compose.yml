@@ -65,7 +65,7 @@ services:
     image: ghcr.io/we-promise/sure:stable
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3002}:3000"
     environment:
       <<: *app_env
     volumes:

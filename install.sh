@@ -15,21 +15,25 @@ IFS=$'\n\t'
 # ─── Colours ────────────────────────────────────────────────────
 if [[ -t 1 ]]; then
   R="\033[0m" B="\033[1m" D="\033[2m"
-  RED="\033[0;31m" GRN="\033[0;32m" YLW="\033[0;33m" CYN="\033[0;36m" WHT="\033[1;37m"
+  GRN="\033[0;32m" CYN="\033[0;36m" WHT="\033[1;37m"
   AMB="\033[38;5;214m" BAMB="\033[1;38;5;214m"
   BGRN="\033[1;32m" BRED="\033[1;31m" BYLW="\033[1;33m"
 else
-  R="" B="" D="" RED="" GRN="" YLW="" CYN="" WHT="" AMB="" BAMB="" BGRN="" BRED="" BYLW=""
+  R="" B="" D="" GRN="" CYN="" WHT="" AMB="" BAMB="" BGRN="" BRED="" BYLW=""
 fi
+
+# Export color variables for use in functions and sourced scripts
+# shellcheck disable=SC2034
+export R B D GRN CYN WHT AMB BAMB BGRN BRED BYLW
 
 # ─── Constants ──────────────────────────────────────────────────
 KUBERA_REPO="https://raw.githubusercontent.com/sdachary/kubera/main"
 KUBERA_IMAGE="ghcr.io/we-promise/sure:stable"
-LOG_FILE="/tmp/kubera-install-$$.log"
+LOG_FILE="$(mktemp /tmp/kubera-install.XXXXXXXXXX.log)"
 
 # ─── State ──────────────────────────────────────────────────────
 KUBERA_DIR="${HOME}/kubera"
-KUBERA_PORT="3000"
+KUBERA_PORT="3002"
 DC="docker compose"
 AI_PROVIDER="" AI_BASE="" AI_KEY="" AI_MODEL=""
 AI_SKIPPED=false
@@ -134,7 +138,7 @@ port_free() {
 
 find_free() {
   local base=$1 found=()
-  for p in $base 8080 8090 4000 4040 5000 9000 3001 3002; do
+  for p in $base 8080 8090 4000 4040 5000 9000 3001 3003; do
     port_free "$p" && found+=("$p")
     (( ${#found[@]} >= 4 )) && break
   done
@@ -221,12 +225,12 @@ s1_deps() {
 s2_port() {
   banner; step 2 6 "Port selection"
 
-  info "Checking port 3000..."; echo
-  if port_free 3000; then
-    ok "Port 3000 is free."
-    if confirm "Use port 3000?"; then KUBERA_PORT=3000; return; fi
+  info "Checking port 3002..."; echo
+  if port_free 3002; then
+    ok "Port 3002 is free."
+    if confirm "Use port 3002?"; then KUBERA_PORT=3002; return; fi
   else
-    warn "Port 3000 is already in use."
+    warn "Port 3002 is already in use."
   fi
 
   info "Scanning for free ports..."; echo
@@ -400,6 +404,7 @@ SECURITIES_PROVIDER=yahoo_finance
 
 ${ai_block}
 ENV
+  # shellcheck disable=SC2034
   chmod 600 "${KUBERA_DIR}/.env"
   ok ".env written (permissions: 600)."
 

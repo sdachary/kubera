@@ -123,7 +123,7 @@ cd kubera
 cp .env.example .env
 # Edit .env — set SECRET_KEY_BASE and POSTGRES_PASSWORD at minimum
 docker compose up -d
-open http://localhost:3000
+open http://localhost:3002
 ```
 
 ---
