@@ -180,7 +180,7 @@ s1_deps() {
     warn "Docker installed but daemon is not running."
     info "Start Docker Desktop, or on Linux: sudo systemctl start docker"
     if confirm "Try to start Docker daemon now?"; then
-      sudo systemctl start docker >> "$LOG_FILE" 2>&1 || true; sleep 2
+      sudo LOG_FILE="$LOG_FILE" bash -c 'systemctl start docker >> "$LOG_FILE" 2>&1' || true; sleep 2
       docker_ok || die "Docker daemon failed to start. Please start it manually and re-run."
       ok "Docker daemon started."
     else
@@ -206,7 +206,7 @@ s1_deps() {
     warn "Docker Compose not found."
     if has apt-get; then
       info "Installing compose plugin..."
-      sudo apt-get install -y docker-compose-plugin >> "$LOG_FILE" 2>&1 & spin $! "Installing..."
+      sudo LOG_FILE="$LOG_FILE" bash -c 'apt-get install -y docker-compose-plugin >> "$LOG_FILE" 2>&1' & spin $! "Installing..."
       resolve_dc && ok "Installed." || die "Install failed. See: https://docs.docker.com/compose/install/"
     else
       die "Install Docker Compose: https://docs.docker.com/compose/install/"
