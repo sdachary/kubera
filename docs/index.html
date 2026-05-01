@@ -9,26 +9,31 @@
     <meta name="theme-color" content="#1d9e75">
     <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)">
     <meta name="color-scheme" content="light dark">
-    
+
     <!-- DNS Prefetch for external resources -->
     <link rel="dns-prefetch" href="https://github.com">
-    
+
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Kubera - Personal Finance OS">
     <meta property="og:description" content="Take control of your finances with Kubera — the self-hosted, open source personal finance OS with zero-knowledge architecture.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/sdachary/kubera">
     <meta property="og:image" content="https://github.com/sdachary/kubera/raw/main/docs/preview.png">
-    
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Kubera - Personal Finance OS">
     <meta name="twitter:description" content="Self-hosted, open source personal finance OS with zero-knowledge architecture.">
     <meta name="twitter:image" content="https://github.com/sdachary/kubera/raw/main/docs/preview.png">
-    
+
     <title>Kubera - Personal Finance OS</title>
+
+    <!-- Google Fonts for distinctive typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    
+
     <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">
     {
@@ -55,7 +60,7 @@
 <body>
     <!-- Accessibility: Skip to main content link -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    
+
     <!-- Navigation -->
     <header>
         <nav aria-label="Main navigation">
@@ -69,8 +74,8 @@
             </a>
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
+                <li><a href="#install">Install</a></li>
                 <li><a href="#deployment">Deploy</a></li>
-                <li><a href="#testimonials">Community</a></li>
             </ul>
             <div class="nav-actions">
                 <button data-theme-toggle aria-label="Toggle theme" aria-pressed="false">🌓</button>
@@ -78,33 +83,80 @@
             </div>
         </nav>
     </header>
-    
+
     <!-- Main Content -->
     <main id="main-content">
         <!-- Hero Section -->
         <section class="hero" aria-labelledby="hero-heading">
-            <h1 id="hero-heading">Zero is better than negative</h1>
-            <p>Take control of your finances with Kubera — the personal finance OS that puts privacy first. Self-hosted, open source, and beautifully simple.</p>
-            <div class="hero-cta">
-                <a href="#deployment" class="primary-btn">Get Started</a>
-                <a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer" class="secondary-btn">View on GitHub</a>
+            <div class="hero-content">
+                <h1 id="hero-heading">Zero is better than negative</h1>
+                <p class="hero-subtitle">Take control of your finances with Kubera — the personal finance OS that puts privacy first. Self-hosted, open source, and beautifully simple.</p>
+                <div class="hero-cta">
+                    <a href="#install" class="primary-btn">Install Now</a>
+                    <a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer" class="secondary-btn">View on GitHub</a>
+                </div>
             </div>
-            <div class="hero-image">
-                <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubera dashboard preview showing financial overview">
-                    <defs>
-                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#1d9e75;stop-opacity:0.1" />
-                            <stop offset="100%" style="stop-color:#d85a30;stop-opacity:0.1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="800" height="400" fill="url(#grad)" rx="12" />
-                    <rect x="50" y="50" width="700" height="300" fill="white" rx="8" />
-                    <text x="400" y="150" font-size="32" font-weight="bold" text-anchor="middle" fill="#1d9e75">Dashboard Preview</text>
-                    <text x="400" y="200" font-size="16" text-anchor="middle" fill="#999">Your financial overview at a glance</text>
-                    <circle cx="150" cy="80" r="6" fill="#1d9e75" />
-                    <circle cx="650" cy="80" r="6" fill="#d85a30" />
-                    <line x1="50" y1="330" x2="750" y2="330" stroke="#e0e0e0" stroke-width="1" />
-                </svg>
+            <div class="hero-visual">
+                <div class="floating-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prominent Curl Command Section -->
+        <section class="curl-command-section" id="install" aria-labelledby="curl-heading">
+            <div class="curl-container">
+                <div class="curl-badge">Quick Install</div>
+                <h2 id="curl-heading" class="curl-title">One line to financial freedom</h2>
+                <p class="curl-description">Copy, paste, and your personal finance OS is ready to use</p>
+
+                <div class="curl-display-wrapper">
+                    <div class="curl-terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <span class="dot dot-red"></span>
+                                <span class="dot dot-yellow"></span>
+                                <span class="dot dot-green"></span>
+                            </div>
+                            <span class="terminal-title">~ kubera installer</span>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="command-line">
+                                <span class="prompt-symbol">$</span>
+                                <code class="curl-command" id="curlCommand">curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash</code>
+                            </div>
+                        </div>
+                        <button class="copy-command-btn" data-clipboard-text="curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash" aria-label="Copy curl command">
+                            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span class="copy-text">Copy</span>
+                        </button>
+                    </div>
+                    <div class="curl-success-message" aria-live="polite"></div>
+                </div>
+
+                <div class="install-features-grid">
+                    <div class="feature-highlight">
+                        <span class="feature-icon-small">⚡</span>
+                        <span>Auto-checks Docker</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <span class="feature-icon-small">🔧</span>
+                        <span>Resolves port conflicts</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <span class="feature-icon-small">🤖</span>
+                        <span>Sets up AI providers</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <span class="feature-icon-small">🔐</span>
+                        <span>Generates secure keys</span>
+                    </div>
+                </div>
             </div>
         </section>
         
@@ -119,31 +171,37 @@
                     <div class="feature-icon" aria-hidden="true">🔒</div>
                     <h3>Privacy First</h3>
                     <p>Self-hosted architecture means your financial data never leaves your server. Complete zero-knowledge guarantee.</p>
+                    <div class="feature-glow"></div>
                 </div>
                 <div class="feature-card" style="--index: 1;">
                     <div class="feature-icon" aria-hidden="true">📊</div>
                     <h3>Advanced Analytics</h3>
                     <p>Deep insights into your spending patterns with interactive charts, trends, and predictive analytics.</p>
+                    <div class="feature-glow"></div>
                 </div>
                 <div class="feature-card" style="--index: 2;">
                     <div class="feature-icon" aria-hidden="true">🏦</div>
                     <h3>Multi-Account Support</h3>
                     <p>Track multiple bank accounts, credit cards, and investment accounts in one unified dashboard.</p>
+                    <div class="feature-glow"></div>
                 </div>
                 <div class="feature-card" style="--index: 3;">
                     <div class="feature-icon" aria-hidden="true">💰</div>
                     <h3>Smart Budgeting</h3>
                     <p>Create and track budgets with automatic categorization and real-time alerts when you're overspending.</p>
+                    <div class="feature-glow"></div>
                 </div>
                 <div class="feature-card" style="--index: 4;">
                     <div class="feature-icon" aria-hidden="true">🤖</div>
                     <h3>AI Assistant</h3>
                     <p>Optional AI-powered insights to help you make better financial decisions. Integrate your favorite AI provider.</p>
+                    <div class="feature-glow"></div>
                 </div>
                 <div class="feature-card" style="--index: 5;">
                     <div class="feature-icon" aria-hidden="true">🌍</div>
                     <h3>Open Source</h3>
                     <p>Built on open source technologies. Audit the code, contribute improvements, and customize to your needs.</p>
+                    <div class="feature-glow"></div>
                 </div>
             </div>
         </section>

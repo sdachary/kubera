@@ -1,6 +1,6 @@
 /**
  * Kubera - Modern JavaScript Module
- * Handles: Theme toggle, scroll animations, smooth scrolling, analytics prep
+ * Handles: Theme toggle, scroll animations, smooth scrolling, clipboard, analytics prep
  */
 
 (function () {
@@ -71,10 +71,91 @@
         }
     };
 
+    // Clipboard Management for Curl Command
+    const ClipboardManager = {
+        init() {
+            this.copyButtons = document.querySelectorAll('.copy-command-btn');
+            this.successMessage = document.querySelector('.curl-success-message');
+            this.initButtons();
+        },
+
+        initButtons() {
+            for (const btn of this.copyButtons) {
+                btn.addEventListener('click', (e) => this.handleCopy(e, btn));
+            }
+        },
+
+        async handleCopy(e, btn) {
+            e.preventDefault();
+            const textToCopy = btn.dataset.clipboardText;
+
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                this.showSuccess(btn);
+            } catch {
+                // Fallback for older browsers or non-HTTPS
+                this.fallbackCopy(textToCopy, btn);
+            }
+        },
+
+        fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                this.showSuccess(btn);
+            } catch {
+                this.showError();
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        },
+
+        showSuccess(btn) {
+            const copyText = btn.querySelector('.copy-text');
+            const originalText = copyText.textContent;
+
+            btn.classList.add('copied');
+            copyText.textContent = 'Copied!';
+
+            if (this.successMessage) {
+                this.successMessage.textContent = '✓ Command copied to clipboard!';
+                setTimeout(() => {
+                    this.successMessage.textContent = '';
+                }, 3000);
+            }
+
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                copyText.textContent = originalText;
+            }, 2000);
+        },
+
+        showError() {
+            if (this.successMessage) {
+                this.successMessage.textContent = 'Failed to copy. Please select and copy manually.';
+                setTimeout(() => {
+                    this.successMessage.textContent = '';
+                }, 3000);
+            }
+        },
+
+        destroy() {
+            for (const btn of this.copyButtons) {
+                btn.removeEventListener('click', this.handleCopy);
+            }
+        }
+    };
+
     // Scroll Animation Manager using Intersection Observer
     const ScrollAnimator = {
         init() {
-            const animatedSelectors = '.feature-card, .testimonial, .step, .section-header';
+            const animatedSelectors = '.feature-card, .testimonial, .step, .section-header, .curl-command-section, .hero';
             this.animatedElements = document.querySelectorAll(animatedSelectors);
 
             if (!this.animatedElements.length) return;
@@ -146,7 +227,7 @@
     // Analytics Preparation (queues events, no actual tracking without consent)
     const AnalyticsPrep = {
         init() {
-            const trackableLinks = document.querySelectorAll('a[href*="github.com"], .primary-btn, .secondary-btn, .cta-button');
+            const trackableLinks = document.querySelectorAll('a[href*="github.com"], .primary-btn, .secondary-btn, .cta-button, .copy-command-btn');
 
             for (const el of trackableLinks) {
                 if (!el.dataset.track) {
@@ -177,6 +258,7 @@
             if (el.matches('a[href*="github.com"]')) return 'github_click';
             if (el.matches('.primary-btn, .cta-button')) return 'primary_cta_click';
             if (el.matches('.secondary-btn')) return 'secondary_cta_click';
+            if (el.matches('.copy-command-btn')) return 'copy_command_click';
             return null;
         },
 
@@ -195,6 +277,7 @@
     // Initialize when DOM ready
     function init() {
         ThemeManager.init();
+        ClipboardManager.init();
         ScrollAnimator.init();
         SmoothScroll.init();
         AnalyticsPrep.init();
@@ -202,6 +285,7 @@
 
     function destroy() {
         ThemeManager.destroy();
+        ClipboardManager.destroy();
         ScrollAnimator.destroy();
         SmoothScroll.destroy();
     }
