@@ -42,7 +42,6 @@
             document.documentElement.setAttribute('data-theme', theme);
             if (this.themeToggle) {
                 this.themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-                this.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
             }
             try {
                 localStorage.setItem(this.STORAGE_KEY, theme);
@@ -89,12 +88,20 @@
             e.preventDefault();
             const textToCopy = btn.dataset.clipboardText;
 
+            // Disable button during copy
+            btn.disabled = true;
+
             try {
                 await navigator.clipboard.writeText(textToCopy);
                 this.showSuccess(btn);
             } catch {
                 // Fallback for older browsers or non-HTTPS
                 this.fallbackCopy(textToCopy, btn);
+            } finally {
+                // Re-enable button after delay
+                setTimeout(() => {
+                    btn.disabled = false;
+                }, 2000);
             }
         },
 
@@ -124,7 +131,7 @@
             copyText.textContent = 'Copied!';
 
             if (this.successMessage) {
-                this.successMessage.textContent = '✓ Command copied to clipboard!';
+                this.successMessage.textContent = 'Command copied to clipboard!';
                 setTimeout(() => {
                     this.successMessage.textContent = '';
                 }, 3000);
@@ -155,7 +162,7 @@
     // Scroll Animation Manager using Intersection Observer
     const ScrollAnimator = {
         init() {
-            const animatedSelectors = '.feature-card, .testimonial, .step, .section-header, .curl-command-section, .hero';
+                const animatedSelectors = '.feature-card, .exclusive-card, .testimonial, .step, .section-header, .curl-command-section, .hero';
             this.animatedElements = document.querySelectorAll(animatedSelectors);
 
             if (!this.animatedElements.length) return;
