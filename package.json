@@ -1,0 +1,48 @@
+{
+  "name": "kubera",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "vitest",
+    "test:a11y": "vitest run tests/accessibility.test.jsx",
+    "test:perf": "vitest run tests/performance.test.jsx",
+    "test:cross-browser": "playwright test tests/cross-browser.test.jsx",
+    "test:visual": "playwright test tests/visual-regression.test.jsx",
+    "lint": "eslint src/",
+    "preview": "vite preview",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sdachary/kubera.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sdachary/kubera/issues"
+  },
+  "homepage": "https://github.com/sdachary/kubera#readme",
+  "dependencies": {
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react": "^6.0.1",
+    "jest-axe": "^10.0.0",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.59.1",
+    "vite": "^8.0.10",
+    "vitest": "^4.1.5"
+  }
+}
