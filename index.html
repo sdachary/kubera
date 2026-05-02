@@ -1,12 +1,984 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kubera - Personal Finance OS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kubera - Personal finance OS. Self-hosted, open source. Zero is better than negative." />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Kubera - Personal Finance OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================
+       CSS RESET & BASE
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --teal-50: #f0fdfa;
+      --teal-100: #ccfbf1;
+      --teal-200: #99f6e4;
+      --teal-300: #5eead4;
+      --teal-400: #2dd4bf;
+      --teal-500: #0d9488;
+      --teal-600: #0f766e;
+      --teal-700: #115e59;
+      --teal-800: #134e4a;
+      --teal-900: #0f3d38;
+
+      --orange-400: #fb923c;
+      --orange-500: #f97316;
+      --orange-600: #ea580c;
+
+      --red-400: #f87171;
+      --red-500: #ef4444;
+
+      --green-400: #4ade80;
+      --green-500: #22c55e;
+
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+
+      --font-sans: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --divider: #334155;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --divider: #334155;
+      }
+    }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --divider: #e2e8f0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 2rem;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+    h1, h2, h3, h4 {
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      text-wrap: text-balance;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }
+
+    .text-accent {
+      color: var(--teal-700);
+    }
+
+    [data-theme="dark"] .text-accent,
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .text-accent {
+        color: var(--teal-300);
+      }
+    }
+
+    .text-secondary {
+      color: var(--text-secondary);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-mono {
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+       COMPONENTS
+       ============================================ */
+    .logo {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--teal-600);
+      text-align: center;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+      white-space: pre;
+    }
+
+    .tagline {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .tagline-highlight {
+      font-weight: 600;
+      color: var(--teal-600);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 3rem 0 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .hero .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Section */
+    .section {
+      padding: 2rem 0;
+      border-top: 1px solid var(--divider);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title .icon {
+      font-size: 1.5rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--divider);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card h3 {
+      color: var(--teal-700);
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    [data-theme="dark"] .card h3,
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .card h3 {
+        color: var(--teal-300);
+      }
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card ul li {
+      padding: 0.375rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .card ul li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--teal-500);
+      font-weight: 700;
+    }
+
+    /* Code Block */
+    .code-block {
+      background: var(--gray-900);
+      color: var(--green-400);
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      position: relative;
+      margin: 1rem 0;
+    }
+
+    .code-block code {
+      font-family: inherit;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-family: var(--font-sans);
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .copy-btn:focus-visible {
+      outline: 2px solid var(--teal-400);
+      outline-offset: 2px;
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 1rem 0;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .comparison-table th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .comparison-table .highlight {
+      background: var(--teal-50);
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] .comparison-table .highlight,
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .comparison-table .highlight {
+        background: rgba(13, 148, 136, 0.1);
+      }
+    }
+
+    .check { color: var(--green-500); }
+    .cross { color: var(--red-500); }
+
+    @media (max-width: 768px) {
+      .comparison-table {
+        font-size: 0.75rem;
+      }
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.5rem;
+      }
+    }
+
+    /* Journey Steps */
+    .journey-step {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .journey-step .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: var(--teal-500);
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .journey-step h3 {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .journey-step p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* AI Provider Cards */
+    .provider-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--divider);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .provider-card .provider-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .provider-card .provider-cost {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--teal-600);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      text-decoration: none;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .btn:hover {
+      background: var(--teal-700);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--teal-400);
+      outline-offset: 2px;
+    }
+
+    .btn-accent {
+      background: var(--orange-500);
+    }
+
+    .btn-accent:hover {
+      background: var(--orange-600);
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      background: var(--teal-50);
+      color: var(--teal-700);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] .badge,
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .badge {
+        background: rgba(13, 148, 136, 0.2);
+        color: var(--teal-300);
+      }
+    }
+
+    /* Footer */
+    .footer {
+      padding: 2rem 0;
+      border-top: 1px solid var(--divider);
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .footer a {
+      color: var(--teal-600);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer a:hover {
+      color: var(--teal-700);
+      text-decoration: underline;
+    }
+
+    .footer a:focus-visible {
+      outline: 2px solid var(--teal-400);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Status Grid */
+    .status-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+    }
+
+    .status-done { color: var(--green-500); }
+    .status-wip { color: var(--orange-500); }
+
+    /* Scroll margin for anchors */
+    h2[id], h3[id] {
+      scroll-margin-top: 2rem;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: var(--teal-600);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      z-index: 100;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    /* Install section specific */
+    .install-command {
+      position: relative;
+    }
+
+    .install-command .code-block {
+      margin: 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .hero {
+        padding: 2rem 0 1.5rem;
+      }
+
+      .section {
+        padding: 1.5rem 0;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      .comparison-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    /* Non-breaking spaces for brand names and commands */
+    .nobr {
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <main id="main-content">
+    <div class="container">
+      <!-- HERO SECTION -->
+      <section class="hero">
+        <div class="logo" aria-label="Kubera logo">
+██╗  ██╗██╗   ██╗██████╗ ███████╗██████╗  █████╗<br>
+██║ ██╔╝██║   ██║██╔══██╗██╔════╝██╔══██╗██╔══██╗<br>
+█████╔╝ ██║   ██║██████╔╝█████╗  ██████╔╝███████║<br>
+██╔═██╗ ██║   ██║██╔══██╗██╔══╝  ██╔══██╗██╔══██║<br>
+██║  ██╗╚██████╔╝██████╔╝███████╗██║  ██║██║  ██║<br>
+╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+        </div>
+        <p class="tagline"><span class="tagline-highlight">Zero is better than negative.</span></p>
+        <p class="tagline">Personal finance&nbsp;OS · Self-hosted · Open source</p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+          <button class="btn" onclick="navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash').then(function(){var b=document.querySelector('.hero .btn');var t=b.textContent;b.textContent='Copied!';setTimeout(function(){b.textContent=t},2000)})" aria-label="Copy install command">Install Now</button>
+          <a href="https://github.com/sdachary/kubera" class="btn btn-accent" target="_blank" rel="noopener noreferrer">View on GitHub ⭐</a>
+        </div>
+        <div class="status-grid" role="list" aria-label="Project status" style="margin-top: 1rem;">
+          <span class="badge" role="listitem">AGPL-3.0</span>
+          <span class="badge" role="listitem">Built on Sure</span>
+        </div>
+      </section>
+
+      <!-- WHAT IS KUBERA -->
+      <section class="section" id="what-is">
+        <h2>What&nbsp;Is&nbsp;Kubera?</h2>
+        <p>Self-hosted personal finance&nbsp;OS that takes you from <strong>debt&nbsp;→&nbsp;zero&nbsp;→&nbsp;wealth</strong> in a defined timeline.</p>
+        <div class="grid-3" style="margin-top: 1.5rem;">
+          <div class="card">
+            <h3>Negative</h3>
+            <p class="text-secondary">In debt. Track loans, EMIs, and payoff strategies.</p>
+          </div>
+          <div class="card">
+            <h3>Zero</h3>
+            <p class="text-secondary">Debt-free. Foundation building with SIPs.</p>
+          </div>
+          <div class="card">
+            <h3>Positive</h3>
+            <p class="text-secondary">Wealthy. Passive income and portfolio growth.</p>
+          </div>
+        </div>
+        <p style="margin-top: 1rem; font-style: italic; color: var(--teal-700);">
+          "Clear your liabilities before building wealth." — The one rule.
+        </p>
+       </section>
+
+       <!-- THE JOURNEY -->
+       <section class="section" id="journey">
+         <h2>The&nbsp;Journey</h2>
+         <div class="grid-3">
+           <div class="journey-step">
+             <div class="step-number">1</div>
+             <h3>Debt Freedom</h3>
+             <p>List loans &amp; EMIs. Avalanche or snowball. Track progress and debt-free date.</p>
+           </div>
+           <div class="journey-step">
+             <div class="step-number">2</div>
+             <h3>Foundation</h3>
+             <p>Once debt is healthy, SIP suggestions activate. Even&nbsp;₹500/month works.</p>
+           </div>
+           <div class="journey-step">
+             <div class="step-number">3</div>
+             <h3>Income Target</h3>
+             <p>Set goal: "₹25,000/month by&nbsp;2030." Reverse-engineer the path.</p>
+           </div>
+         </div>
+       </section>
+
+       <!-- WHY KUBERA? -->
+       <section class="section" id="why">
+         <h2>Why&nbsp;Kubera?</h2>
+         <div class="grid-2" style="margin-bottom: 1.5rem;">
+           <div class="card">
+             <ul>
+               <li>Philosophy-first — "Debt first, then wealth" is the foundation</li>
+               <li>Your data stays yours — self-hosted, no surveillance</li>
+               <li>Free AI from day one — no $20/month fees</li>
+               <li>Built for India — NSE/BSE, EMIs, SIPs, ₹ currency</li>
+               <li>Community-driven — features serve users, not shareholders</li>
+             </ul>
+           </div>
+           <div class="card" style="border-color: var(--teal-500);">
+             <p class="text-secondary" style="margin-bottom: 0.75rem;">Key differentiators vs other finance apps:</p>
+             <ul>
+               <li>Self-hosted (your data, no subscription)</li>
+               <li>Debt-first philosophy</li>
+               <li>Indian markets (NSE/BSE)</li>
+               <li>Free AI options (OpenRouter/Ollama)</li>
+               <li>Open source (AGPL-3.0)</li>
+             </ul>
+           </div>
+         </div>
+         <div style="overflow-x: auto;">
+           <table class="comparison-table" aria-label="Kubera vs other finance apps">
+             <thead>
+               <tr>
+                 <th scope="col">Feature</th>
+                 <th scope="col" class="highlight">Kubera</th>
+                 <th scope="col">YNAB</th>
+                 <th scope="col">Mint†</th>
+                 <th scope="col">Empower</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>Self-hosted</td>
+                 <td class="highlight check">✅</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+               </tr>
+               <tr>
+                 <td>Free (no subscription)</td>
+                 <td class="highlight check">✅</td>
+                 <td class="cross">❌ ~$15/mo</td>
+                 <td>Was free</td>
+                 <td>Freemium</td>
+               </tr>
+               <tr>
+                 <td>Debt-first philosophy</td>
+                 <td class="highlight check">✅ Core</td>
+                 <td>Partial</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+               </tr>
+               <tr>
+                 <td>Indian markets (NSE/BSE)</td>
+                 <td class="highlight check">✅ Built-in</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+               </tr>
+               <tr>
+                 <td>Free&nbsp;AI options</td>
+                 <td class="highlight check">✅ OpenRouter/Ollama</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+               </tr>
+               <tr>
+                 <td>Open source (AGPL-3.0)</td>
+                 <td class="highlight check">✅</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+                 <td class="cross">❌</td>
+               </tr>
+             </tbody>
+           </table>
+         </div>
+         <p class="text-sm text-secondary" style="margin-top: 0.5rem;">† Mint shut down March&nbsp;2024</p>
+       </section>
+
+       <!-- KEY FEATURES -->
+       <section class="section" id="features">
+         <h2>Key&nbsp;Features</h2>
+         <div class="grid-3">
+           <div class="card">
+             <h3>💳 Debt Payoff</h3>
+             <ul>
+               <li>Loans &amp; EMI tracking</li>
+               <li>Avalanche/snowball strategies</li>
+               <li>Debt-free date projection</li>
+             </ul>
+           </div>
+           <div class="card">
+             <h3>📈 Dividend SIP</h3>
+             <ul>
+               <li>AI stock suggestions</li>
+               <li>Income target planning</li>
+               <li>Monthly contribution tracking</li>
+             </ul>
+           </div>
+           <div class="card">
+             <h3>🔄 Rebalancing</h3>
+             <ul>
+               <li>Monthly check-ins</li>
+               <li>On/off track status</li>
+               <li>Automated suggestions</li>
+             </ul>
+           </div>
+           <div class="card">
+             <h3>🔔 Reminders</h3>
+             <ul>
+               <li>Recurring expense alerts</li>
+               <li>EMI &amp; subscription tracking</li>
+               <li>Never miss a payment</li>
+             </ul>
+           </div>
+           <div class="card">
+             <h3>🤖 Free&nbsp;AI</h3>
+             <ul>
+               <li>OpenRouter (free tier)</li>
+               <li>Ollama (fully local)</li>
+               <li>Any OpenAI-compatible endpoint</li>
+             </ul>
+           </div>
+           <div class="card">
+             <h3>🇮🇳 Indian&nbsp;Markets</h3>
+             <ul>
+               <li>NSE/BSE support built-in</li>
+               <li>EMI &amp; SIP tracking</li>
+               <li>₹ currency native</li>
+             </ul>
+           </div>
+         </div>
+       </section>
+
+      <!-- INSTALL -->
+      <section class="section" id="install">
+        <h2>Install&nbsp;in&nbsp;One&nbsp;Line</h2>
+        <div class="install-command">
+          <div class="code-block">
+            <code>curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash</code>
+            <button class="copy-btn" onclick="copyToClipboard(this)" aria-label="Copy install command">Copy</button>
+          </div>
+        </div>
+        <p class="text-sm text-secondary" style="margin-top: 0.75rem;">Interactive TUI installer — no docs required.</p>
+        <div class="grid-4" style="margin-top: 1rem;">
+          <div class="status-item"><span class="check">✅</span> Checks Docker</div>
+          <div class="status-item"><span class="check">✅</span> Detects port conflicts</div>
+          <div class="status-item"><span class="check">✅</span> AI provider setup</div>
+          <div class="status-item"><span class="check">✅</span> Secure config</div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">Other Commands</h3>
+        <div class="grid-2" style="margin-top: 0.75rem;">
+          <div class="code-block" style="margin: 0;">
+            <code>curl -fsSL ... | bash -s update</code>
+            <button class="copy-btn" onclick="copyToClipboard(this)" aria-label="Copy update command">Copy</button>
+          </div>
+          <div class="code-block" style="margin: 0;">
+            <code>curl -fsSL ... | bash -s status</code>
+            <button class="copy-btn" onclick="copyToClipboard(this)" aria-label="Copy status command">Copy</button>
+          </div>
+          <div class="code-block" style="margin: 0;">
+            <code>curl -fsSL ... | bash -s logs</code>
+            <button class="copy-btn" onclick="copyToClipboard(this)" aria-label="Copy logs command">Copy</button>
+          </div>
+          <div class="code-block" style="margin: 0;">
+            <code>curl -fsSL ... | bash -s uninstall</code>
+            <button class="copy-btn" onclick="copyToClipboard(this)" aria-label="Copy uninstall command">Copy</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI ASSISTANT -->
+      <section class="section" id="ai">
+        <h2>AI&nbsp;Assistant</h2>
+        <p class="text-secondary" style="margin-bottom: 1rem;">Works with any OpenAI-compatible endpoint. Free options work great.</p>
+        <div class="grid-4">
+          <div class="provider-card">
+            <div class="provider-name">OpenRouter</div>
+            <div class="provider-cost">Free tier</div>
+            <div class="text-sm text-secondary" style="margin-top: 0.25rem;">Llama&nbsp;3.1, Gemma&nbsp;2</div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Ollama</div>
+            <div class="provider-cost">Free (local)</div>
+            <div class="text-sm text-secondary" style="margin-top: 0.25rem;">Runs on your machine</div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Anthropic</div>
+            <div class="provider-cost">Paid</div>
+            <div class="text-sm text-secondary" style="margin-top: 0.25rem;">Claude — best quality</div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">OpenAI</div>
+            <div class="provider-cost">Paid</div>
+            <div class="text-sm text-secondary" style="margin-top: 0.25rem;">GPT-4o mini</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ROADMAP -->
+      <section class="section" id="roadmap">
+        <h2>Roadmap</h2>
+        <div class="grid-3">
+          <div class="status-item"><span class="status-done">✅</span> v0.1 Installer &amp; AI</div>
+          <div class="status-item"><span class="status-wip">🔄</span> v0.2 Debt payoff</div>
+          <div class="status-item"><span class="status-wip">🔄</span> v0.3 SIP planner</div>
+          <div class="status-item"><span class="status-wip">🔄</span> v0.4 Rebalancing</div>
+          <div class="status-item"><span class="status-wip">🔄</span> v0.5 Recurring</div>
+          <div class="status-item"><span class="status-wip">🔄</span> v1.0 Full journey</div>
+        </div>
+      </section>
+
+      <!-- WHY OPEN SOURCE -->
+      <section class="section" id="opensource">
+        <h2>Why&nbsp;Open&nbsp;Source?</h2>
+        <div class="grid-2">
+          <div class="card">
+            <ul>
+              <li>Your data stays yours</li>
+              <li>Audit your finances</li>
+              <li>No vendor lock-in</li>
+            </ul>
+          </div>
+          <div class="card">
+            <ul>
+              <li>Community-driven</li>
+              <li>AGPL-3.0 licensed</li>
+              <li>Free&nbsp;AI options</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <p>
+          <span translate="no">Kubera</span> (कुबेर) is the Hindu god of wealth.<br>
+          <em>The name is aspirational — but you have to get to zero first.</em>
+        </p>
+        <p style="margin-top: 1rem;">
+          Built on <a href="https://github.com/we-promise/sure" target="_blank" rel="noopener noreferrer">Sure</a> · 
+          Forked from <a href="https://github.com/maybe-finance/maybe" target="_blank" rel="noopener noreferrer">Maybe Finance</a> · 
+          <a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener noreferrer">GitHub</a> · 
+          <a href="https://github.com/sdachary/kubera/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a> · 
+          <a href="https://github.com/sdachary/kubera/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
+        </p>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    // Copy to clipboard functionality
+    function copyToClipboard(button) {
+      const codeBlock = button.parentElement;
+      const code = codeBlock.querySelector('code').textContent;
+      
+      navigator.clipboard.writeText(code).then(function() {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.background = 'rgba(34, 197, 94, 0.3)';
+        
+        setTimeout(function() {
+          button.textContent = originalText;
+          button.style.background = '';
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Failed to copy: ', err);
+        button.textContent = 'Error';
+        setTimeout(function() {
+          button.textContent = 'Copy';
+        }, 2000);
+      });
+    }
+
+    // Theme detection (optional - for GitHub Pages compatibility)
+    (function() {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</body>
 </html>
