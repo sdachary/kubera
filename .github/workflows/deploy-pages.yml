@@ -1,138 +1,71 @@
-name: Deploy Landing Page to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - master
     paths:
       - 'docs/**'
+      - 'src/**'
+      - 'components/**'
+      - 'design-system/**'
+      - 'hooks/**'
+      - 'package.json'
+      - 'vite.config.js'
       - '.github/workflows/deploy-pages.yml'
-  pull_request:
-    branches:
-      - main
-      - master
-    paths:
-      - 'docs/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  validate:
-    name: Validate HTML & Assets
+  build:
+    name: Build React App
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check HTML file exists
-        run: |
-          if [ ! -f "docs/index.html" ]; then
-            echo "❌ Error: docs/index.html not found"
-            exit 1
-          fi
-          echo "✅ docs/index.html found"
-
-      - name: Validate HTML syntax
-        run: |
-          # Check for required HTML structure
-          grep -q "<!DOCTYPE html>" docs/index.html || { echo "Missing DOCTYPE"; exit 1; }
-          grep -q "<html" docs/index.html || { echo "Missing html tag"; exit 1; }
-          grep -q "<head>" docs/index.html || { echo "Missing head tag"; exit 1; }
-          grep -q "<body>" docs/index.html || { echo "Missing body tag"; exit 1; }
-          echo "✅ HTML structure is valid"
-
-      - name: Check meta tags
-        run: |
-          grep -q "charset" docs/index.html || { echo "Missing charset"; exit 1; }
-          grep -q "viewport" docs/index.html || { echo "Missing viewport meta"; exit 1; }
-          grep -q "description" docs/index.html || { echo "Missing description"; exit 1; }
-          echo "✅ Required meta tags present"
-
-      - name: Verify responsive design
-        run: |
-          grep -q "viewport" docs/index.html && echo "✅ Viewport meta tag present" || exit 1
-          grep -q "max-width\|min-width\|@media" docs/styles.css && echo "✅ Responsive design detected (CSS)" || echo "⚠️ No responsive CSS found"
-
-      - name: Check for common issues
-        run: |
-          # Warn about missing SVG attributes
-          if grep -q "<svg" docs/index.html; then
-            if ! grep -q "viewBox" docs/index.html; then
-              echo "⚠️  Warning: SVG elements should have viewBox attribute"
-            fi
-          fi
-          
-          # Check for accessibility
-          if ! grep -q "alt=" docs/index.html && ! grep -q "aria-label=" docs/index.html; then
-            echo "⚠️  Note: Consider adding alt text or aria-labels for images"
-          fi
-          
-          echo "✅ Code quality check complete"
-
-      - name: File size check
-        run: |
-          SIZE=$(stat -f%z docs/index.html 2>/dev/null || stat -c%s docs/index.html)
-          echo "📊 File size: $(echo "scale=2; $SIZE / 1024" | bc) KB"
-          if [ "$SIZE" -gt 1048576 ]; then
-            echo "⚠️  File is larger than 1MB, consider optimization"
-          fi
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: validate
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --run
+
+      - name: Build for GitHub Pages
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs'
 
-      - name: Deploy to GitHub Pages
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Deployment Summary
+      - name: Summary
         run: |
-          echo "✅ Deployment completed successfully!"
-          echo "🌐 Site will be available at: ${{ steps.deployment.outputs.page_url }}"
-          echo "⏱️  Updates usually appear within 1-2 minutes"
-
-  notify:
-    name: Send Deployment Notification
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: success()
-    steps:
-      - name: Deployment Success
-        run: |
-          echo "✨ GitHub Pages deployment successful!"
-          echo "📍 Check your GitHub Pages URL in the repository settings"
-          echo "💡 Tip: Custom domains can be configured in Settings → Pages"
-
-  notify-failure:
-    name: Notify on Failure
-    needs: validate
-    runs-on: ubuntu-latest
-    if: failure()
-    steps:
-      - name: Deployment Failed
-        run: |
-          echo "❌ Validation failed"
-          echo "📝 Check the workflow logs above for details"
-          exit 1
+          echo "✅ Deployed to GitHub Pages!"
+          echo "🌐 URL: ${{ steps.deployment.outputs.page_url }}"
