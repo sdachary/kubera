@@ -17,26 +17,39 @@ Full plan for the debt → zero → wealth journey.
 
 ---
 
-## 🔄 v0.2 — Debt Payoff Module
+## 🔄 v0.2 — Debt Payoff Module (IN PROGRESS)
 
 **Goal:** Make debt freedom the core experience.
 
 ### Features
 - [ ] Debt onboarding wizard (loan type, balance, interest rate, EMI)
 - [ ] Debt list view with status tracking
-- [ ] Avalanche method (highest interest first)
-- [ ] Snowball method (smallest balance first)
-- [ ] Debt-free date projection
+- [x] Avalanche method (highest interest first) - Backend complete
+- [x] Snowball method (smallest balance first) - Backend complete
+- [x] Debt-free date projection - Backend complete
 - [ ] Monthly progress tracking with visual indicators
 - [ ] EMI calendar integration
-- [ ] Debt payoff simulation (what-if scenarios)
+- [x] Debt payoff simulation (what-if scenarios) - Backend complete
 
 ### Technical Tasks
-- [ ] `debts` table migration (amount, interest_rate, emi, due_date, type)
-- [ ] Debt API endpoints (CRUD)
-- [ ] Debt store/state management
-- [ ] Debt components (DebtList, DebtCard, PayoffSimulator)
-- [ ] Integration with Sure's transaction system for EMI tracking
+- [x] Database migration (add_debt_fields_to_loans.rb) - emi_amount, due_date, debt_status, etc.
+- [x] DebtPayoffCalculator service - Avalanche & Snowball methods
+- [x] Debt API endpoints (/api/v1/debt_payoff) - avalanche, snowball, simulate, payoff_date
+- [x] Loan model updated - months_remaining, debt_free_date, progress_percentage methods
+- [x] Backend moved to kubera/backend structure
+- [ ] Debt UI components (DebtList, DebtCard, PayoffSimulator) - IN PROGRESS
+- [ ] EMI calendar integration - PENDING
+- [ ] Integration with transaction system for EMI tracking - PENDING
+
+**Progress Log:**
+- 2026-05-02: Started v0.2 implementation.
+  - Sure repo cloned and moved to kubera/backend
+  - Added debt fields migration (emi_amount, due_date, debt_status, etc.)
+  - Created DebtPayoffCalculator service with Avalanche/Snowball methods
+  - Added Loan model methods (months_remaining, debt_free_date, progress_percentage) for real-time payoff analytics
+  - Added /api/v1/debt_payoff endpoints for avalanche, snowball, simulation, and payoff date calculation
+  - Frontend agent spawned via mcp-hub (task: 9343b7a5)
+  - Updated compose.yml to build from local backend instead of pulling image
 
 ---
 
