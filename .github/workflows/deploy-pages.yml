@@ -51,7 +51,7 @@ jobs:
       - name: Verify responsive design
         run: |
           grep -q "viewport" docs/index.html && echo "✅ Viewport meta tag present" || exit 1
-          grep -q "max-width" docs/styles.css && echo "✅ Responsive design detected (CSS)" || echo "⚠️ No max-width found in CSS"
+          grep -q "max-width\|min-width\|@media" docs/styles.css && echo "✅ Responsive design detected (CSS)" || echo "⚠️ No responsive CSS found"
 
       - name: Check for common issues
         run: |
