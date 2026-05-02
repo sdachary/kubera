@@ -7,10 +7,21 @@ import { DeploymentSteps } from '../components/DeploymentSteps'
 import { ScrollReveal } from '../components/ScrollReveal'
 
 function App() {
+  const handleGetStarted = () => {
+    const featuresSection = document.querySelector('section');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleLearnMore = () => {
+    window.open('https://github.com/sdachary/kubera', '_blank');
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-background text-foreground">
-        <HeroSection />
+        <HeroSection onPrimaryClick={handleGetStarted} onSecondaryClick={handleLearnMore} />
         <section className="max-w-6xl mx-auto px-4 py-16">
           <ScrollReveal>
             <h2 className="text-3xl font-bold text-center mb-8">Features</h2>
