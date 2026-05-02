@@ -5,10 +5,10 @@ import { colors } from '../design-system/colors.js';
 import { Button } from './Button.jsx';
 
 export function HeroSection({
-  title = 'Kubera Personal Finance OS',
-  subtitle = 'Take control of your financial future with intelligent insights and powerful tools.',
-  primaryCta = 'Get Started',
-  secondaryCta = 'Learn More',
+  title = 'From Debt to Wealth — The Open Source Way',
+  subtitle = 'Kubera is a self-hosted personal finance OS that takes you from debt → zero → wealth. Clear your liabilities first, then build lasting wealth.',
+  primaryCta = 'Install Now (One Line)',
+  secondaryCta = 'View on GitHub ⭐',
   onPrimaryClick,
   onSecondaryClick,
   className = '',
@@ -119,30 +119,86 @@ export function HeroSection({
              {title}
            </motion.h1>
 
-           <motion.p
-             custom={0.25}
-             variants={itemVariants}
-             initial="hidden"
-             animate="visible"
-             style={{
-               fontSize: '1.125rem',
-               lineHeight: 1.6,
-               fontFamily: "'Inter', system-ui, sans-serif",
-               color: semantic.text_secondary,
-               margin: 0,
-               maxWidth: '500px'
-             }}
-           >
-             {subtitle}
-           </motion.p>
+            <motion.p
+              custom={0.25}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              style={{
+                fontSize: '1.125rem',
+                lineHeight: 1.6,
+                fontFamily: "'Inter', system-ui, sans-serif",
+                color: semantic.text_secondary,
+                margin: 0,
+                maxWidth: '500px'
+              }}
+            >
+              {subtitle}
+            </motion.p>
 
-           <motion.div
-             custom={0.4}
-             variants={itemVariants}
-             initial="hidden"
-             animate="visible"
-             style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}
-           >
+            <motion.div
+              custom={0.3}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                flexWrap: 'wrap',
+                padding: '1rem 0'
+              }}
+            >
+              <span style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 1rem',
+                borderRadius: '9999px',
+                backgroundColor: resolvedTheme === 'dark' ? `${colors.negative[500]}33` : `${colors.negative[100]}`,
+                color: colors.negative[500],
+                fontSize: '0.875rem',
+                fontWeight: 600
+              }}>
+                💳 Debt
+              </span>
+              <span style={{ color: semantic.text_secondary, fontSize: '1.25rem' }}>→</span>
+              <span style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 1rem',
+                borderRadius: '9999px',
+                backgroundColor: resolvedTheme === 'dark' ? `${colors.primary[500]}33` : `${colors.primary[100]}`,
+                color: colors.primary[500],
+                fontSize: '0.875rem',
+                fontWeight: 600
+              }}>
+                🎯 Zero
+              </span>
+              <span style={{ color: semantic.text_secondary, fontSize: '1.25rem' }}>→</span>
+              <span style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 1rem',
+                borderRadius: '9999px',
+                backgroundColor: resolvedTheme === 'dark' ? `${colors.positive[500]}33` : `${colors.positive[100]}`,
+                color: colors.positive[500],
+                fontSize: '0.875rem',
+                fontWeight: 600
+              }}>
+                💰 Wealth
+              </span>
+            </motion.div>
+
+            <motion.div
+              custom={0.4}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}
+            >
              <Button variant="primary" size="lg" onClick={onPrimaryClick}>
                {primaryCta}
              </Button>
