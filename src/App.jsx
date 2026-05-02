@@ -147,7 +147,7 @@ function InstallSection() {
 
 function App() {
   const handleGetStarted = () => {
-    const featuresSection = document.querySelector('section');
+    const featuresSection = document.querySelector('section:nth-of-type(2)');
     if (featuresSection) {
       featuresSection.scrollIntoView({ behavior: 'smooth' });
     }
