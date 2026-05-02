@@ -6,14 +6,14 @@ on:
       - main
       - master
     paths:
-      - 'docs/index.html'
+      - 'docs/**'
       - '.github/workflows/deploy-pages.yml'
   pull_request:
     branches:
       - main
       - master
     paths:
-      - 'docs/index.html'
+      - 'docs/**'
   workflow_dispatch:
 
 jobs:
