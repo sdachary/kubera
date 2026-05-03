@@ -35,11 +35,12 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 
 Built on top of [Sure](https://github.com/we-promise/sure), Kubera adds:
 
-### ✅ Completed Phases (v0.1 → v0.4)
-- 🔧 **v0.1** — Single-line installer (`curl ... | ruby`), Docker setup, AI connector
-- 🔄 **v0.2** — Debt Payoff Module (Avalanche/Snowball, EMI calendar, simulation)
+### ✅ Completed Phases (v0.1 → v0.5)
+- 🔧 **v0.1** — Single-line installer (`curl ... | bash`), Docker setup, AI connector
+- 💳 **v0.2** — Debt Payoff Module (Avalanche/Snowball, EMI calendar, simulation)
 - 📈 **v0.3** — Dividend SIP Planner (AI stock suggestions, NSE/BSE screener)
 - 🔄 **v0.4** — Portfolio Rebalancing (Modern Portfolio Theory, asset allocation)
+- 🔔 **v0.5** — Recurring Expense Tracker (EMI/subscription calendar, notifications)
 
 **All phases implemented via mcp-hub agents:** Claude Code (frontend), Gemini CLI (typescript), NVIDIA (github)
 
@@ -166,14 +167,14 @@ open http://localhost:3002
 
 ## Roadmap
 
-See [docs/roadmap.md](docs/roadmap.md) for the full plan.
+See [docs/roadmap-updated.md](docs/roadmap-updated.md) for the full plan.
 
 - ✅ v0.1 — Installer + Docker setup + AI connector
-- 🔄 v0.2 — Debt payoff module
-- 🔄 v0.3 — Dividend SIP planner
-- 🔄 v0.4 — Portfolio rebalancing
-- 🔄 v0.5 — Recurring expense tracker
-- 🔄 v1.0 — Full debt → wealth journey
+- ✅ v0.2 — Debt payoff module
+- ✅ v0.3 — Dividend SIP planner
+- ✅ v0.4 — Portfolio rebalancing
+- ✅ v0.5 — Recurring expense tracker
+- 🚀 v1.0 — Full debt → wealth journey
 
 ---
 
