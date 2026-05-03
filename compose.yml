@@ -63,6 +63,8 @@ x-app-env: &app_env
 services:
   web:
     image: ghcr.io/we-promise/sure:stable
+    # For local development with kubera-backend:
+    # build: ../kubera-backend
     restart: unless-stopped
     ports:
       - "${PORT:-3002}:3000"
@@ -89,6 +91,8 @@ services:
 
   worker:
     image: ghcr.io/we-promise/sure:stable
+    # For local development with kubera-backend:
+    # build: ../kubera-backend
     command: bundle exec sidekiq
     restart: unless-stopped
     environment:
