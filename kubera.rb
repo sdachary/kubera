@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Kubera Single-File Installer
-require "fileutils"
+require 'fileutils'
 
 puts "KUBERA INSTALLER v0.3"
 puts
@@ -13,7 +13,7 @@ print "OpenRouter API Key: "
 OPENROUTER_KEY = gets.chomp
 
 print "Install dependencies? (y/n) [y]: "
-INSTALL_DEPS = gets.chomp.downcase != "n"
+INSTALL_DEPS = gets.chomp.downcase != 'n'
 
 puts "\nStarting installation..."
 FileUtils.mkdir_p(INSTALL_DIR)
@@ -23,8 +23,10 @@ puts "Cloning Sure repo..."
 system("git clone https://github.com/we-promise/sure.git sure 2>&1 | tail -3")
 
 puts "Applying Kubera features..."
+
+# Create migration
 FileUtils.mkdir_p("sure/db/migrate")
-File.write("sure/db/migrate/20260502130000_add_debt_fields_to_loans.rb", <<~RUBY)
+File.write("sure/db/migrate/20260502130000_add_debt_fields_to_loans.rb", <<~RUBY2)
   class AddDebtFieldsToLoans < ActiveRecord::Migration[7.0]
     def change
       add_column :loans, :emi_amount, :decimal, precision: 15, scale: 2
@@ -32,10 +34,11 @@ File.write("sure/db/migrate/20260502130000_add_debt_fields_to_loans.rb", <<~RUBY
       add_column :loans, :debt_status, :string, default: "active"
     end
   end
-RUBY
+RUBY2
 
+# Create DebtPayoffCalculator
 FileUtils.mkdir_p("sure/app/services")
-File.write("sure/app/services/debt_payoff_calculator.rb", <<~RUBY)
+File.write("sure/app/services/debt_payoff_calculator.rb", <<~RUBY2)
   class DebtPayoffCalculator
     attr_reader :debts, :extra_payment
 
@@ -89,10 +92,11 @@ File.write("sure/app/services/debt_payoff_calculator.rb", <<~RUBY)
       [months, total_interest]
     end
   end
-RUBY
+RUBY2
 
+# Create .env.local
 File.write("sure/.env.local", "OPENROUTER_API_KEY=#{OPENROUTER_KEY}\n")
 
-puts "\n✅ Installation complete!"
+puts "\nInstallation complete!"
 puts "Location: #{INSTALL_DIR}"
 puts "Start: cd #{INSTALL_DIR}/sure && bin/dev"
