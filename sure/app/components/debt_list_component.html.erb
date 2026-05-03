@@ -1,0 +1,31 @@
+<div class="space-y-8">
+  <div class="bg-surface rounded-2xl border border-subtle p-6 shadow-sm">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div>
+        <h2 class="text-2xl font-black text-primary tracking-tight mb-1">Debt Portfolio</h2>
+        <p class="text-secondary font-medium">Managing <%= loans.count %> active liability <%= "account".pluralize(loans.count) %>.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div>
+          <div class="text-[10px] text-secondary uppercase font-black tracking-widest mb-1.5">Total Remaining</div>
+          <div class="text-2xl font-black text-primary"><%= total_debt %></div>
+        </div>
+        <div class="sm:border-l border-subtle sm:pl-8">
+          <div class="text-[10px] text-secondary uppercase font-black tracking-widest mb-1.5">Avg. APR</div>
+          <div class="text-2xl font-black text-indigo-600"><%= average_interest_rate %></div>
+        </div>
+        <div class="sm:border-l border-subtle sm:pl-8">
+          <div class="text-[10px] text-secondary uppercase font-black tracking-widest mb-1.5">Total Monthly</div>
+          <div class="text-2xl font-black text-primary"><%= total_monthly_emi %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <% loans.each do |loan| %>
+      <%= render DebtCardComponent.new(loan: loan) %>
+    <% end %>
+  </div>
+</div>

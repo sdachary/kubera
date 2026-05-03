@@ -1,0 +1,113 @@
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+  <div class="p-8 border-b border-gray-50 bg-gray-50/50">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="p-2 bg-indigo-600 rounded-lg">
+        <%= helpers.icon "line-chart", class: "w-5 h-5 text-white" %>
+      </div>
+      <h2 class="text-2xl font-black text-gray-900 tracking-tight">Payoff Strategy Simulator</h2>
+    </div>
+    <p class="text-gray-500 font-medium">Compare the two most popular methods to become debt-free faster.</p>
+  </div>
+
+  <div class="p-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <!-- Avalanche Method -->
+      <div class="flex flex-col">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 flex items-center justify-center bg-amber-100 rounded-full">
+            <%= helpers.icon "zap", class: "w-6 h-6 text-amber-600" %>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 text-lg leading-tight">Debt Avalanche</h3>
+            <span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-black uppercase tracking-widest">Mathematically Optimal</span>
+          </div>
+        </div>
+        
+        <p class="text-sm text-gray-600 mb-8 leading-relaxed">
+          The avalanche method prioritizes debts with the <strong>highest interest rates</strong> first, regardless of balance. This strategy minimizes total interest paid and reduces the overall cost of your debt.
+        </p>
+
+        <div class="space-y-6 mt-auto">
+          <div class="bg-amber-50/50 border border-amber-100 p-4 rounded-xl">
+            <div class="text-[10px] text-amber-700 uppercase font-black tracking-widest mb-1">Estimated Savings</div>
+            <div class="text-3xl font-black text-amber-900"><%= avalanche_savings %></div>
+            <div class="text-xs text-amber-600 font-medium mt-1">saved in interest payments</div>
+          </div>
+
+          <div>
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Payoff Sequence</div>
+            <div class="space-y-3">
+              <% avalanche_order.first(3).each_with_index do |loan, i| %>
+                <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-lg border border-transparent hover:border-amber-200 transition-colors">
+                  <span class="flex-none w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded-full text-xs font-black text-gray-500"><%= i + 1 %></span>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold text-gray-900 truncate"><%= loan.account.name %></div>
+                    <div class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter"><%= loan.subtype.titleize %></div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-sm font-black text-amber-600"><%= loan.interest_rate %>%</div>
+                    <div class="text-[10px] text-gray-400 font-bold uppercase">APR</div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Snowball Method -->
+      <div class="flex flex-col">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full">
+            <%= helpers.icon "snowflake", class: "w-6 h-6 text-blue-600" %>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 text-lg leading-tight">Debt Snowball</h3>
+            <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-black uppercase tracking-widest">Psychological Wins</span>
+          </div>
+        </div>
+        
+        <p class="text-sm text-gray-600 mb-8 leading-relaxed">
+          The snowball method focuses on the <strong>smallest balances</strong> first. By eliminating small debts quickly, you gain psychological momentum and "quick wins" that help you stay committed to your plan.
+        </p>
+
+        <div class="space-y-6 mt-auto">
+          <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
+            <div class="text-[10px] text-blue-700 uppercase font-black tracking-widest mb-1">First Win Expected</div>
+            <div class="text-3xl font-black text-blue-900">In <%= snowball_win_time %></div>
+            <div class="text-xs text-blue-600 font-medium mt-1">to eliminate your first debt</div>
+          </div>
+
+          <div>
+            <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Payoff Sequence</div>
+            <div class="space-y-3">
+              <% snowball_order.first(3).each_with_index do |loan, i| %>
+                <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-lg border border-transparent hover:border-blue-200 transition-colors">
+                  <span class="flex-none w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded-full text-xs font-black text-gray-500"><%= i + 1 %></span>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold text-gray-900 truncate"><%= loan.account.name %></div>
+                    <div class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter"><%= loan.subtype.titleize %></div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-sm font-black text-blue-600"><%= loan.debt_remaining.format %></div>
+                    <div class="text-[10px] text-gray-400 font-bold uppercase">Balance</div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gray-900 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+      <p class="text-indigo-100 text-sm font-medium">Want a custom payoff plan tailored to your income?</p>
+    </div>
+    <button class="bg-white text-gray-900 px-6 py-2 rounded-xl text-sm font-black hover:bg-indigo-50 transition-colors">
+      Generate AI Plan
+    </button>
+  </div>
+</div>
