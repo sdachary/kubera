@@ -2,7 +2,9 @@
 # Kubera Single-File Installer
 require 'fileutils'
 
-puts "KUBERA INSTALLER v0.3"
+puts "╔══════════════════════════════════════╗"
+puts "║       KUBERA INSTALLER v0.3          ║"
+puts "╚══════════════════════════════════════╝"
 puts
 
 print "Install directory [~/.kubera]: "
