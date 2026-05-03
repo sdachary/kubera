@@ -399,6 +399,7 @@ Rails.application.routes.draw do
   resources :other_liabilities, only: %i[new create edit update]
 
   resources :securities, only: :index
+  resources :dividend_sip, only: :index
 
   resources :invite_codes, only: %i[index create destroy]
 
@@ -428,12 +429,31 @@ Rails.application.routes.draw do
       resources :transactions, only: [ :index, :show, :create, :update, :destroy ]
       resources :trades, only: [ :index, :show, :create, :update, :destroy ]
       resources :holdings, only: [ :index, :show ]
+      resource :portfolio, only: [] do
+        get :rebalance
+      end
       resources :valuations, only: [ :index, :create, :update, :show ]
       resources :recurring_transactions, only: [ :index, :show, :create, :update, :destroy ]
       resources :imports, only: [ :index, :show, :create ]
       resource :usage, only: [ :show ], controller: :usage
       resource :balance_sheet, only: [ :show ], controller: :balance_sheet
       post :sync, to: "sync#create"
+
+      resources :debt_payoff, only: [:index] do
+        collection do
+          get :avalanche
+          get :snowball
+          get :simulate
+          get :payoff_date
+          get :calendar
+        end
+      end
+
+      resources :dividend_sip, only: [] do
+        collection do
+          get :suggest
+        end
+      end
 
       resources :chats, only: [ :index, :show, :create, :update, :destroy ] do
         resources :messages, only: [ :create ] do
@@ -573,27 +593,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Debt Payoff Module API
-  namespace :api do
-    namespace :v1 do
-      resources :debt_payoff, only: [:index] do
-        collection do
-          get :avalanche
-          get :snowball
-          get :simulate
-          get :payoff_date
-          get :calendar
-        end
-      end
-    end
-  end
-
   # Defines the root path route ("/")
   root "pages#dashboard"
 end
-  get :calendar
-  resources :dividend_sip, only: [:index] do
-    collection do
-      get :suggest
-    end
-  end

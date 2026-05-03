@@ -110,6 +110,14 @@ class PagesController < ApplicationController
           collapsible: true
         },
         {
+          key: "portfolio_rebalancing",
+          title: "Portfolio Rebalancing",
+          partial: "pages/dashboard/portfolio_rebalancing",
+          locals: {},
+          visible: @accounts.any? && @investment_statement.investment_accounts.any?,
+          collapsible: true
+        },
+        {
           key: "net_worth_chart",
           title: "pages.dashboard.net_worth_chart.title",
           partial: "pages/dashboard/net_worth_chart",

@@ -1,0 +1,55 @@
+<div class="space-y-8">
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-semibold mb-4">SIP Timeline Projection</h2>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="p-4 bg-blue-50 rounded-lg">
+        <div class="text-sm text-blue-600 font-medium">Months to Target</div>
+        <div class="text-2xl font-bold text-blue-900"><%= @timeline[:months] %> months</div>
+        <div class="text-sm text-blue-700">(~<%= @timeline[:years] %> years)</div>
+      </div>
+      <div class="p-4 bg-green-50 rounded-lg">
+        <div class="text-sm text-green-600 font-medium">Target Corpus</div>
+        <div class="text-2xl font-bold text-green-900">₹<%= number_with_delimiter(@timeline[:target_corpus].to_i) %></div>
+        <div class="text-sm text-green-700">@ <%= @timeline[:avg_yield_percent] %>% avg yield</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-semibold mb-4">Stock Suggestions (NSE/BSE)</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b">
+            <th class="py-2 font-medium text-gray-700">Symbol</th>
+            <th class="py-2 font-medium text-gray-700 text-right">Yield (%)</th>
+            <th class="py-2 font-medium text-gray-700 text-right">Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @suggestions.each do |stock| %>
+            <tr class="border-b last:border-0">
+              <td class="py-3">
+                <div class="font-medium text-gray-900"><%= stock[:symbol] %></div>
+                <div class="text-xs text-gray-500"><%= stock[:name] %></div>
+              </td>
+              <td class="py-3 text-right text-green-600 font-semibold">
+                <%= stock[:dividend_yield] %>%
+              </td>
+              <td class="py-3 text-right">
+                <span class="px-2 py-1 text-xs rounded-full <%= 
+                  case stock[:risk]
+                  when "low" then "bg-green-100 text-green-800"
+                  when "medium" then "bg-yellow-100 text-yellow-800"
+                  when "high" then "bg-red-100 text-red-800"
+                  end %>">
+                  <%= stock[:risk].capitalize %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

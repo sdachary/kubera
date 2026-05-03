@@ -1,0 +1,50 @@
+<div class="space-y-6" data-controller="portfolio-rebalancer">
+  <div class="flex justify-between items-center">
+    <h2 class="text-2xl font-bold text-primary">Portfolio Dashboard</h2>
+    <div class="text-right">
+      <p class="text-sm text-secondary">Total Value</p>
+      <p class="text-xl font-semibold"><%= portfolio_value %></p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-container p-6 rounded-xl shadow-border-xs">
+      <h3 class="text-lg font-medium mb-4">Current Allocation</h3>
+      <div class="space-y-4">
+        <% current_holdings.each do |holding| %>
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-medium"><%= holding.security.ticker %></p>
+              <p class="text-sm text-secondary"><%= holding.security.name %></p>
+            </div>
+            <div class="text-right">
+              <p class="font-medium"><%= holding.amount_money %></p>
+              <p class="text-xs text-secondary"><%= number_to_percentage(holding.weight, precision: 2) %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="bg-container p-6 rounded-xl shadow-border-xs">
+      <h3 class="text-lg font-medium mb-4">Rebalancing Insights (MPT)</h3>
+      <button 
+        data-action="click->portfolio-rebalancer#rebalance"
+        class="w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+      >
+        Calculate Optimal Allocation
+      </button>
+      
+      <div data-portfolio-rebalancer-target="results" class="mt-6 hidden">
+        <h4 class="font-medium mb-2 text-sm text-secondary uppercase tracking-wider">Suggested Trades</h4>
+        <div data-portfolio-rebalancer-target="suggestions" class="space-y-3">
+          <!-- Populated by Stimulus -->
+        </div>
+      </div>
+      
+      <div data-portfolio-rebalancer-target="loader" class="mt-6 hidden flex justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    </div>
+  </div>
+</div>
