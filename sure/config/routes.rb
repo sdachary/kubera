@@ -400,6 +400,9 @@ Rails.application.routes.draw do
 
   resources :securities, only: :index
   resources :dividend_sip, only: :index
+      resources :recurring_expenses, only: [:index, :create, :update, :destroy] do
+        post :notify, on: :collection
+      end
 
   resources :invite_codes, only: %i[index create destroy]
 
