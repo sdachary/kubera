@@ -12,19 +12,14 @@ puts
 
 # Collect all details upfront
 print "📁 Install directory [~/.kubera]: "
-INSTALL_DIR = gets.chomp.empty? ? File.expand_path("~/.kubera") : gets.chomp
+input = gets.chomp
+INSTALL_DIR = input.empty? ? File.expand_path("~/.kubera") : input
 
-print "🔑 OpenRouter API Key (for AI): "
+print "🔑 OpenRouter API Key (for AI suggestions): "
 OPENROUTER_KEY = gets.chomp
 
-print "🗄️  Supabase URL (optional): "
-SUPABASE_URL = gets.chomp
-
-print "🔐 Supabase Key (optional): "
-SUPABASE_KEY = gets.chomp
-
-print "🎨 Install frontend components? (y/n) [y]: "
-INSTALL_FRONTEND = gets.chomp.downcase != 'n'
+print "🎨 Install dependencies? (y/n) [y]: "
+INSTALL_DEPS = gets.chomp.downcase != 'n'
 
 print "🧪 Run tests after install? (y/n) [n]: "
 RUN_TESTS = gets.chomp.downcase == 'y'
