@@ -35,6 +35,14 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 
 Built on top of [Sure](https://github.com/we-promise/sure), Kubera adds:
 
+### ✅ Completed Phases (v0.1 → v0.4)
+- 🔧 **v0.1** — Single-line installer (`curl ... | ruby`), Docker setup, AI connector
+- 🔄 **v0.2** — Debt Payoff Module (Avalanche/Snowball, EMI calendar, simulation)
+- 📈 **v0.3** — Dividend SIP Planner (AI stock suggestions, NSE/BSE screener)
+- 🔄 **v0.4** — Portfolio Rebalancing (Modern Portfolio Theory, asset allocation)
+
+**All phases implemented via mcp-hub agents:** Claude Code (frontend), Gemini CLI (typescript), NVIDIA (github)
+
 - 💳 **Debt payoff tracker** — loans, EMIs, avalanche/snowball strategies
 - 📈 **Dividend SIP planner** — AI suggests stocks based on your income target
 - 🔄 **Portfolio rebalancing** — monthly check-ins, on/off track status
