@@ -155,3 +155,41 @@ Full plan for the debt → zero → wealth journey.
 ---
 
 *This file is the single source of truth for Kubera's development plan. Update status here as features ship.*
+
+## 🔄 v2.0 — AI Financial Advisor
+
+**Goal:** AI-powered personal financial advisor.
+
+### Features
+- [ ] AI chat for financial queries
+- [ ] Speding pattern analysis
+- [ ] Investment recommendations based on risk profile
+- [ ] Tax optimization suggestions
+- [ ] Retirement planning calculator
+- [ ] AI-generated financial health report
+
+### Technical Tasks
+- [ ] AI chat endpoint (`/api/v1/ai/chat`)
+- [ ] Financial data analysis engine
+- [ ] Risk profiling system
+- [ ] Integration with OpenRouter for AI models
+- [ ] Report generation service (PDF)
+
+---
+
+## 🔄 v3.0 — Multi-User & Collaboration
+
+**Goal:** Family finance management.
+
+### Features
+- [ ] Multi-user support (family members)
+- [ ] Shared budgets and goals
+- [ ] Approval workflows for large expenses
+- [ ] Family financial dashboard
+- [ ] Permission management (view/edit/admin)
+
+### Technical Tasks
+- [ ] Multi-tenant architecture
+- [ ] Role-based access control (RBAC)
+- [ ] Family invitation system
+- [ ] Shared data views
