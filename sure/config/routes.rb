@@ -465,6 +465,13 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :export, only: [] do
+        collection do
+          get :csv
+          get :pdf
+        end
+      end
+
     end
   end
       end
