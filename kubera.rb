@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 
-INSTALL_DIR = File.expand_path("~/kubera-d")
+INSTALL_DIR = File.expand_path("~/kubera")
 puts "Kubera Installer v0.3"
 puts "Installing to: #{INSTALL_DIR}"
 puts

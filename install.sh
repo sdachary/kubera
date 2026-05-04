@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Kubera One-Line Installer
 # Usage: curl -fsSL URL | bash -s ~/kubera
-#    or: curl -fsSL URL | bash -s /path/to/kubera-d
-#    or: curl -fsSL URL | bash (installs in current dir/kubera-d)
+#    or: curl -fsSL URL | bash -s /path/to/kubera
+#    or: curl -fsSL URL | bash (installs in current dir/kubera)
 
 set -e
 
 # If user passes ~ or $HOME, expand to actual home path
 if [[ "$1" == "~" || "$1" == "$HOME" || "$1" == "" ]]; then
-    INSTALL_DIR="$HOME/kubera-d"
+    INSTALL_DIR="$HOME/kubera"
 else
     # If relative path, make it absolute
     if [[ "$1" != /* ]]; then
