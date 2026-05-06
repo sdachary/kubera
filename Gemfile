@@ -2,7 +2,7 @@ source "https://rubygems.org"
 ruby file: ".ruby-version"
 
 gem "rails", "~> 7.2.2"
-gem "pg", "~> 1.5"
+gem "pg", "~> 1.5", platforms: [:mri, :mingw, :x64_mingw]
 gem "redis", "~> 5.4"
 gem "puma", ">= 5.0"
 gem "bootsnap", require: false
