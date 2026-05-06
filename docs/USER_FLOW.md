@@ -28,21 +28,25 @@ Installation complete!
 
 ---
 
-### 2️⃣ Start the App
-```bash
-cd ~/kubera/sure
-bin/dev
+### 2️⃣ What Happens After Install (Zero-Config)
+After the curl command completes, the terminal shows:
+```
+Installation complete!
+Location: ~/kubera
+To start:
+  cd ~/kubera/sure && bin/dev
+Visit: http://kubera.test (or http://localhost:3000)
 ```
 
-**What starts:**
-- Rails server (dynamic port: 3000, 3001, etc.)
-- Vite dev server (frontend)
-- Background jobs (Sidekiq)
+**User just opens the URL:**
+- No manual setup needed
+- No database config needed
+- No API key setup needed (optional for AI features)
 
-**Check logs for port:**
-```bash
-tail -f ~/kubera/sure/log/development.log
-# Look for: *Listening on http://kubera.test:3000*
+**What starts automatically:**
+- Rails server (dynamic port)
+- Vite dev server (frontend)
+- Database already setup by installer
 ```
 
 ---
