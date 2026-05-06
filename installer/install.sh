@@ -10,7 +10,13 @@ echo "Installing to: $INSTALL_DIR"
 
 # Clone Kubera repo (single repo with sure/ inside)
 echo "Cloning Kubera repository..."
-git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
+if [ -d "$INSTALL_DIR/.git" ]; then
+    echo "Existing repo found, pulling updates..."
+    cd "$INSTALL_DIR" && git pull
+else
+    git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
+fi
 
 cd "$INSTALL_DIR"
 
