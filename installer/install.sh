@@ -6,65 +6,99 @@ set -e
 
 INSTALL_DIR="${1:-$HOME/kubera}"
 
-echo "Kubera Installer v0.5"
+echo "🚀 Kubera Zero-Config Installer"
+echo "==============================="
 echo "Installing to: $INSTALL_DIR"
+
+# Check for git
+if ! command -v git &> /dev/null; then
+    echo "❌ Error: git is not installed. Please install git and try again."
+    exit 1
+fi
 
 # Handle existing directory
 if [ -d "$INSTALL_DIR" ]; then
     if [ -d "$INSTALL_DIR/.git" ]; then
-        echo "Existing repo found, updating..."
+        echo "🔄 Existing repo found, updating..."
         cd "$INSTALL_DIR"
         git fetch --depth 1 origin 2>/dev/null
         git reset --hard origin/main 2>/dev/null || git pull --depth 1
     else
-        echo "Backing up existing directory..."
+        echo "📦 Backing up existing directory..."
         mv "$INSTALL_DIR" "${INSTALL_DIR}.backup.$(date +%s)"
-        echo "Cloning Kubera repository..."
+        echo "📥 Cloning Kubera repository..."
         git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
         cd "$INSTALL_DIR"
     fi
 else
-    echo "Cloning Kubera repository..."
+    echo "📥 Cloning Kubera repository..."
     git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
     cd "$INSTALL_DIR"
 fi
 
 # Zero-config setup
-echo "Starting zero-config setup..."
+echo "⚙️ Starting zero-config setup..."
+
+# Check for Ruby
+if ! command -v ruby &> /dev/null; then
+    echo "❌ Error: Ruby is not installed. Please install Ruby and try again."
+    exit 1
+fi
+
+# Check for Node/NPM
+if ! command -v npm &> /dev/null; then
+    echo "❌ Error: NPM is not installed. Please install Node.js and NPM and try again."
+    exit 1
+fi
 
 # Install dependencies (Required before bin/setup in some environments)
-echo "Installing Ruby dependencies..."
+echo "💎 Installing Ruby dependencies..."
 bundle install 2>&1 | tail -5
 
-echo "Installing Node dependencies..."
+echo "📦 Installing Node dependencies..."
 npm install 2>&1 | tail -5
 
 # Run application setup
-echo "Running bin/setup..."
+echo "🛠️ Running bin/setup..."
+chmod +x bin/setup
 bin/setup 2>&1 | tail -10
 
-echo "Starting server..."
+echo "📡 Starting server..."
 # Start server in background
 PORT=3000 bundle exec rails s > server.log 2>&1 &
 SERVER_PID=$!
 
-# Wait a few seconds for the server to start
-sleep 5
+# Wait for server ready
+echo "⏳ Waiting for server to be ready..."
+MAX_RETRIES=60
+RETRY_COUNT=0
+until curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200\|302\|401\|404\|500"; do
+    RETRY_COUNT=$((RETRY_COUNT+1))
+    if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+        echo
+        echo "❌ Server failed to start within 60 seconds."
+        echo "Check $INSTALL_DIR/server.log for details."
+        exit 1
+    fi
+    printf "."
+    sleep 1
+done
 
 echo
-echo "Installation complete!"
-echo "Location: $INSTALL_DIR"
-echo "Server is running (PID: $SERVER_PID)"
+echo "✅ Installation complete!"
+echo "--------------------------------"
+echo "📍 Location: $INSTALL_DIR"
+echo "🔥 Server is running (PID: $SERVER_PID)"
+echo "🔗 URL: http://localhost:3000"
+echo "--------------------------------"
 echo
-echo "Visit: http://localhost:3000"
+echo "📝 To view logs: tail -f $INSTALL_DIR/server.log"
+echo "🛑 To stop: kill $SERVER_PID"
 echo
-echo "To view logs: tail -f $INSTALL_DIR/server.log"
-echo "To stop: kill $SERVER_PID"
-
-echo
-echo "=== Quick Financial Guide ==="
-echo "1. Create account at http://localhost:3000"
-echo "2. Add your debts (Home Loan, Car Loan, etc.)"
-echo "3. See AI-powered payoff plan"
-echo "4. Setup SIP planner for passive income"
-echo "5. Track your journey: Debt → Zero → Wealth"
+echo "💰 === Kubera Financial Guide ==="
+echo "1️⃣ Create your account at http://localhost:3000"
+echo "2️⃣ Add your liabilities (Mortgage, Loans, Credit Cards)"
+echo "3️⃣ Use the AI Payoff Plan to optimize your debt reduction"
+echo "4️⃣ Plan your future with the SIP (Systematic Investment Plan) tool"
+echo "5️⃣ Track your transition from Debt to Financial Freedom!"
+echo "==============================="
