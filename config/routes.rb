@@ -429,9 +429,24 @@ Rails.application.routes.draw do
       resources :transactions, only: [ :index, :show, :create, :update, :destroy ]
       resources :trades, only: [ :index, :show, :create, :update, :destroy ]
       resources :holdings, only: [ :index, :show ]
-      resources :portfolio, only: [ :index ] do
-        get :rebalance, on: :collection
+      namespace :v1 do
+        resources :debt_payoffs, only: [:index, :create, :show] do
+          collection { post :simulate }
+        end
+        resources :dividend_sips, only: [:index, :create, :show] do
+          collection { post :suggest }
+        end
+        resources :portfolios, only: [:index, :show] do
+          member { post :rebalance }
+        end
+        resources :journeys, only: [:show] do
+          collection { get :progress }
+        end
+        resources :recurring_expenses, only: [:index, :create, :show] do
+          collection { get :calendar }
+        end
       end
+
       resources :valuations, only: [ :index, :create, :update, :show ]
       resources :recurring_transactions, only: [ :index, :show, :create, :update, :destroy ]
       resources :imports, only: [ :index, :show, :create ]
@@ -439,38 +454,11 @@ Rails.application.routes.draw do
       resource :balance_sheet, only: [ :show ], controller: :balance_sheet
       post :sync, to: "sync#create"
 
-      resources :debt_payoff, only: [:index] do
-        collection do
-          get :avalanche
-          get :snowball
-          get :simulate
-          get :payoff_date
-          get :calendar
-        end
-      end
-
-      resources :dividend_sip, only: [] do
-        collection do
-          get :suggest
-        end
-      end
-
-      resources :journey, only: [] do
-        collection do
-          get :dashboard
-          get :net_worth_chart
-        end
-      end
-
       resources :export, only: [] do
         collection do
           get :csv
           get :pdf
         end
-      end
-
-      resources :recurring_expenses, only: [:index, :create, :update, :destroy] do
-        post :notify, on: :collection
       end
 
       resources :chats, only: [ :index, :show, :create, :update, :destroy ] do

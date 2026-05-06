@@ -1,0 +1,86 @@
+<div class="max-w-6xl mx-auto p-6">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">SIP Calculator</h2>
+    <p class="text-gray-600 dark:text-gray-400">Calculate returns on your Systematic Investment Plan</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Monthly Investment</h3>
+      <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">₹<%= @monthly_investment.to_i %></p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Expected Return Rate</h3>
+      <p class="text-3xl font-bold text-green-600 dark:text-green-400"><%= @expected_return_rate %>%</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Time Period</h3>
+      <p class="text-3xl font-bold text-purple-600 dark:text-purple-400"><%= @time_period_years %> Years</p>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Investment Summary</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Total Investment</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">₹<%= total_investment.to_i %></p>
+      </div>
+      <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Estimated Returns</p>
+        <p class="text-xl font-bold text-green-600 dark:text-green-400">₹<%= estimated_returns.to_i %></p>
+      </div>
+      <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
+        <p class="text-xl font-bold text-blue-600 dark:text-blue-400">₹<%= total_value.to_i %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Yearly Projection</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th class="px-4 py-3">Year</th>
+            <th class="px-4 py-3">Invested</th>
+            <th class="px-4 py-3">Value</th>
+            <th class="px-4 py-3">Returns</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% yearly_projection.each do |proj| %>
+            <tr class="border-b dark:border-gray-700">
+              <td class="px-4 py-3 font-medium"><%= proj[:year] %></td>
+              <td class="px-4 py-3">₹<%= proj[:invested].to_i %></td>
+              <td class="px-4 py-3">₹<%= proj[:value].to_i %></td>
+              <td class="px-4 py-3 text-green-600 dark:text-green-400">₹<%= proj[:returns].to_i %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Existing SIPs</h3>
+    <div class="space-y-3">
+      <% @existing_data.each do |sip| %>
+        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white"><%= sip[:fund_name] %></p>
+            <div class="flex items-center mt-1">
+              <% sip[:rating].times do %>
+                <span class="text-yellow-400">★</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-lg font-bold text-blue-600 dark:text-blue-400">₹<%= sip[:monthly] %>/mo</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
