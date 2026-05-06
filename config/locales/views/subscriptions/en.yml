@@ -1,0 +1,13 @@
+en:
+  subscriptions:
+    self_hosted_alert: "%{product_name} is not available in self-hosted mode."
+    upgrade:
+      contribute_and_support_kubera: "Contribute and support Kubera"
+      cta: "Continue supporting the development of this codebase!"
+      header:
+        support: "Support"
+        kubera: "Kubera"
+        today: "today"
+      redirect_to_stripe: "In the next step, you'll be redirected to Stripe which handles credit cards for us."
+      trialing: "Your data will be deleted in %{days} days"
+      trial_over: "Your trial is over"

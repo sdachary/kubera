@@ -1,0 +1,26 @@
+<div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+  <h3 class="text-lg font-semibold text-indigo-900 mb-4">Payoff Simulator</h3>
+  <div class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-indigo-700">Extra Monthly Payment</label>
+      <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="₹ 0.00">
+    </div>
+    <div class="bg-white p-4 rounded-md shadow-inner">
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-gray-600">Original Months:</span>
+        <span class="font-medium text-gray-900"><%= @debt.months_remaining %> months</span>
+      </div>
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-gray-600">New Months:</span>
+        <span class="font-bold text-green-600">Simulating...</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-600">Months Saved:</span>
+        <span class="font-bold text-green-600">Simulating...</span>
+      </div>
+    </div>
+    <button class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">
+      Run Simulation
+    </button>
+  </div>
+</div>

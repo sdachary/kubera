@@ -14,7 +14,6 @@
 Personal finance OS · Self-hosted · Open source
 
 ![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)
-![Built on Sure](https://img.shields.io/badge/built%20on-Sure-orange.svg)
 
 </div>
 
@@ -22,7 +21,7 @@ Personal finance OS · Self-hosted · Open source
 
 ## What is Kubera?
 
-Kubera is a **self-hosted personal finance OS** that takes you from **debt → zero → wealth** in a defined timeline.
+Kubera is a **standalone, self-hosted personal finance OS** that takes you from **debt → zero → wealth** in a defined timeline.
 
 Most finance apps are either budgeting tools or investment dashboards. Kubera is the full arc:
 
@@ -33,14 +32,13 @@ Negative  →  Zero  →  Positive
 
 The app follows one rule: **clear your liabilities before building wealth.** It doesn't block you — but it always shows debt freedom progress front and center, and investment suggestions only strengthen once debt is under control.
 
-Built on top of [Sure](https://github.com/we-promise/sure), Kubera adds:
-
-### ✅ Completed Phases (v0.1 → v0.5)
+### ✅ Completed Phases (v0.1 → v1.0)
 - 🔧 **v0.1** — Single-line installer (`curl ... | bash`), Docker setup, AI connector
 - 💳 **v0.2** — Debt Payoff Module (Avalanche/Snowball, EMI calendar, simulation)
 - 📈 **v0.3** — Dividend SIP Planner (AI stock suggestions, NSE/BSE screener)
 - 🔄 **v0.4** — Portfolio Rebalancing (Modern Portfolio Theory, asset allocation)
 - 🔔 **v0.5** — Recurring Expense Tracker (EMI/subscription calendar, notifications)
+- 🛡️ **v1.0** — Security audit & standalone architecture (No Sure dependency)
 
 **All phases implemented via mcp-hub agents:** Claude Code (frontend), Gemini CLI (typescript), NVIDIA (github)
 
@@ -75,6 +73,7 @@ Built on top of [Sure](https://github.com/we-promise/sure), Kubera adds:
 3. **Free AI from day one** — no $20/month for AI features
 4. **Built for India** — NSE/BSE, EMIs, SIPs, ₹ currency
 5. **Community-driven** — features serve users, not shareholders
+6. **Standalone Architecture** — No external dependencies, all data stays local
 
 ---
 
@@ -141,12 +140,12 @@ The installer walks you through choosing one. You can also skip and configure la
 
 ## Architecture
 
-Kubera = Sure (Maybe Finance fork) + Kubera-specific features
+Kubera is a **native Rails 7.2 application** built for self-hosting.
 
-- **Sure/Maybe**: Handles transactions, budgets, investments, AI chat
-- **Kubera Layer**: Adds debt payoff tracker, SIP planner, Indian market features
-
-Most application code lives in [Sure](https://github.com/we-promise/sure). This repo handles distribution, installer, and Kubera-specific extensions.
+- **Frontend**: Tailwind CSS + Hotwire (Turbo/Stimulus)
+- **Backend**: Ruby on Rails, PostgreSQL, Redis
+- **Security**: Local-only data storage, no external bank sync required
+- **AI**: Pluggable architecture supporting local (Ollama) and cloud (OpenRouter) models
 
 ---
 
@@ -174,7 +173,7 @@ See [docs/roadmap-updated.md](docs/roadmap-updated.md) for the full plan.
 - ✅ v0.3 — Dividend SIP planner
 - ✅ v0.4 — Portfolio rebalancing
 - ✅ v0.5 — Recurring expense tracker
-- 🚀 v1.0 — Full debt → wealth journey
+- ✅ v1.0 — Security audit & standalone architecture
 
 ---
 
@@ -184,9 +183,9 @@ See [docs/roadmap-updated.md](docs/roadmap-updated.md) for the full plan.
 2. **Audit Your Finances** — Full transparency: inspect the code that handles your money
 3. **No Vendor Lock-in** — Fork it, modify it, host it forever
 4. **Community-Driven** — Features serve users, not shareholders
-5. **AGPL-3.0 Licensed** — Same as Maybe Finance; any hosted version must share improvements
-6. **Free AI Options** — Unlike Mint/Copilot, no forced subscriptions for AI features
-7. **Contribute Back** — Add NSE/BSE support, improve debt algorithms, share with everyone
+5. **AGPL-3.0 Licensed** — Any hosted version must share improvements
+6. **Free AI Options** — Unlike commercial apps, no forced subscriptions for AI features
+7. **Contribute Back** — Add exchange support, improve debt algorithms, share with everyone
 
 ---
 
@@ -198,17 +197,12 @@ The short version: contributions should serve the philosophy — debt first, the
 
 ---
 
-## Acknowledgements
-
-Kubera is built on [Sure](https://github.com/we-promise/sure), which is built on [Maybe Finance](https://github.com/maybe-finance/maybe). We're standing on good foundations.
-
----
-
 ## License
 
-[AGPL-3.0](LICENSE) — same as Sure and Maybe. Fork freely, contribute back when you can.
+[AGPL-3.0](LICENSE) — Fork freely, contribute back when you can.
 
 ---
 
 *Kubera (कुबेर) is the Hindu god of wealth and treasurer of the gods.*
 *The name is aspirational — but you have to get to zero first.*
+

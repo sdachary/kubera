@@ -13,6 +13,7 @@
     "test:cross-browser": "playwright test tests/cross-browser.test.jsx",
     "test:visual": "playwright test tests/visual-regression.test.jsx",
     "lint": "eslint src/",
+    "tokens:build": "node bin/tokens.mjs",
     "preview": "vite preview",
     "dev": "vite",
     "build": "vite build"

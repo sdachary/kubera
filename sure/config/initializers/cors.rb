@@ -8,9 +8,12 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # Allow requests from any origin for API endpoints
-    # Mobile apps and development environments need flexible CORS
-    origins "*"
+    # Restrict CORS to specific origins for security
+    # Configure allowed origins via CORS_ALLOWED_ORIGINS env var (comma-separated)
+    # Default: allow localhost for development
+    allowed_origins = ENV.fetch("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+
+    origins allowed_origins
 
     # API endpoints for mobile client and third-party integrations
     resource "/api/*",

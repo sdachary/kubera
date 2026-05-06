@@ -15,7 +15,7 @@ Features that fit:
 - Installer improvements (new distros, edge cases, UX)
 
 Features that don't fit (for now):
-- General budgeting features (Sure handles this upstream)
+- High-frequency trading
 - Crypto tracking
 - Social/sharing features
 
@@ -45,20 +45,19 @@ Visit http://localhost:3000
 
 ### 3. Make your changes
 
-Kubera extends [Sure](https://github.com/we-promise/sure). Most application code lives upstream. Kubera-specific additions will live in:
+Kubera is a **native Rails 7.2 application**.
 
 ```
 kubera/
+├── app/                    ← Rails application code (Models, Controllers, Views)
+├── config/                 ← App configuration
+├── db/                     ← Migrations and schema
 ├── install.sh              ← Installer TUI
 ├── compose.example.yml     ← Docker config
-├── docs/
-│   ├── hosting/            ← Self-hosting guides
-│   ├── features/           ← Feature documentation
-│   └── roadmap.md
-└── scripts/
-    ├── update.sh           ← Update helper
-    └── backup.sh           ← Backup helper
+├── docs/                   ← Documentation
+└── lib/                    ← Custom libraries and tasks
 ```
+
 
 ## Submitting changes
 

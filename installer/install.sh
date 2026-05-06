@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Kubera Single-Repo Installer
+# Kubera Zero-Config Installer
 # Usage: curl -fsSL URL | bash -s ~/kubera
 
 set -e
 
 INSTALL_DIR="${1:-$HOME/kubera}"
 
-echo "Kubera Installer v0.3"
+echo "Kubera Installer v0.5"
 echo "Installing to: $INSTALL_DIR"
 
 # Handle existing directory
@@ -29,29 +29,42 @@ else
     cd "$INSTALL_DIR"
 fi
 
-# Install dependencies (sure/ is already inside)
-echo "Installing dependencies..."
-cd "$INSTALL_DIR/sure"
+# Zero-config setup
+echo "Starting zero-config setup..."
+
+# Install dependencies (Required before bin/setup in some environments)
+echo "Installing Ruby dependencies..."
 bundle install 2>&1 | tail -5
+
+echo "Installing Node dependencies..."
 npm install 2>&1 | tail -5
 
-# Setup database
-echo "Setting up database..."
-cp .env.local.example .env.local 2>/dev/null || true
+# Run application setup
+echo "Running bin/setup..."
 bin/setup 2>&1 | tail -10
+
+echo "Starting server..."
+# Start server in background
+PORT=3000 bundle exec rails s > server.log 2>&1 &
+SERVER_PID=$!
+
+# Wait a few seconds for the server to start
+sleep 5
 
 echo
 echo "Installation complete!"
 echo "Location: $INSTALL_DIR"
+echo "Server is running (PID: $SERVER_PID)"
 echo
-echo "To start:"
-echo "  cd $INSTALL_DIR/sure && bin/dev"
+echo "Visit: http://localhost:3000"
 echo
-echo "Visit: http://kubera.test (add to /etc/hosts) or http://localhost:3000"
+echo "To view logs: tail -f $INSTALL_DIR/server.log"
+echo "To stop: kill $SERVER_PID"
+
 echo
 echo "=== Quick Financial Guide ==="
-echo "1. Create account at http://kubera.test"
+echo "1. Create account at http://localhost:3000"
 echo "2. Add your debts (Home Loan, Car Loan, etc.)"
-echo "3. See AI-powered payoff plan (Avalanche/Snowball)"
+echo "3. See AI-powered payoff plan"
 echo "4. Setup SIP planner for passive income"
 echo "5. Track your journey: Debt → Zero → Wealth"

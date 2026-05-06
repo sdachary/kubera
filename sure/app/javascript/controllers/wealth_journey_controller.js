@@ -4,9 +4,7 @@ export default class extends Controller {
     this.loadDashboard()
   }
   async loadDashboard() {
-    const response = await fetch('/api/v1/journey/dashboard', {
-      headers: { 'X-API-Key': process.env.API_KEY }
-    })
+    const response = await fetch('/api/v1/journey/dashboard')
     const data = await response.json()
     this.updateUI(data)
   }

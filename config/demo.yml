@@ -1,0 +1,16 @@
+default: &default
+  hosts:
+    - kubera-demo.pikapod.net
+    - demo.kubera.am
+    - app.kubera.am
+  email: user@example.com
+  password: Password1!
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

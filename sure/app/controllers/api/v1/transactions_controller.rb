@@ -232,11 +232,21 @@ end
 
       # Date range filtering
       if params[:start_date].present?
-        query = query.joins(:entry).where("entries.date >= ?", Date.parse(params[:start_date]))
+        begin
+          start_date = Date.parse(params[:start_date])
+          query = query.joins(:entry).where("entries.date >= ?", start_date)
+        rescue Date::Error
+          # Invalid date format, skip filter
+        end
       end
 
       if params[:end_date].present?
-        query = query.joins(:entry).where("entries.date <= ?", Date.parse(params[:end_date]))
+        begin
+          end_date = Date.parse(params[:end_date])
+          query = query.joins(:entry).where("entries.date <= ?", end_date)
+        rescue Date::Error
+          # Invalid date format, skip filter
+        end
       end
 
       # Amount filtering
