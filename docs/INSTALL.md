@@ -9,7 +9,7 @@ curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/kubera.rb | ru
 This single command:
 1. Asks install directory (default: `~/.kubera`)
 2. Asks OpenRouter API key (for AI features)
-3. Clones Sure repo into `sure/` subdirectory
+3. Clones Kubera repo into `kubera/` subdirectory
 4. Applies all Kubera features (v0.1 → v1.0)
 5. Creates `.env.local` with your API key
 
@@ -31,14 +31,14 @@ This single command:
    cd ~/.kubera
    ```
 
-2. **Clone Sure into `sure/`**
+2. **Clone Kubera into `kubera/`**
    ```bash
-   git clone https://github.com/we-promise/sure.git sure
+   git clone https://github.com/we-promise/kubera.git kubera
    ```
 
 3. **Setup Environment**
    ```bash
-   cd sure
+   cd kubera
    cp .env.local.example .env.local
    # Edit .env.local and add:
    # OPENROUTER_API_KEY=your_key_here
@@ -47,7 +47,7 @@ This single command:
 
 4. **Install Dependencies**
    ```bash
-   cd ~/.kubera/sure
+   cd ~/.kubera/kubera
    bundle install
    npm install
    ```
@@ -165,10 +165,10 @@ curl http://localhost:3000/api/v1/export/pdf > financial-plan.pdf
 ### Logs
 ```bash
 # Rails logs
-tail -f ~/.kubera/sure/log/development.log
+tail -f ~/.kubera/kubera/log/development.log
 
 # Frontend (Vite)
-tail -f ~/.kubera/sure/log/vite.log
+tail -f ~/.kubera/kubera/log/vite.log
 ```
 
 ### Common Issues
@@ -186,7 +186,7 @@ tail -f ~/.kubera/sure/log/vite.log
 
 3. **Missing dependencies:**
    ```bash
-   cd ~/.kubera/sure
+   cd ~/.kubera/kubera
    bundle install
    npm install
    ```
