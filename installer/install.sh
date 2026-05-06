@@ -14,7 +14,7 @@ git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
 
 cd "$INSTALL_DIR"
 
-# Install dependencies
+# Install dependencies (sure/ is already inside)
 echo "Installing dependencies..."
 cd sure
 bundle install 2>&1 | tail -5
