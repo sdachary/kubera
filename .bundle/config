@@ -1,2 +1,2 @@
 ---
-BUNDLE_PATH: "/home/deepak/.local/share/gem/ruby/3.3.0"
+BUNDLE_PATH: "vendor/bundle"
