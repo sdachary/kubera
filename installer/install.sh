@@ -9,18 +9,21 @@ INSTALL_DIR="${1:-$HOME/kubera}"
 echo "Kubera Installer v0.3"
 echo "Installing to: $INSTALL_DIR"
 
-# If exists, update in place
-if [ -d "$INSTALL_DIR/.git" ]; then
-    echo "Existing repo found, updating..."
-    cd "$INSTALL_DIR"
-    git fetch --depth 1 origin 2>/dev/null
-    git reset --hard origin/main 2>/dev/null || git pull --depth 1
-else
-    # If exists but not git repo, backup and clone fresh
-    if [ -d "$INSTALL_DIR" ]; then
+# Handle existing directory
+if [ -d "$INSTALL_DIR" ]; then
+    if [ -d "$INSTALL_DIR/.git" ]; then
+        echo "Existing repo found, updating..."
+        cd "$INSTALL_DIR"
+        git fetch --depth 1 origin 2>/dev/null
+        git reset --hard origin/main 2>/dev/null || git pull --depth 1
+    else
         echo "Backing up existing directory..."
         mv "$INSTALL_DIR" "${INSTALL_DIR}.backup.$(date +%s)"
+        echo "Cloning Kubera repository..."
+        git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
+        cd "$INSTALL_DIR"
     fi
+else
     echo "Cloning Kubera repository..."
     git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
     cd "$INSTALL_DIR"
