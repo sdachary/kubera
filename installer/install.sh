@@ -8,14 +8,22 @@ INSTALL_DIR="${1:-$HOME/kubera}"
 echo "Kubera Installer v0.3"
 echo "Installing to: $INSTALL_DIR"
 
-# Clone Kubera repo (single repo with sure/ inside)
-echo "Cloning Kubera repository..."
-if [ -d "$INSTALL_DIR/.git" ]; then
-    echo "Existing repo found, pulling updates..."
-    cd "$INSTALL_DIR" && git pull
+# Check if directory exists
+if [ -d "$INSTALL_DIR" ]; then
+    echo "Directory exists, checking..."
+    if [ -d "$INSTALL_DIR/.git" ]; then
+        echo "Existing repo found, pulling updates..."
+        cd "$INSTALL_DIR"
+        git pull --depth 1
+    else
+        echo "Directory exists but not a git repo, backing up..."
+        mv "$INSTALL_DIR" "${INSTALL_DIR}.backup.$(date +%s)"
+        echo "Cloning Kubera repository..."
+        git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
+    fi
 else
+    echo "Cloning Kubera repository..."
     git clone --depth 1 https://github.com/sdachary/kubera.git "$INSTALL_DIR"
-    cd "$INSTALL_DIR"
 fi
 
 cd "$INSTALL_DIR"
@@ -38,5 +46,4 @@ echo
 echo "To start:"
 echo "  cd $INSTALL_DIR/sure && bin/dev"
 echo
-echo "Visit: http://localhost:3000 (or check logs for dynamic port)"
-echo "Or use slug URL: http://kubera.test (add to /etc/hosts)"
+echo "Visit: http://kubera.test (add to /etc/hosts) or http://localhost:3000"
