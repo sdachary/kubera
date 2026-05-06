@@ -32,4 +32,5 @@ echo
 echo "To start:"
 echo "  cd $INSTALL_DIR/sure && bin/dev"
 echo
-echo "Visit: http://localhost:3000"
+echo "Visit: http://localhost:3000 (or check logs for dynamic port)"
+echo "Or use slug URL: http://kubera.test (add to /etc/hosts)"
