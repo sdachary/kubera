@@ -10,7 +10,7 @@ class ApiKey < ApplicationRecord
 
   # Constants
   SOURCES = [ "web", "mobile", "monitoring" ].freeze
-  DEMO_MONITORING_KEY = "demo_monitoring_key_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+  # DEMO_MONITORING_KEY removed for security - use env var or seeds instead
 
   # Validations
   validates :display_key, presence: true, uniqueness: true

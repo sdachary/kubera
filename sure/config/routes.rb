@@ -472,10 +472,6 @@ Rails.application.routes.draw do
         end
       end
 
-    end
-  end
-      end
-
       resources :chats, only: [ :index, :show, :create, :update, :destroy ] do
         resources :messages, only: [ :create ] do
           post :retry, on: :collection
