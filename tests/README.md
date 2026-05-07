@@ -4,7 +4,7 @@
 Tests in this folder verify the full debt payoff journey.
 
 ## Prerequisites
-- kubera-backend running (Docker or local)
+- Kubera running (Docker or local)
 - API key for authentication
 - Test database with sample debts
 
@@ -52,7 +52,7 @@ npm test -- debt_payoff
 // tests/api/debt_payoff.test.js
 const axios = require('axios');
 
-const API_BASE = 'http://localhost:3002/api/v1';
+const API_BASE = 'http://localhost:3000/api/v1';
 const API_KEY = process.env.API_KEY || 'test-key';
 
 const api = axios.create({
@@ -73,6 +73,4 @@ describe('Debt Payoff API', () => {
 
 ## Resume Note
 If interrupted, check:
-1. `kubera/docs/roadmap.md` - What's done
-2. `kubera/PROGRESS.md` - Last task
-3. `kubera-backend/` - Latest code changes
+1. `kubera/PROGRESS.md` - Current status

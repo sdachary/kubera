@@ -5,6 +5,16 @@ class Rack::Attack
   enabled = Rails.env.production? || Rails.env.staging?
   self.enabled = enabled
 
+  # Throttle login/signup attempts (brute force protection)
+  throttle("auth/login", limit: 5, period: 1.minute) do |request|
+    request.ip if request.path == "/api/v1/auth/login" || request.path == "/api/v1/auth/signup"
+  end
+
+  # Throttle password reset attempts
+  throttle("auth/password_reset", limit: 3, period: 1.hour) do |request|
+    request.ip if request.path == "/password_reset"
+  end
+
   # Throttle requests to the OAuth token endpoint
   throttle("oauth/token", limit: 10, period: 1.minute) do |request|
     request.ip if request.path == "/oauth/token"

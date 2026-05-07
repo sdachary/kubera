@@ -4,40 +4,150 @@ class WealthJourneyTracker
   end
 
   def debt_progress
-    debts = Debt.all
-    total_debt = debts.sum(&:amount)
-    total_emi = debts.sum(&:emi_amount)
+    debts = Debt.where(user: @user, status: "active")
+    total_debt = debts.sum(:amount)
+    total_emi = debts.sum(:emi_amount)
+
     {
       total_debt: total_debt,
       total_emi: total_emi,
+      debt_count: debts.count,
       months_to_zero: debts.map(&:months_remaining).max || 0,
-      progress_percentage: 25.0 # Placeholder
+      estimated_debt_free_date: debts.map(&:debt_free_date).compact.max,
+      progress_percentage: debts.any? ? debts.sum(&:progress_percentage) / debts.count : 100.0,
+      debts: debts.map { |d|
+        {
+          id: d.id, name: d.name, amount: d.amount, interest_rate: d.interest_rate,
+          emi_amount: d.emi_amount, due_date: d.due_date, status: d.status,
+          months_remaining: d.months_remaining, debt_free_date: d.debt_free_date
+        }
+      }
     }
   end
 
   def sip_progress
-    investments = Investment.all
+    sips = DividendSip.where(status: "active")
+    total_monthly = sips.sum(&:monthly_contribution)
+    projected_annual = total_monthly * 12 * 0.08
+    target_income = sips.first&.target_income || 50_000
+
     {
-      goal: 50000,
-      current: 15000,
-      progress: 30.0,
-      projected_income: 2500
+      active_sips: sips.count,
+      total_monthly_contribution: total_monthly,
+      target_monthly_income: target_income,
+      projected_monthly_income: projected_annual / 12,
+      progress: target_income > 0 ? [(projected_annual / 12 / target_income * 100).round(1), 100.0].min : 0,
+      sips: sips.map { |s|
+        {
+          id: s.id, amount: s.amount, frequency: s.frequency,
+          target_income: s.target_income, status: s.status,
+          monthly_contribution: s.monthly_contribution
+        }
+      }
     }
   end
 
-  def net_worth_trajectory
-    total_debt = Debt.sum(:amount)
-    # Use DebtPayoffService for a more accurate trajectory if needed
-    # For now, keeping the simple placeholder logic
+  def net_worth_trajectory(months: 12)
+    current = NetWorthSnapshot.current(@user)
+    debts = Debt.where(user: @user, status: "active")
+    total_emi = debts.sum(:emi_amount)
+
+    trajectory = (0..months).map do |m|
+      month_date = Date.today + m.months
+      debt_reduction = total_emi * [m, debts.map(&:months_remaining).max || 0].min
+      asset_growth = current.total_assets * 1.005 ** m
+      liability = [current.total_liabilities - debt_reduction, 0].max
+
+      {
+        month: month_date.strftime("%Y-%m"),
+        label: month_date.strftime("%b %Y"),
+        net_worth: (asset_growth - liability).round(2),
+        assets: asset_growth.round(2),
+        liabilities: liability.round(2)
+      }
+    end
+
     {
-      net_worth: 500000 - total_debt,
-      assets: 500000,
-      liabilities: total_debt,
-      trajectory: (1..12).map { |m| { month: m, net_worth: (500000 - total_debt) + m * 10000 } }
+      current_net_worth: current.net_worth,
+      total_assets: current.total_assets,
+      total_liabilities: current.total_liabilities,
+      breakdown: current.breakdown,
+      trajectory: trajectory,
+      projection_12m: trajectory.last[:net_worth]
     }
+  end
+
+  def wealth_growth_projection
+    current = NetWorthSnapshot.current(@user)
+    yearly_rate = 0.10
+    monthly_contribution = DividendSip.where(status: "active").sum(&:monthly_contribution)
+
+    (1..30).map do |year|
+      year_date = Date.today + year.years
+      current_net = current.net_worth.to_f
+      projected = current_net * (1 + yearly_rate) ** year
+      projected += monthly_contribution * 12 * year * (1 + yearly_rate / 2) ** year
+
+      {
+        year: year_date.year,
+        age: year,
+        projected_net_worth: projected.round(2),
+        monthly_passive_income: (projected * 0.04 / 12).round(2)
+      }
+    end
   end
 
   def zero_day_milestone
-    { reached: false, estimated_date: Date.today >> 12 }
+    debts = Debt.where(user: @user, status: "active")
+    return { reached: true, estimated_date: Date.today, message: "You are debt-free!" } if debts.empty?
+
+    max_months = debts.map(&:months_remaining).max || 0
+    est_date = Date.today + max_months.months
+
+    {
+      reached: false,
+      estimated_date: est_date,
+      months_remaining: max_months,
+      total_debt: debts.sum(:amount),
+      message: max_months > 0 ? "Debt-free by #{est_date.strftime('%b %Y')}" : "No active debts"
+    }
+  end
+
+  def summary
+    debt = debt_progress
+    sip = sip_progress
+    net = net_worth_trajectory
+    zero = zero_day_milestone
+
+    {
+      debt_summary: {
+        total_debt: debt[:total_debt],
+        debt_free_months: debt[:months_to_zero],
+        progress: debt[:progress_percentage]
+      },
+      investment_summary: {
+        monthly_sip: sip[:total_monthly_contribution],
+        projected_income: sip[:projected_monthly_income],
+        target_income: sip[:target_monthly_income]
+      },
+      net_worth: {
+        current: net[:current_net_worth],
+        projected_12m: net[:projection_12m],
+        assets: net[:total_assets],
+        liabilities: net[:total_liabilities]
+      },
+      zero_day: zero,
+      score: calculate_wealth_score(debt, sip, net)
+    }
+  end
+
+  private
+
+  def calculate_wealth_score(debt, sip, net)
+    debt_score = debt[:total_debt] > 0 ? [(1 - debt[:total_debt] / [net[:current_net_worth], 1].max) * 40, 0].max : 40
+    sip_score = sip[:target_monthly_income] > 0 ? [(sip[:projected_monthly_income] / sip[:target_monthly_income]) * 30, 30].min : 0
+    net_score = net[:current_net_worth] > 0 ? [[net[:current_net_worth] / 1_000_000 * 30, 30].min, 0].max : 0
+
+    (debt_score + sip_score + net_score).round
   end
 end

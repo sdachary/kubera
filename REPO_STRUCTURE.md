@@ -1,76 +1,60 @@
 # Kubera Repository Structure
 
 ## Overview
-Kubera uses a **two-repo approach**:
-- **kubera/** (this repo) - Marketing site, installer, docs, tests
-- **kubera-backend/** (fork of Sure) - Rails API backend
+Kubera is a **single-repo** application:
+- Rails API backend with ViewComponents (in `app/`)
+- Vite React landing page (at root, `src/`)
+- All features native, no external fork dependencies
 
 ## Directory Structure
 
 ```
-kubera/                    ← This repo (github.com/deepakachary/kubera)
-├── compose.yml            # Points to kubera-backend Docker image
-├── install.sh            # Interactive installer
-├── src/                  # React marketing site
-├── docs/                 # Documentation + roadmap
-├── tests/                # E2E tests for full stack
-│   ├── api/             # API integration tests
-│   ├── debt_module/      # Debt payoff feature tests
-│   └── e2e/             # End-to-end browser tests
-└── README.md
-
-kubera-backend/           ← Separate repo (fork of Sure)
-├── app/
-│   ├── models/loan.rb   # Extended with debt methods
-│   ├── services/debt_payoff_calculator.rb
-│   └── controllers/api/v1/debt_payoff_controller.rb
-└── db/migrate/          # Debt fields migration
+kubera/                    # Single repo (github.com/deepakachary/kubera)
+├── app/                  # Rails application
+│   ├── controllers/     # API: /api/v1/debt_payoff, dividend_sip, portfolio, journey
+│   ├── models/          # Loan, RecurringExpense, Account, etc.
+│   ├── services/        # DebtPayoffCalculator, DividendScreener, PortfolioRebalancer
+│   ├── components/      # ViewComponents (DebtCard, SIPCalculator, etc.)
+│   └── views/           # ERB templates
+├── src/                 # Vite React landing page
+├── config/              # Rails configuration
+├── db/migrate/          # Database migrations
+├── docs/                # Documentation + roadmap
+├── installer/           # Curl install script
+├── tests/               # E2E tests for full stack
+├── compose.yml          # Docker Compose (builds locally)
+├── Dockerfile           # Container definition
+└── PROGRESS.md          # Feature progress tracking
 ```
 
 ## Development Workflow
 
 ### Local Development
-1. Clone both repos:
-   ```bash
-   git clone https://github.com/deepakachary/kubera.git
-   git clone https://github.com/deepakachary/kubera-backend.git
-   ```
+```bash
+# Start the app
+bin/dev
 
-2. Update `compose.yml` to build locally:
-   ```yaml
-   services:
-     web:
-       build: ../kubera-backend  # Local path for development
-   ```
+# Or with Docker
+docker compose up --build
+```
 
-3. Run tests from kubera/tests/:
-   ```bash
-   cd kubera/tests && npm test
-   ```
+### Testing
+```bash
+# Rails tests
+bundle exec rspec
 
-### Production
-- `compose.yml` pulls from `ghcr.io/deepakachary/kubera-backend:stable`
-- kubera-backend auto-builds on push via GitHub Actions
+# Frontend tests (Vitest)
+npm run test
 
-## Test Strategy
+# E2E tests
+npm run test:e2e
+```
 
-Tests in **kubera/tests/** cover:
-1. **API Tests** - Debt payoff endpoints
-2. **E2E Tests** - Full user journey (add debt → see payoff plan)
-3. **Integration Tests** - EMI tracking with transactions
+## Current Status
 
-## Resume After Interruption
-
-1. Check roadmap: `cat docs/roadmap.md`
-2. Check progress: `cat PROGRESS.md`
-3. Continue from last completed task
-4. Update `PROGRESS.md` after each task
-
-## Current Status (2026-05-02)
-
-- [x] Fork Sure → kubera-backend
-- [x] Add debt fields to loans table
-- [x] Create DebtPayoffCalculator service
-- [x] Add debt API endpoints
-- [ ] Create E2E tests in kubera/tests/
-- [ ] Build debt UI components (frontend agent working)
+- [x] v0.1 — Installer + Docker + AI Connector
+- [x] v0.2 — Debt Payoff Module (Avalanche/Snowball)
+- [x] v0.3 — Dividend SIP Planner
+- [x] v0.4 — Portfolio Rebalancing
+- [ ] v0.5 — Wealth Tracker (multi-asset portfolio, net worth)
+- [ ] v1.0 — Security hardening + docs + CI/CD

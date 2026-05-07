@@ -11,7 +11,7 @@ Kubera is in a "Feature Complete" state for v0.4, but suffers from architectural
 ## 🚩 Critical Issues (Priority: High)
 
 ### 1. [FIXED] Broken Routing System
-- **Issue:** `sure/config/routes.rb` had multiple extra `end` statements and misaligned namespaces that prevented the application from booting.
+- **Issue:** `config/routes.rb` had multiple extra `end` statements and misaligned namespaces that prevented the application from booting.
 - **Impact:** App would not start in any environment.
 - **Action Taken:** Surgical removal of redundant blocks and realignment of `api/v1` namespace.
 
@@ -40,7 +40,7 @@ Kubera is in a "Feature Complete" state for v0.4, but suffers from architectural
 - **Recommendation:** Explicitly define the frontend strategy (Rails ViewComponents vs. React API-driven).
 
 ### 6. Installer Inconsistency
-- **Issue:** `kubera.rb` and `install.sh` use different logic and hardcode different GitHub URLs (`we-promise/sure` vs `sdachary/kubera`).
+- **Issue:** `kubera.rb` and `install.sh` use different logic and hardcode different GitHub URLs.
 - **Impact:** Potential for "version drift" depending on which installer a user chooses.
 - **Recommendation:** Unify the installation logic into a single source of truth.
 

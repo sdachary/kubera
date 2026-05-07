@@ -35,7 +35,7 @@ module Kubera
     end
 
     # Enable Rack::Attack middleware for API rate limiting
-    # config.middleware.use Rack::Attack
+    config.middleware.use Rack::Attack
 
     config.x.ui = ActiveSupport::OrderedOptions.new
     config.x.ui.default_layout = "dashboard"

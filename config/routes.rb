@@ -440,8 +440,14 @@ Rails.application.routes.draw do
           member { post :rebalance }
         end
         resources :journeys, only: [:show] do
-          collection { get :progress }
+          collection do
+            get :progress
+            get :net_worth
+            get :projection
+            post :snapshot
+          end
         end
+        resources :net_worth_snapshots, only: [:index, :show]
         resources :recurring_expenses, only: [:index, :create, :show] do
           collection { get :calendar }
         end

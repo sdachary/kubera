@@ -32,10 +32,9 @@ cd kubera
 
 ```bash
 # Install using the local script
-bash install.sh
+bash installer/install.sh
 
 # Or manually
-cp compose.example.yml compose.yml
 cp .env.example .env
 # Fill in .env — SECRET_KEY_BASE and POSTGRES_PASSWORD are required
 docker compose up
@@ -52,10 +51,10 @@ kubera/
 ├── app/                    ← Rails application code (Models, Controllers, Views)
 ├── config/                 ← App configuration
 ├── db/                     ← Migrations and schema
-├── install.sh              ← Installer TUI
-├── compose.example.yml     ← Docker config
-├── docs/                   ← Documentation
-└── lib/                    ← Custom libraries and tasks
+├── installer/install.sh   ← Installer TUI
+├── compose.yml            ← Docker config
+├── docs/                  ← Documentation
+└── lib/                   ← Custom libraries and tasks
 ```
 
 
@@ -63,10 +62,10 @@ kubera/
 
 1. Create a branch: `git checkout -b feat/your-feature-name`
 2. Make your changes
-3. Test the installer if you touched `install.sh`:
+3. Test the installer if you touched `installer/install.sh`:
    ```bash
-   bash -n install.sh   # syntax check
-   bash install.sh      # full run
+   bash -n installer/install.sh   # syntax check
+   bash installer/install.sh      # full run
    ```
 4. Open a PR with a clear description of what and why
 

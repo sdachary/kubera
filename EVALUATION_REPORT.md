@@ -4,7 +4,7 @@
 
 **Score: 7/10**
 
-* **Ruby (Backend in `sure/`)**: The Rails codebase follows conventional MVC patterns. Models like `Loan` properly encapsulate business logic (e.g., calculating EMI, remaining months with infinite loop protection, and `Money` objects). The API controllers (`api/v1/*`) are logically separated by feature domains.
+* **Ruby (Backend)**: The Rails codebase follows conventional MVC patterns. Models like `Loan` properly encapsulate business logic (e.g., calculating EMI, remaining months with infinite loop protection, and `Money` objects). The API controllers (`api/v1/*`) are logically separated by feature domains.
 * **JavaScript / React**: The root React application uses modern tools (React 19, Vite, Framer Motion) and includes comprehensive testing (`tests/` using Playwright and Vitest). However, the implementation of components (e.g., `DeploymentSteps.jsx`) relies heavily on inline styles mapped from a custom JS design system (`design-system/colors.js`) rather than standard CSS classes or Tailwind. This approach is verbose, harder to maintain, and prone to performance issues compared to utility-first CSS frameworks.
 * **CSS**: Custom animations are separated (`src/animations.css`), but the over-reliance on JS-injected inline styles limits the scalability of the UI.
 
@@ -16,11 +16,10 @@
 
 **Score: 5/10**
 
-* **Structure**: The repository adopts a "Frankenstein" architecture. The root acts as a Vite React application (landing page/frontend), while the `sure/` directory contains an entire monolithic Ruby on Rails application (forked from Maybe Finance).
-* **Issues**: 
-  * Dependency fragmentation: There are separate `package.json` files in the root and inside `sure/`, leading to duplicate dependencies and confusing build steps.
-  * Deployment complexity: Running the application requires navigating into the `sure/` folder and starting Rails, ignoring the root React app, which seems to serve a separate purpose (or is just a landing page wrapper).
-  * Fork maintenance: By embedding `sure/` directly rather than as a Git submodule or distinct API backend, upstream updates from the original Sure/Maybe repository will be extremely difficult to merge.
+* **Structure**: The repository has a Vite React application at root (landing page) alongside the Rails monolith in `app/`. The `sure/` directory (formerly a fork of Sure/Maybe) has been removed.
+* **Issues**:
+  * Deployment complexity: Running the application requires starting Rails, with the root React app serving a separate landing page purpose.
+  * The app is now standalone with no upstream fork dependency.
 
 **Recommendations**:
 * Decouple the frontend and backend. Extract the `sure/` Rails app to a separate repository (or use Git submodules) and treat it strictly as an API.
@@ -31,13 +30,13 @@
 **Score: 4/10**
 
 * **Implementation**: The bash and Ruby installers are basic imperative scripts that clone the repository, run bundle/npm installs, and setup the database.
-* **Discrepancies**: The documentation claims the installer is an "interactive TUI" that checks for Docker, detects port conflicts, and guides the user through AI provider setup. None of these features exist in the scripts provided. The `.sh` script simply copies `.env.example` and runs `bin/setup`, while the `.rb` script hardcodes a `git clone` of the upstream `sure` repository (bypassing local `sure/` modifications).
+* **Discrepancies**: The documentation claims the installer is an "interactive TUI" that checks for Docker, detects port conflicts, and guides the user through AI provider setup. None of these features exist in the scripts provided. The `.sh` script simply copies `.env.example` and runs `bin/setup`.
 * **Reliability**: They lack proper prerequisite validation (e.g., checking if Postgres, Node, or Ruby are actually installed) and error handling.
 
 **Recommendations**:
 * Rewrite the installer to match the documentation's promises (implement an actual TUI using a tool like `gum` or a Ruby CLI framework).
 * Add prerequisite checks (Docker, Ruby, Node, Postgres) before attempting installation.
-* Fix `kubera.rb` to use the local `sure/` directory rather than cloning from the remote if it already exists within the payload.
+* Fix `kubera.rb` to use the local `app/` directory rather than cloning from the remote.
 
 ## 4. Phase Completeness (v0.1 - v1.0)
 

@@ -33,8 +33,17 @@ class Api::V1::PortfolioController < Api::V1::BaseController
   end
 
   def rebalance
-    service = PortfolioService.new(@portfolio)
-    render json: service.rebalance
+    assets = @portfolio.holdings.map { |h|
+      { symbol: h.security&.ticker || "UNKNOWN", expected_return: 0.08, volatility: 0.15 }
+    }
+    service = PortfolioService.new(assets, risk_tolerance: @portfolio.risk_tolerance || 0.5)
+    render json: {
+      portfolio_id: @portfolio.id,
+      current_value: @portfolio.total_value,
+      allocation: @portfolio.allocation_summary,
+      optimization: service.optimize,
+      efficient_frontier: service.efficient_frontier
+    }
   end
 
   private

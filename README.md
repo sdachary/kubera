@@ -38,9 +38,7 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 - 📈 **v0.3** — Dividend SIP Planner (AI stock suggestions, NSE/BSE screener)
 - 🔄 **v0.4** — Portfolio Rebalancing (Modern Portfolio Theory, asset allocation)
 - 🔔 **v0.5** — Recurring Expense Tracker (EMI/subscription calendar, notifications)
-- 🛡️ **v1.0** — Security audit & standalone architecture (No Sure dependency)
-
-**All phases implemented via mcp-hub agents:** Claude Code (frontend), Gemini CLI (typescript), NVIDIA (github)
+- 🛡️ **v1.0** — Security audit & standalone architecture
 
 - 💳 **Debt payoff tracker** — loans, EMIs, avalanche/snowball strategies
 - 📈 **Dividend SIP planner** — AI suggests stocks based on your income target
@@ -151,7 +149,7 @@ Kubera is a **native Rails 7.2 application** built for self-hosting.
 
 ## Manual Setup
 
-Prefer to set it up yourself? See [docs/manual-setup.md](docs/manual-setup.md).
+Prefer to set it up yourself?
 
 ```bash
 git clone https://github.com/sdachary/kubera.git

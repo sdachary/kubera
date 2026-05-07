@@ -31,7 +31,7 @@
 ## ❌ Critical Issues (Must Fix)
 
 ### 1. Architecture: "Frankenstein" (Score: 5/10)
-- **Problem:** Root is Vite React app, `sure/` is entire Rails monolith
+- **Problem:** Root has Vite React landing page alongside Rails monolith in `app/`
 - **Impact:** Confusing, hard to deploy, difficult to merge upstream Sure updates
 - **Fix:** Decouple → Rails API + Separate React frontend (or fully integrate)
 
@@ -54,7 +54,7 @@
 - **Fix:** Consolidate into single structure
 
 ### 5. Frontend Strategy Confusion
-- **Problem:** Root uses React + custom JS styles, `sure/` uses Rails ViewComponents + inline styles
+- **Problem:** Root uses React + custom JS styles, Rails app uses ViewComponents + inline styles
 - **Fix:** Pick one stack (React + Tailwind OR Rails + Hotwire)
 
 ### 6. Migration Bloat
@@ -88,7 +88,7 @@
 6. **Squash Migrations:** Create clean slate for new users
 
 ### Long Term (Next Month)
-7. **Decouple Architecture:** Extract `sure/` to separate repo (or make it pure API)
+7. **Decouple Architecture:** Make Rails a pure API (separate frontend/backend)
 8. **Add Tests:** Increase coverage for v0.2-v0.5 features
 9. **Deploy Strategy:** Figure out how to deploy the "Frankenstein" (Docker? Submodules?)
 
