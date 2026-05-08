@@ -4,9 +4,8 @@ module.exports = {
   content: [
     "./app/views/**/*.erb",
     "./app/helpers/**/*.rb",
-    "./app/components/**/*.{erb,rb}",
-    "./app/assets/stylesheets/**/*.css",
-    "./app/javascript/**/*.js"
+    "./app/javascript/**/*.js",
+    "./app/assets/tailwind/**/*.css"
   ],
   darkMode: "class",
   theme: {
