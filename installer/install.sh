@@ -51,9 +51,19 @@ if ! command -v npm &> /dev/null; then
     exit 1
 fi
 
-# Install dependencies (Required before bin/setup in some environments)
+# Install bundler if missing
+if ! command -v bundle &> /dev/null; then
+    echo "💎 Installing Bundler..."
+    gem install bundler --conservative 2>&1 | tail -3
+fi
+
 echo "💎 Installing Ruby dependencies..."
-bundle install 2>&1 | tail -5
+if ! bundle install 2>&1 | tail -10; then
+    echo "❌ Ruby dependency installation failed."
+    echo "Try running 'bundle install' manually in $INSTALL_DIR"
+    echo "Or use Docker: cd $INSTALL_DIR && docker compose up -d"
+    exit 1
+fi
 
 echo "📦 Installing Node dependencies..."
 npm install 2>&1 | tail -5
@@ -61,7 +71,9 @@ npm install 2>&1 | tail -5
 # Run application setup
 echo "🛠️ Running bin/setup..."
 chmod +x bin/setup
-bin/setup 2>&1 | tail -10
+if ! bin/setup 2>&1; then
+    echo "⚠️  Setup completed with warnings (continuing anyway)."
+fi
 
 echo "📡 Starting server..."
 # Start server in background
@@ -72,7 +84,7 @@ SERVER_PID=$!
 echo "⏳ Waiting for server to be ready..."
 MAX_RETRIES=60
 RETRY_COUNT=0
-until curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200\|302\|401\|404\|500"; do
+until curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null | grep -q "200\|302\|401\|404\|500"; do
     RETRY_COUNT=$((RETRY_COUNT+1))
     if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
         echo
