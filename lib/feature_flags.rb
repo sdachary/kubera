@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FeatureFlags
   class << self
     def intro_ui?
