@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::DashboardController < Api::BaseController
   def show
     user = current_user

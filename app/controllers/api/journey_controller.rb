@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::JourneyController < Api::BaseController
   def show
     journey = current_user.journeys.first || current_user.journeys.create!(phase: "negative")

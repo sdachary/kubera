@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::DebtsController < Api::BaseController
   def index
     debts = current_user.debts.order(created_at: :desc)

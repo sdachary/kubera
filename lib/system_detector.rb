@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module SystemDetector
   MIN_RAM_FOR_LOCAL_AI = 8192
 

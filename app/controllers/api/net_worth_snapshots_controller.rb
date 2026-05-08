@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::NetWorthSnapshotsController < Api::BaseController
   def index
     snapshots = current_user.net_worth_snapshots.recent

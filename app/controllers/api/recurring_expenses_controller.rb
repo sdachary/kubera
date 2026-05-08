@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::RecurringExpensesController < Api::BaseController
   def index
     expenses = current_user.recurring_expenses.order(next_due_date: :asc)

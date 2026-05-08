@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::DividendSipsController < Api::BaseController
   def index
     sips = DividendSip.joins(portfolio: :user)

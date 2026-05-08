@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::NotificationsController < Api::BaseController
   def index
     notifications = current_user.notifications.recent

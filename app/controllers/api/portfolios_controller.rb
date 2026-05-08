@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::PortfoliosController < Api::BaseController
   def index
     portfolios = current_user.portfolios.order(created_at: :desc)

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::InvestmentsController < Api::BaseController
   def index
     investments = Investment.joins(portfolio: :user)
