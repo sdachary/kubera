@@ -3,6 +3,13 @@
 <head>
   <title><%= content_for?(:title) ? yield(:title) : "Kubera — Financial Freedom OS" %></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Kubera">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
@@ -15,6 +22,11 @@
     body { font-family: var(--font-sans); }
     * { scrollbar-width: thin; scrollbar-color: #1e293b transparent; }
   </style>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  </script>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased min-h-screen">
   <%= yield %>
