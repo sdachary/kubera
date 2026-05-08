@@ -12,9 +12,7 @@ development:
   database: <%= ENV.fetch("POSTGRES_DB") { "kubera_development" } %>
 
 test:
-  <<: *default
-  database: <%= ENV.fetch("POSTGRES_DB") { "kubera_test" } %>
-  url: <%= ENV["DATABASE_URL"].presence %>
+  url: <%= ENV["DATABASE_URL"] || "postgres://localhost:5432/kubera_test" %>
 
 production:
   <<: *default
