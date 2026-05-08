@@ -12,25 +12,19 @@ class NetWorthSnapshot < ApplicationRecord
   end
 
   def self.create_snapshot(user)
-    total_assets = Account.where(family_id: user.family_id, classification: "asset").sum(:balance)
-    total_liabilities = Account.where(family_id: user.family_id, classification: "liability").sum(:balance)
     debts_total = Debt.where(user: user, status: "active").sum(:amount)
+    portfolio_value = Portfolio.where(user: user).sum(&:total_value)
+    total_assets = portfolio_value
+    total_liabilities = debts_total
+    net_worth = total_assets - total_liabilities
 
-    all_liabilities = [total_liabilities, debts_total].max
-    net_worth = total_assets - all_liabilities
-
-    snapshot = create!(
+    create!(
       user: user,
       snapshot_date: Date.today,
       total_assets: total_assets,
-      total_liabilities: all_liabilities,
+      total_liabilities: total_liabilities,
       net_worth: net_worth,
-      breakdown: {
-        accounts: total_assets,
-        debts: debts_total,
-        portfolios: Portfolio.where(user: user).sum { |p| p.total_value }
-      }
+      breakdown: { debts: debts_total, portfolios: portfolio_value }
     )
-    snapshot
   end
 end

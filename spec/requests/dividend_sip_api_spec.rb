@@ -79,12 +79,13 @@ RSpec.describe 'Dividend SIP API', type: :request do
   end
 
   describe 'GET /api/v1/dividend_sips/:id/suggest' do
-    it 'returns suggestion' do
+    it 'returns stock suggestions' do
       sip = create(:dividend_sip, portfolio: portfolio, monthly_investment: 5000)
-      get "/api/v1/dividend_sips/#{sip.id}/suggest", params: { monthly_investment: 5000, target_income: 10000 }
+      get "/api/v1/dividend_sips/#{sip.id}/suggest", params: { monthly_investment: 5000, years: 10 }
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
-      expect(json).to have_key('monthly_investments')
+      expect(json).to have_key('stocks')
+      expect(json).to have_key('target_income')
     end
   end
 end

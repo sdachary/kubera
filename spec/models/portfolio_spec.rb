@@ -1,25 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Portfolio, type: :model do
-  it { should have_many(:holdings) }
   it { should have_many(:dividend_sips) }
+  it { should belong_to(:user) }
 
   describe 'associations' do
-    it 'can have multiple holdings' do
-      portfolio = create(:portfolio)
-      expect(portfolio.holdings).to eq([])
-    end
-
     it 'can have multiple dividend sips' do
       portfolio = create(:portfolio)
       create(:dividend_sip, portfolio: portfolio)
       create(:dividend_sip, portfolio: portfolio)
       expect(portfolio.dividend_sips.count).to eq(2)
-    end
-
-    it 'belongs to a family through holdings' do
-      portfolio = create(:portfolio)
-      expect(portfolio).to be_valid
     end
   end
 

@@ -1,4 +1,24 @@
 class RecurringExpense < ApplicationRecord
-  validates :frequency, presence: true
-  validates :amount, presence: true
+  belongs_to :user
+
+  validates :name, :amount, :frequency, presence: true
+  validates :amount, numericality: { greater_than: 0 }
+  validates :frequency, inclusion: { in: %w[weekly monthly quarterly yearly] }
+
+  scope :active, -> { where(active: true) }
+
+  def monthly_amount
+    case frequency
+    when "weekly" then amount * 4.33
+    when "monthly" then amount
+    when "quarterly" then amount / 3.0
+    when "yearly" then amount / 12.0
+    else amount
+    end
+  end
+
+  def next_due_days
+    return nil if next_due_date.nil?
+    (next_due_date - Date.today).to_i
+  end
 end

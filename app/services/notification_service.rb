@@ -8,11 +8,6 @@ class NotificationService
     create_in_app_notification("debt_milestone", "#{milestone} for #{debt.name}")
   end
 
-  def notify_market_alert(security, trigger)
-    NotificationMailer.market_alert(@user, security, trigger).deliver_later
-    create_in_app_notification("market_alert", "#{security.ticker}: #{trigger}")
-  end
-
   def notify_sip_reminder(sip)
     NotificationMailer.sip_reminder(@user, sip).deliver_later
     create_in_app_notification("sip_reminder", "SIP due: #{sip.name}")

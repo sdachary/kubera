@@ -1,12 +1,12 @@
 class DividendSip < ApplicationRecord
   belongs_to :portfolio
 
-  validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :amount, numericality: { greater_than: 0 }
   validates :frequency, inclusion: { in: %w[monthly quarterly yearly] }
   validates :status, inclusion: { in: %w[active paused completed] }
 
   def projected_annual_income(yield_rate = 0.04)
-    amount * 12 * yield_rate
+    monthly_contribution * 12 * yield_rate
   end
 
   def monthly_contribution

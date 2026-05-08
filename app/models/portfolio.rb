@@ -1,18 +1,18 @@
 class Portfolio < ApplicationRecord
   belongs_to :user
+  has_many :investments, dependent: :destroy
   has_many :dividend_sips, dependent: :destroy
 
   validates :name, presence: true
-  validates :risk_tolerance, inclusion: { in: %w[conservative moderate aggressive] }
+  validates :risk_tolerance, numericality: { greater_than: 0, less_than_or_equal_to: 1 }, allow_nil: true
+  validates :goal, inclusion: { in: %w[growth income balanced conservative] }, allow_nil: true
 
   def total_value
-    holdings.sum { |h| h.amount.to_f }
+    investments.sum { |i| (i.shares || 0) * (i.current_price || 0) }
   end
 
   def allocation_summary
-    by_type = holdings.group_by(&:accountable_type)
-    total = total_value
-    return {} if total.zero?
-    by_type.transform_values { |hs| (hs.sum(&:amount).to_f / total * 100).round(1) }
+    by_sector = investments.group(:sector).sum { |i| (i.shares || 0) * (i.current_price || 0) }
+    { sectors: by_sector, dividend_sips: dividend_sips.sum(:amount) }
   end
 end

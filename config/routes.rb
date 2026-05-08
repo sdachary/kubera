@@ -1,50 +1,31 @@
 require "sidekiq/web"
-require "sidekiq/cron/web"
 
 Rails.application.routes.draw do
-  mount Sidekiq::Web => "/sidekiq"
+  mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
-  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # PWA
-  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  root "pages#dashboard"
 
-  # Pages (marketing + dashboard)
-  root "pages#index"
-  get "dashboard", to: "pages#dashboard", as: :dashboard
-  get "changelog", to: "pages#changelog"
-  get "feedback", to: "pages#feedback"
-  get "privacy", to: "pages#privacy"
-  get "terms", to: "pages#terms"
-  get "intro", to: "pages#intro"
-  get "redis-configuration-error", to: "pages#redis_configuration_error"
-  patch "dashboard/preferences", to: "pages#update_preferences"
+  # Conversations (primary AI chat interface)
+  resources :conversations, only: [:index, :show, :create, :destroy] do
+    resources :messages, only: [:index, :create]
+  end
 
-  # API v1
+  # Quick data endpoints (used by AI to read/write financial data)
   namespace :api do
-    namespace :v1 do
-      resources :debt_payoffs, only: [:index, :create, :show, :update, :destroy], controller: "debt_payoff" do
-        member { post :simulate }
-      end
-      resources :dividend_sips, only: [:index, :create, :show, :update, :destroy], controller: "dividend_sip" do
-        member { get :suggest }
-      end
-      resources :portfolios, only: [:index, :create, :show, :update, :destroy], controller: "portfolio" do
-        member { post :rebalance }
-      end
-      resource :journey, only: [:show], controller: "journey" do
-        get :progress, on: :collection
-        get :net_worth, on: :collection
-        get :projection, on: :collection
-        post :snapshot, on: :collection
-      end
-      resources :net_worth_snapshots, only: [:index, :show]
-      resources :recurring_expenses, only: [:index, :create, :show, :update, :destroy] do
-        collection { get :calendar }
-        member { get :calendar }
-      end
+    resources :debts, only: [:index, :create, :update, :destroy]
+    resources :debt_payoffs, only: [:index, :show]
+    resources :portfolios, only: [:index, :show]
+    resources :investments, only: [:index, :create, :update, :destroy]
+    resources :dividend_sips, only: [:index, :create, :update, :destroy]
+    resource :journey, only: [:show]
+    resources :net_worth_snapshots, only: [:index, :show]
+    resources :recurring_expenses, only: [:index, :create, :update, :destroy]
+    resources :notifications, only: [:index, :update] do
+      collection { post :mark_all_read }
     end
+    get "dashboard", to: "dashboard#show"
+    get "dashboard/projection", to: "dashboard#projection"
   end
 end

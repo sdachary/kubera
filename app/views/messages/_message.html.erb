@@ -1,0 +1,11 @@
+<div class="flex gap-3 <%= message.role == "user" ? "justify-end" : "justify-start" %>" data-message-id="<%= message.id %>">
+  <div class="<%= message.role == "user" ? "bg-teal-600/20 border border-teal-700/30 max-w-[70%]" : "bg-slate-800/50 border border-slate-700/30 max-w-[80%]" %> rounded-2xl px-4 py-3">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="text-xs font-medium <%= message.role == "user" ? "text-teal-400" : "text-slate-400" %>">
+        <%= message.role == "user" ? "You" : "Kubera" %>
+      </span>
+      <span class="text-[10px] text-slate-600"><%= message.created_at.strftime("%I:%M %p") %></span>
+    </div>
+    <div class="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap"><%= message.content %></div>
+  </div>
+</div>

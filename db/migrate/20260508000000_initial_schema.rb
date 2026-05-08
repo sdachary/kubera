@@ -1731,9 +1731,91 @@ class InitialSchema < ActiveRecord::Migration[7.2]
       end
       add_foreign_key "notifications", "users"
 
+      create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+        t.uuid "user_id", null: false
+        t.string "name", null: false
+        t.decimal "amount", precision: 15, scale: 2, default: 0.0, null: false
+        t.decimal "interest_rate", precision: 5, scale: 2
+        t.decimal "emi_amount", precision: 15, scale: 2
+        t.decimal "min_payment", precision: 15, scale: 2
+        t.decimal "balance", precision: 15, scale: 2, default: 0.0
+        t.date "due_date"
+        t.date "start_date"
+        t.string "status", default: "active", null: false
+        t.datetime "created_at", null: false
+        t.datetime "updated_at", null: false
+        t.index ["user_id"]
+        t.index ["status"]
+      end
+      add_foreign_key "debts", "users"
+
+      create_table "dividend_sips", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+        t.uuid "portfolio_id", null: false
+        t.string "name"
+        t.decimal "amount", precision: 15, scale: 2, default: 0.0
+        t.decimal "monthly_investment", precision: 15, scale: 2, default: 0.0
+        t.decimal "target_income", precision: 15, scale: 2, default: 0.0
+        t.decimal "dividend_yield", precision: 5, scale: 2
+        t.string "frequency", default: "monthly"
+        t.string "status", default: "active"
+        t.datetime "created_at", null: false
+        t.datetime "updated_at", null: false
+        t.index ["portfolio_id"]
+        t.index ["status"]
+      end
+      add_foreign_key "dividend_sips", "portfolios"
+
+      create_table "portfolios", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+        t.uuid "user_id", null: false
+        t.string "name", null: false
+        t.decimal "risk_tolerance", precision: 3, scale: 2, default: 0.5
+        t.jsonb "target_allocation", default: {}
+        t.jsonb "current_allocation", default: {}
+        t.datetime "created_at", null: false
+        t.datetime "updated_at", null: false
+        t.index ["user_id"]
+      end
+      add_foreign_key "portfolios", "users"
+
+      create_table "recurring_expenses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+        t.string "name"
+        t.decimal "amount", precision: 15, scale: 2, default: 0.0
+        t.string "frequency"
+        t.date "next_due_date"
+        t.string "category"
+        t.boolean "auto_debit", default: false
+        t.datetime "created_at", null: false
+        t.datetime "updated_at", null: false
+      end
+
+      create_table "journeys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+        t.uuid "user_id", null: false
+        t.date "zero_day_target"
+        t.decimal "monthly_sip_goal", precision: 15, scale: 2
+        t.text "notes"
+        t.datetime "created_at", null: false
+        t.datetime "updated_at", null: false
+        t.index ["user_id"]
+      end
+      add_foreign_key "journeys", "users"
+
+      create_table "net_worth_snapshots", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+        t.uuid "user_id", null: false
+        t.date "snapshot_date", null: false
+        t.decimal "total_assets", precision: 15, scale: 2, default: 0.0
+        t.decimal "total_liabilities", precision: 15, scale: 2, default: 0.0
+        t.decimal "net_worth", precision: 15, scale: 2, default: 0.0
+        t.jsonb "breakdown", default: {}
+        t.datetime "created_at", null: false
+        t.datetime "updated_at", null: false
+        t.index ["user_id", "snapshot_date"], unique: true
+        t.index ["user_id"]
+      end
+      add_foreign_key "net_worth_snapshots", "users"
+
   end
   def down
-    tables = ["notifications", "vehicles", "valuations", "users", "transfers", "transactions", "trades", "tool_calls", "tags", "taggings", "syncs", "subscriptions", "sso_providers", "sso_audit_logs", "sophtron_items", "sophtron_accounts", "snaptrade_items", "snaptrade_accounts", "simplefin_items", "simplefin_accounts", "settings", "sessions", "security_prices", "securities", "rules", "rule_runs", "rule_conditions", "rule_actions", "rejected_transfers", "recurring_transactions", "properties", "plaid_items", "plaid_accounts", "other_liabilities", "other_assets", "oidc_identities", "oauth_applications", "oauth_access_tokens", "oauth_access_grants", "mobile_devices", "messages", "mercury_items", "mercury_accounts", "merchants", "lunchflow_items", "lunchflow_accounts", "loans", "llm_usages", "invite_codes", "invitations", "investments", "indexa_capital_items", "indexa_capital_accounts", "imports", "import_rows", "import_mappings", "impersonation_sessions", "impersonation_session_logs", "holdings", "family_merchant_associations", "family_exports", "family_documents", "families", "exchange_rates", "exchange_rate_pairs", "eval_samples", "eval_runs", "eval_results", "eval_datasets", "entries", "enable_banking_items", "enable_banking_accounts", "depositories", "data_enrichments", "cryptos", "credit_cards", "coinstats_items", "coinstats_accounts", "coinbase_items", "coinbase_accounts", "chats", "categories", "budgets", "budget_categories", "binance_items", "binance_accounts", "balances", "archived_exports", "api_keys", "addresses", "active_storage_variant_records", "active_storage_blobs", "active_storage_attachments", "accounts", "account_shares", "account_providers"]
+    tables = ["net_worth_snapshots", "journeys", "recurring_expenses", "portfolios", "dividend_sips", "debts", "notifications", "vehicles", "valuations", "users", "transfers", "transactions", "trades", "tool_calls", "tags", "taggings", "syncs", "subscriptions", "sso_providers", "sso_audit_logs", "sophtron_items", "sophtron_accounts", "snaptrade_items", "snaptrade_accounts", "simplefin_items", "simplefin_accounts", "settings", "sessions", "security_prices", "securities", "rules", "rule_runs", "rule_conditions", "rule_actions", "rejected_transfers", "recurring_transactions", "properties", "plaid_items", "plaid_accounts", "other_liabilities", "other_assets", "oidc_identities", "oauth_applications", "oauth_access_tokens", "oauth_access_grants", "mobile_devices", "messages", "mercury_items", "mercury_accounts", "merchants", "lunchflow_items", "lunchflow_accounts", "loans", "llm_usages", "invite_codes", "invitations", "investments", "indexa_capital_items", "indexa_capital_accounts", "imports", "import_rows", "import_mappings", "impersonation_sessions", "impersonation_session_logs", "holdings", "family_merchant_associations", "family_exports", "family_documents", "families", "exchange_rates", "exchange_rate_pairs", "eval_samples", "eval_runs", "eval_results", "eval_datasets", "entries", "enable_banking_items", "enable_banking_accounts", "depositories", "data_enrichments", "cryptos", "credit_cards", "coinstats_items", "coinstats_accounts", "coinbase_items", "coinbase_accounts", "chats", "categories", "budgets", "budget_categories", "binance_items", "binance_accounts", "balances", "archived_exports", "api_keys", "addresses", "active_storage_variant_records", "active_storage_blobs", "active_storage_attachments", "accounts", "account_shares", "account_providers"]
     tables.each { |t| drop_table t, if_exists: true rescue nil }
     execute "DROP TYPE IF EXISTS account_status CASCADE" rescue nil
   end

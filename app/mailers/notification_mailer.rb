@@ -6,13 +6,6 @@ class NotificationMailer < ApplicationMailer
     mail(to: user.email, subject: "🎯 Debt Milestone: #{milestone}")
   end
 
-  def market_alert(user, security, trigger)
-    @user = user
-    @security = security
-    @trigger = trigger
-    mail(to: user.email, subject: "📈 Market Alert: #{security.ticker}")
-  end
-
   def sip_reminder(user, sip)
     @user = user
     @sip = sip

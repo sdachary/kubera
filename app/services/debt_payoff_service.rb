@@ -1,6 +1,6 @@
 class DebtPayoffService
   def initialize(debts, extra_payment: 0)
-    @debts = debts.map(&:symbolize_keys)
+    @debts = debts.map { |d| d.respond_to?(:attributes) ? d.attributes.symbolize_keys : d.symbolize_keys }
     @extra_payment = extra_payment.to_f
   end
 

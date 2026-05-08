@@ -1,16 +1,28 @@
 class Investment < ApplicationRecord
-  # symbol, name, dividend_yield, risk_level
-  
-  def calculate_sip(monthly_amount, years)
-    # Placeholder for SIP calculation
-    {
-      total_invested: monthly_amount * 12 * years,
-      projected_value: monthly_amount * 12 * years * 1.1 # 10% growth placeholder
-    }
+  belongs_to :portfolio
+
+  validates :investment_type, inclusion: {
+    in: %w[stock etf mutual_fund bond other]
+  }, allow_nil: true
+
+  def current_value
+    (shares || 0) * (current_price || 0)
   end
 
-  def project_income(monthly_sip)
-    # Placeholder for income projection
-    monthly_sip * (dividend_yield / 100.0)
+  def cost_basis
+    (shares || 0) * (buy_price || 0)
+  end
+
+  def gain_loss
+    current_value - cost_basis
+  end
+
+  def gain_loss_percentage
+    return 0.0 if cost_basis <= 0
+    (gain_loss / cost_basis * 100).round(2)
+  end
+
+  def projected_annual_income
+    current_value * (dividend_yield || 0) / 100.0
   end
 end

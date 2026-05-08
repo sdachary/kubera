@@ -1,11 +1,9 @@
 FactoryBot.define do
   factory :debt do
+    association :user
     amount { 10000.0 }
     interest_rate { 10.0 }
     emi_amount { 500.0 }
-    min_payment { 500.0 }
-    balance { 10000.0 }
-    due_date { Date.today + 1.month }
     status { "active" }
     name { "Home Loan" }
   end
@@ -14,14 +12,13 @@ FactoryBot.define do
     symbol { "ITC.NS" }
     name { "ITC Limited" }
     dividend_yield { 3.8 }
-    risk_level { "low" }
   end
 
   factory :portfolio do
+    association :user
     name { "Equity Portfolio" }
     risk_tolerance { 0.5 }
     target_allocation { { "stocks" => 60, "bonds" => 40 } }
-    current_allocation { { "stocks" => 55, "bonds" => 45 } }
   end
 
   factory :recurring_expense do
@@ -40,24 +37,22 @@ FactoryBot.define do
   factory :dividend_sip do
     association :portfolio
     name { "Monthly SIP" }
-    monthly_investment { 5000.0 }
+    amount { 5000.0 }
     target_income { 10000.0 }
-    dividend_yield { 3.5 }
+    frequency { "monthly" }
+    status { "active" }
   end
 
   factory :journey do
+    association :user
+    zero_day_target { Date.today + 5.years }
+    monthly_sip_goal { 50000.0 }
     notes { "Wealth building journey" }
   end
 
   factory :user do
-    association :family
     email { "test@example.com" }
     password { "password123" }
-  end
-
-  factory :family do
-    name { "Test Family" }
-    currency { "USD" }
   end
 
   factory :notification do

@@ -21,7 +21,7 @@ gem "httparty"
 gem "matrix"
 gem "sidekiq"
 gem "sidekiq-cron"
-gem "rack-cors"
+gem "ruby-openai"
 
 group :development, :test do
   gem "rspec-rails"

@@ -1,8 +1,7 @@
 class Notification < ApplicationRecord
   belongs_to :user
 
-  validates :notification_type, presence: true
-  validates :message, presence: true
+  validates :notification_type, :message, presence: true
 
   scope :unread, -> { where(read: false) }
   scope :recent, -> { order(created_at: :desc).limit(50) }

@@ -3,3 +3,41 @@ dist/
 .env
 .DS_Store
 *.log
+
+# Bundler
+vendor/bundle
+.bundle
+
+# Rails logs and temp
+log/
+tmp/
+
+# Test coverage
+coverage/
+
+# Storage (Active Storage local disk)
+storage/
+
+# Compiled assets
+public/assets
+public/packs
+app/assets/builds
+
+# Generated reports
+reports/
+
+# Empty placeholder
+docs-installer/
+
+# Local env overrides
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
