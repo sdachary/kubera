@@ -1,0 +1,22 @@
+inherit_gem:
+  rubocop-rails: config/rubocop.yml
+  rubocop-rspec: config/rubocop.yml
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3
+  Exclude:
+    - "db/schema.rb"
+    - "db/migrate/*.rb"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+    - "bin/*"
+    - "tmp/**/*"
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "config/routes.rb"

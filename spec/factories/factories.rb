@@ -50,6 +50,7 @@ FactoryBot.define do
   end
 
   factory :user do
+    association :family
     email { "test@example.com" }
     password { "password123" }
   end
@@ -57,5 +58,12 @@ FactoryBot.define do
   factory :family do
     name { "Test Family" }
     currency { "USD" }
+  end
+
+  factory :notification do
+    association :user
+    notification_type { "debt_milestone" }
+    message { "Test notification" }
+    read { false }
   end
 end

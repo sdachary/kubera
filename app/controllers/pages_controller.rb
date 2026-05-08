@@ -26,5 +26,6 @@ class PagesController < ApplicationController
   end
 
   def update_preferences
+    head :ok
   end
 end

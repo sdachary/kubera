@@ -1,0 +1,9 @@
+<h2 style="color: #0f766e;">📊 Your Weekly Kubera Digest</h2>
+<p>Here's a summary of your financial progress this week:</p>
+<ul>
+  <li><strong>Total Debt:</strong> <%= number_to_currency(@stats[:total_debt]) %></li>
+  <li><strong>Total Investments:</strong> <%= number_to_currency(@stats[:total_investments]) %></li>
+  <li><strong>Net Worth:</strong> <%= number_to_currency(@stats[:net_worth]) %></li>
+  <li><strong>Monthly SIP:</strong> <%= number_to_currency(@stats[:monthly_sip]) %></li>
+</ul>
+<p>Keep up the great work!</p>
