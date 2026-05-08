@@ -147,6 +147,23 @@ footer p{font-size:.75rem;color:var(--muted);letter-spacing:.02em}
   .cta-section{padding:0 0 64px}
 }
 
+/* Code block */
+.code-block{background:oklch(0.14 0.006 30);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:12px;border:1px solid oklch(0.25 0.01 30);font-size:.8125rem;max-width:480px}
+.code-block .prompt{color:var(--accent);font-family:'Manrope',monospace;font-weight:500;flex-shrink:0}
+.code-block code{font-family:'SF Mono','Cascadia Code','Fira Code','JetBrains Mono',monospace;color:oklch(0.85 0.005 60);white-space:nowrap;overflow-x:auto;font-size:.8125rem}
+.code-block .copy-btn{background:transparent;border:1px solid oklch(0.35 0.01 30);color:oklch(0.6 0.005 60);padding:4px 12px;border-radius:5px;cursor:pointer;font-size:.6875rem;font-family:'Manrope',sans-serif;transition:all .2s var(--ease-out);margin-left:auto;flex-shrink:0}
+.code-block .copy-btn:hover{background:oklch(0.25 0.01 30);color:oklch(0.9 0.005 60);border-color:oklch(0.45 0.01 30)}
+.hero-actions{display:flex;flex-direction:column;gap:12px}
+.hero-actions .text-link{font-size:.8125rem;color:var(--muted);text-decoration:none;transition:color .2s var(--ease-out)}
+.hero-actions .text-link:hover{color:var(--accent)}
+
+/* CTA curl block */
+.cta-curl{margin-top:20px}
+.cta-curl .code-block{margin:0 auto}
+
+@media(max-width:620px){.code-block{font-size:.75rem;padding:12px 16px;flex-wrap:wrap}}
+@media(max-width:620px){.code-block code{font-size:.75rem}}
+
 /* Scroll progress */
 .scroll-progress{position:fixed;top:68px;left:0;height:3px;background:linear-gradient(90deg,var(--accent),oklch(0.33 0.07 135));z-index:60;transition:width .1s var(--ease-out);width:0%}
 
@@ -164,7 +181,7 @@ footer p{font-size:.75rem;color:var(--muted);letter-spacing:.02em}
 <a href="#journey">The Journey</a>
 <a href="#stats">Progress</a>
 <a href="#cta">Get Started</a>
-<a href="/sign-in" class="nav-cta">Sign In</a>
+<a href="/docs">API</a>
 </div>
 <button class="mobile-toggle" data-toggle aria-label="Toggle navigation" aria-expanded="false">
 <span></span><span></span><span></span>
@@ -180,9 +197,13 @@ footer p{font-size:.75rem;color:var(--muted);letter-spacing:.02em}
 <p class="hero-eyebrow">From Liabilities to Assets</p>
 <h1>Your journey to <em>financial freedom.</em></h1>
 <p>Kubera connects all your accounts and shows you the path from where you are to where you want to be. Track every liability, grow every asset, and watch your net worth rise.</p>
-<div class="hero-buttons">
-<a href="#cta" class="btn-primary">Begin your journey <span aria-hidden="true">→</span></a>
-<a href="#journey" class="btn-secondary">How it works</a>
+<div class="hero-actions">
+<div class="code-block">
+<span class="prompt">$</span>
+<code>curl -s https://api.kubera.com/v1/start</code>
+<button class="copy-btn" data-copy="curl -s https://api.kubera.com/v1/start">Copy</button>
+</div>
+<a href="#journey" class="text-link">How it works <span aria-hidden="true">→</span></a>
 </div>
 </div>
 <div class="hero-visual">
@@ -276,7 +297,13 @@ footer p{font-size:.75rem;color:var(--muted);letter-spacing:.02em}
 <div class="container">
 <h2>Ready to start your journey?</h2>
 <p>From liabilities to assets. From confusion to clarity. From where you are to financial freedom.</p>
-<a href="/sign-in" class="btn-primary">Begin your journey <span aria-hidden="true">→</span></a>
+<div class="cta-curl">
+<div class="code-block">
+<span class="prompt">$</span>
+<code>curl -s https://api.kubera.com/v1/start</code>
+<button class="copy-btn" data-copy="curl -s https://api.kubera.com/v1/start">Copy</button>
+</div>
+</div>
 </div>
 </section>
 
@@ -381,6 +408,18 @@ window.addEventListener('scroll', function() {
 }, { passive: true });
 
 updateColors();
+
+document.querySelectorAll('[data-copy]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var text = this.getAttribute('data-copy');
+    navigator.clipboard.writeText(text).then(function() {
+      var orig = this.textContent;
+      this.textContent = 'Copied!';
+      var self = this;
+      setTimeout(function() { self.textContent = orig; }, 2000);
+    }.bind(this));
+  });
+});
 
 document.querySelector('[data-toggle]')?.addEventListener('click', function() {
   var nav = document.getElementById('navLinks');
