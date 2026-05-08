@@ -1,0 +1,161 @@
+<% content_for(:title, "Kubera — Open Source Personal Finance") %>
+
+<!-- Hero Section -->
+<section class="relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+  <!-- Floating shapes -->
+  <div class="absolute top-1/4 left-1/6 w-48 h-48 rounded-full bg-teal-400/10 animate-float"></div>
+  <div class="absolute top-1/3 right-1/4 w-36 h-36 rounded-full bg-orange-400/10 animate-float" style="animation-delay: 2s"></div>
+  <div class="absolute bottom-1/4 right-1/3 w-24 h-24 rounded-full bg-teal-300/10 animate-float" style="animation-delay: 4s"></div>
+
+  <div class="max-w-6xl mx-auto px-4 py-24 md:py-32">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="animate-fade-in-up">
+        <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight">
+          Your Financial Journey,
+          <span class="text-teal-600 dark:text-teal-400">AI-Powered</span>
+        </h1>
+        <p class="mt-6 text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+          Kubera is an open-source personal finance app built for the Indian market.
+          Track debt, plan SIPs, manage portfolios, and get AI-powered insights — all self-hosted.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="#features" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-700 text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
+            Get Started
+          </a>
+          <a href="https://github.com/sdachary/kubera" target="_blank" class="inline-flex items-center px-6 py-3 border-2 border-teal-500 text-teal-700 dark:text-teal-400 font-semibold rounded-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+            Learn More →
+          </a>
+        </div>
+      </div>
+
+      <!-- Illustration placeholder -->
+      <div class="hidden md:flex items-center justify-center animate-scale-in">
+        <div class="w-64 h-64 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 dark:from-teal-900 dark:to-teal-800 flex items-center justify-center text-6xl shadow-2xl">
+          💰
+        </div>
+      </div>
+    </div>
+
+    <!-- Journey badges -->
+    <div class="mt-12 flex flex-wrap justify-center gap-3 animate-fade-in-up" style="animation-delay: 0.3s">
+      <span class="px-4 py-2 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-medium">Debt →</span>
+      <span class="px-4 py-2 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-sm font-medium">Zero →</span>
+      <span class="px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-medium">Wealth</span>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="max-w-6xl mx-auto px-4 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Features</h2>
+    <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Everything you need to take control of your finances</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <% [
+      { icon: "💳", title: "Debt Payoff Tracker", desc: "Avalanche & snowball strategies. Projects your debt-free date." },
+      { icon: "📈", title: "Dividend SIP Planner", desc: "AI suggests 2-3 dividend stocks based on your income target." },
+      { icon: "🔄", title: "Portfolio Rebalancing", desc: "Monthly check-ins show if you're on/off track." },
+      { icon: "🔔", title: "Recurring Reminders", desc: "Never miss an EMI or subscription. Smart alerts for recurring expenses." },
+      { icon: "🤖", title: "Free AI Included", desc: "Works with OpenRouter (free tier) or Ollama (fully local)." },
+      { icon: "🇮🇳", title: "Built for Indian Markets", desc: "NSE/BSE support. Handles EMIs, SIPs, and dividend stocks." }
+    ] do |feature| %>
+      <div class="p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300">
+        <div class="w-14 h-14 rounded-xl bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center text-2xl mb-4">
+          <%= feature[:icon] %>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2"><%= feature[:title] %></h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400"><%= feature[:desc] %></p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- Journey Section -->
+<section class="max-w-6xl mx-auto px-4 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Your Financial Journey</h2>
+    <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Kubera guides you through three clear phases</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-8">
+    <% [
+      { icon: "💳", title: "Phase 1: Debt Freedom", desc: "Clear all high-interest debt using avalanche or snowball strategies.", color: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400" },
+      { icon: "🎯", title: "Phase 2: Foundation Building", desc: "Build your emergency fund and establish a solid financial foundation.", color: "bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-400" },
+      { icon: "💰", title: "Phase 3: Income Target", desc: "Build wealth with dividend SIPs. AI suggests stocks based on your target.", color: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400" }
+    ] do |phase| %>
+      <div class="p-8 rounded-2xl text-center <%= phase[:color] %> border-2">
+        <div class="text-5xl mb-4"><%= phase[:icon] %></div>
+        <h3 class="text-xl font-bold mb-3"><%= phase[:title] %></h3>
+        <p class="text-sm leading-relaxed opacity-80"><%= phase[:desc] %></p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- Why Open Source -->
+<section class="max-w-6xl mx-auto px-4 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Open Source?</h2>
+  </div>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <% [
+      { icon: "🔒", title: "Your Data Stays Yours", desc: "Self-hosted on your own infrastructure. No data mining." },
+      { icon: "🤖", title: "Free AI Options", desc: "Works with OpenRouter free tier or Ollama (fully local)." },
+      { icon: "🍴", title: "Fork & Customize", desc: "AGPL-3.0 licensed. Modify and adapt to your exact needs." },
+      { icon: "🌍", title: "Community-Driven", desc: "Built by people who need it, for people who need it." }
+    ] do |item| %>
+      <div class="text-center p-6">
+        <div class="text-4xl mb-3"><%= item[:icon] %></div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-2"><%= item[:title] %></h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400"><%= item[:desc] %></p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- Install Section -->
+<section class="max-w-6xl mx-auto px-4 py-16">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Install Kubera</h2>
+    <p class="text-gray-600 dark:text-gray-400">One-line installation. Self-hosted in minutes.</p>
+  </div>
+
+  <div id="install" class="max-w-2xl mx-auto mb-12">
+    <% command = "curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash" %>
+    <div class="p-6 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-between gap-4 font-mono text-sm" data-controller="clipboard">
+      <code class="overflow-auto whitespace-nowrap text-gray-800 dark:text-gray-200"><%= command %></code>
+      <button data-action="clipboard#copy" data-clipboard-text="<%= command %>"
+        class="shrink-0 px-4 py-2 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-xs font-semibold transition-colors">
+        Copy
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-3xl mx-auto">
+    <% steps = [
+      { title: "Download", desc: "Get the automated installer script.", code: "curl -fsSL ... | bash" },
+      { title: "Run", desc: "Execute the installer and follow the TUI prompts.", code: "bash install.sh" },
+      { title: "Configure", desc: "Set up your AI provider and secure keys." },
+      { title: "Enjoy", desc: "Access Kubera at localhost:3000." }
+    ] %>
+    <div class="space-y-6">
+      <% steps.each_with_index do |step, i| %>
+        <div class="flex gap-4 items-start">
+          <div class="w-12 h-12 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold shrink-0">
+            <%= i + 1 %>
+          </div>
+          <div class="flex-1 pt-2">
+            <h4 class="font-semibold text-gray-900 dark:text-white"><%= step[:title] %></h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1"><%= step[:desc] %></p>
+            <% if step[:code] %>
+              <pre class="mt-2 p-3 rounded-lg bg-gray-900 text-gray-100 text-sm overflow-x-auto"><code><%= step[:code] %></code></pre>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

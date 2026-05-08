@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Run RuboCop
+        run: bundle exec rubocop --parallel
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: kubera
+          POSTGRES_PASSWORD: kubera
+          POSTGRES_DB: kubera_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: |
+          bundle exec rails assets:precompile
+      - name: Setup database
+        env:
+          DATABASE_URL: postgres://kubera:kubera@localhost:5432/kubera_test
+          RAILS_ENV: test
+        run: |
+          bundle exec rails db:schema:load
+      - name: Run RSpec
+        env:
+          DATABASE_URL: postgres://kubera:kubera@localhost:5432/kubera_test
+          RAILS_ENV: test
+          REDIS_URL: redis://localhost:6379/1
+          SECRET_KEY_BASE: test_secret_key_base_for_ci
+        run: |
+          bundle exec rspec
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/

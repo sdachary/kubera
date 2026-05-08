@@ -1,0 +1,7 @@
+{
+  "name": "@kubera/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kubera design tokens (colors, typography, spacing)",
+  "main": "src/theme/index.js"
+}

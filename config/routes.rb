@@ -2,117 +2,7 @@ require "sidekiq/web"
 require "sidekiq/cron/web"
 
 Rails.application.routes.draw do
-  resources :indexa_capital_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
-    collection do
-      get :preload_accounts
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
 
-    member do
-      post :sync
-      get :setup_accounts
-      post :complete_account_setup
-    end
-  end
-  resources :mercury_items, only: %i[index new create show edit update destroy] do
-    collection do
-      get :preload_accounts
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-      get :setup_accounts
-      post :complete_account_setup
-    end
-  end
-
-  resources :coinbase_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
-    collection do
-      get :preload_accounts
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-      get :setup_accounts
-      post :complete_account_setup
-    end
-  end
-
-  resources :binance_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
-    collection do
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-      get :setup_accounts
-      post :complete_account_setup
-    end
-  end
-
-  resources :snaptrade_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
-    collection do
-      get :preload_accounts
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-      get :callback
-    end
-
-    member do
-      post :sync
-      get :connect
-      get :setup_accounts
-      post :complete_account_setup
-      get :connections
-      delete :delete_connection
-      delete :delete_orphaned_user
-    end
-  end
-
-  # CoinStats routes
-  resources :coinstats_items, only: [ :index, :new, :create, :update, :destroy ] do
-    collection do
-      post :link_wallet
-      post :link_exchange
-    end
-    member do
-      post :sync
-    end
-  end
-
-  resources :enable_banking_items, only: [ :new, :create, :update, :destroy ] do
-    collection do
-      get :callback
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
-    member do
-      post :sync
-      get :select_bank
-      post :authorize
-      post :reauthorize
-      get :setup_accounts
-      post :complete_account_setup
-      post :new_connection
-    end
-  end
   use_doorkeeper
   # MFA routes
   resource :mfa, controller: "mfa", only: [ :new, :create ] do
@@ -502,65 +392,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :plaid_items, only: %i[new edit create destroy] do
-    collection do
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-    end
-  end
-
-  resources :simplefin_items, only: %i[index new create show edit update destroy] do
-    collection do
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-      post :balances
-      get :setup_accounts
-      post :complete_account_setup
-      post :dismiss_replacement_suggestion
-    end
-  end
-
-  resources :lunchflow_items, only: %i[index new create show edit update destroy] do
-    collection do
-      get :preload_accounts
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-      get :setup_accounts
-      post :complete_account_setup
-    end
-  end
-
-  resources :sophtron_items, only: %i[index new create show edit update destroy] do
-    collection do
-      get :preload_accounts
-      get :select_accounts
-      post :link_accounts
-      get :select_existing_account
-      post :link_existing_account
-    end
-
-    member do
-      post :sync
-      post :balances
-      get :setup_accounts
-      post :complete_account_setup
-    end
-  end
-
   namespace :webhooks do
     post "plaid"
     post "plaid_eu"
@@ -606,5 +437,6 @@ Rails.application.routes.draw do
   end
 
   # Defines the root path route ("/")
-  root "pages#dashboard"
+  root "pages#index"
+  get "dashboard", to: "pages#dashboard", as: :dashboard
 end

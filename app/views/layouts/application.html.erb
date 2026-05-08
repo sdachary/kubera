@@ -6,27 +6,55 @@
     <title><%= content_for(:title) || "Kubera" %></title>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <style>
+      :root {
+        --color-primary-50: #f0fdfa; --color-primary-100: #ccfbf1;
+        --color-primary-200: #99f6e4; --color-primary-300: #5eead4;
+        --color-primary-400: #2dd4bf; --color-primary-500: #0d9488;
+        --color-primary-600: #0f766e; --color-primary-700: #115e59;
+        --color-primary-800: #134e4a; --color-primary-900: #0f3d38;
+        --color-accent-500: #f97316; --color-accent-700: #c2410c;
+        --color-surface-primary: #ffffff;
+        --color-surface-secondary: #f8fafc;
+        --color-text-primary: #0f172a;
+        --color-text-secondary: #334155;
+        --color-divider: #e2e8f0;
+      }
+      .dark {
+        --color-surface-primary: #0f172a;
+        --color-surface-secondary: #1e293b;
+        --color-text-primary: #f8fafc;
+        --color-text-secondary: #94a3b8;
+        --color-divider: #334155;
+      }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono&display=swap" rel="stylesheet">
   </head>
 
-  <body class="bg-gray-50 dark:bg-gray-950">
-    <div class="flex min-h-screen">
-      <%= render SidebarComponent.new(current_path: request.path) %>
-
-      <main class="flex-1 ml-64 p-8">
-        <% if notice %>
-          <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-800 rounded-lg dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
-            <%= notice %>
-          </div>
-        <% end %>
-
-        <% if alert %>
-          <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-800 rounded-lg dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
-            <%= alert %>
-          </div>
-        <% end %>
-
-        <%= yield %>
-      </main>
-    </div>
+  <body class="<%= controller_name == 'pages' && action_name == 'index' ? 'bg-white dark:bg-gray-950' : 'bg-gray-50 dark:bg-gray-950' %>">
+    <% if controller_name == 'pages' && action_name == 'index' %>
+      <%= yield %>
+    <% else %>
+      <div class="flex min-h-screen">
+        <%= render SidebarComponent.new(current_path: request.path) %>
+        <main class="flex-1 ml-64 p-8">
+          <% if notice %>
+            <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-800 rounded-lg dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
+              <%= notice %>
+            </div>
+          <% end %>
+          <% if alert %>
+            <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-800 rounded-lg dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
+              <%= alert %>
+            </div>
+          <% end %>
+          <%= yield %>
+        </main>
+      </div>
+    <% end %>
   </body>
 </html>
