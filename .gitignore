@@ -41,3 +41,6 @@ docs-installer/
 *.swp
 *.swo
 *~
+
+# Local agent config
+.claude/

@@ -54,18 +54,24 @@ jobs:
           bundler-cache: true
       - name: Setup database
         env:
-          DATABASE_URL: postgres://kubera:kubera@localhost:5432/kubera_test
+          POSTGRES_USER: kubera
+          POSTGRES_PASSWORD: kubera
+          POSTGRES_DB: kubera_test
           RAILS_ENV: test
         run: bin/rails db:schema:load
       - name: Precompile assets
         env:
-          DATABASE_URL: postgres://kubera:kubera@localhost:5432/kubera_test
+          POSTGRES_USER: kubera
+          POSTGRES_PASSWORD: kubera
+          POSTGRES_DB: kubera_test
           RAILS_ENV: test
           SECRET_KEY_BASE: test_secret_key_base_for_ci
         run: bin/rails assets:precompile
       - name: Run RSpec
         env:
-          DATABASE_URL: postgres://kubera:kubera@localhost:5432/kubera_test
+          POSTGRES_USER: kubera
+          POSTGRES_PASSWORD: kubera
+          POSTGRES_DB: kubera_test
           RAILS_ENV: test
           REDIS_URL: redis://localhost:6379/1
           SECRET_KEY_BASE: test_secret_key_base_for_ci
