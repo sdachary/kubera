@@ -32,13 +32,14 @@ Negative  →  Zero  →  Positive
 
 The app follows one rule: **clear your liabilities before building wealth.** It doesn't block you — but it always shows debt freedom progress front and center, and investment suggestions only strengthen once debt is under control.
 
-### ✅ Completed Phases (v0.1 → v1.0)
+### ✅ Completed Phases (v0.1 → Phase 6)
 - 🔧 **v0.1** — Single-line installer (`curl ... | bash`), Docker setup, AI connector
 - 💳 **v0.2** — Debt Payoff Module (Avalanche/Snowball, EMI calendar, simulation)
 - 📈 **v0.3** — Dividend SIP Planner (AI stock suggestions, NSE/BSE screener)
 - 🔄 **v0.4** — Portfolio Rebalancing (Modern Portfolio Theory, asset allocation)
 - 🔔 **v0.5** — Recurring Expense Tracker (EMI/subscription calendar, notifications)
 - 🛡️ **v1.0** — Security audit & standalone architecture
+- 🧹 **Phase 6** — Architecture refinement: routes cleanup (442→57 lines), dead code removal, mailer views, initializer simplification, importmap-compatible JS
 
 - 💳 **Debt payoff tracker** — loans, EMIs, avalanche/snowball strategies
 - 📈 **Dividend SIP planner** — AI suggests stocks based on your income target
@@ -46,6 +47,7 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 - 🔔 **Recurring expense reminders** — never miss an EMI or subscription
 - 🤖 **Free AI** — works with free models via OpenRouter, or fully local via Ollama
 - 🇮🇳 **NSE/BSE support** — built with Indian markets in mind
+- 🧹 **Clean architecture** — refined routes (57 lines), no dead code, simplified initializers
 
 ---
 
@@ -172,6 +174,7 @@ See [docs/roadmap-updated.md](docs/roadmap-updated.md) for the full plan.
 - ✅ v0.4 — Portfolio rebalancing
 - ✅ v0.5 — Recurring expense tracker
 - ✅ v1.0 — Security audit & standalone architecture
+- ✅ Phase 6 — Architecture refinement (routes, dead code, mailers, initializers)
 
 ---
 
