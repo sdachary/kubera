@@ -93,32 +93,15 @@ You define the goal: *"₹25,000/month passive income by 2030."* Kubera reverse-
 ## Install in One Line
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/installer/install.sh | bash
 ```
 
-The installer is an interactive TUI — no documentation reading required:
+The installer clones the repo, installs Ruby and Node dependencies, runs setup, and starts the server on `http://localhost:3000`:
 
-- ✅ Checks for Docker, offers to install if missing
-- ✅ Detects port conflicts, suggests free alternatives
-- ✅ Walks you through AI provider setup (or skip for later)
-- ✅ Generates all config files with secure random keys
-- ✅ Pulls Docker images and starts everything
-
-**Other commands:**
-
-```bash
-# Update to latest
-curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s update
-
-# View logs
-curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s logs
-
-# Check status
-curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s status
-
-# Uninstall
-curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/install.sh | bash -s uninstall
-```
+- ✅ Clones the repository into `~/kubera`
+- ✅ Installs Ruby gems and Node packages
+- ✅ Runs `bin/setup` (database creation, migration, seeding)
+- ✅ Starts the Rails server on port 3000
 
 ---
 

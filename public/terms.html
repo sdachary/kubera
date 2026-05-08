@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Kubera</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:oklch(0.975 0.005 50);color:oklch(0.15 0.006 30);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+:focus-visible{outline:2px solid var(--accent, oklch(0.38 0.07 30));outline-offset:2px;border-radius:4px}
+::selection{background:var(--accent, oklch(0.35 0.08 30));color:oklch(0.95 0.005 60)}
+
+:root {
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --accent: oklch(0.35 0.08 30);
+  --accent-light: oklch(0.42 0.075 30);
+  --accent-dark: oklch(0.26 0.065 30);
+  --accent-glow: oklch(0.35 0.08 30 / 0.06);
+  --bg: oklch(0.975 0.005 50);
+  --surface: oklch(0.99 0.004 50);
+  --text: oklch(0.15 0.006 30);
+  --muted: oklch(0.48 0.008 30);
+  --border: oklch(0.9 0.005 50);
+  --on-accent: oklch(0.94 0.005 60);
+  --eyebrow: oklch(0.35 0.08 30);
+  --section-divider: oklch(0.35 0.08 30 / 0.04);
+}
+
+.container{width:100%;max-width:800px;margin:0 auto;padding:0 24px}
+
+nav{position:sticky;top:0;z-index:50;background:oklch(0.975 0.005 50 / 0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between;height:68px;max-width:1200px}
+nav .logo{font-family:'Petrona',Georgia,'Times New Roman',serif;font-weight:600;font-size:1.35rem;letter-spacing:-.01em;color:var(--text);text-decoration:none}
+nav .logo em{font-style:normal;color:var(--accent)}
+nav .nav-links{display:flex;gap:32px;align-items:center}
+nav .nav-links a{text-decoration:none;font-size:.875rem;font-weight:500;color:var(--muted);transition:color .3s var(--ease-out);position:relative}
+nav .nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .35s var(--ease-out);border-radius:1px}
+nav .nav-links a:hover{color:var(--text)}
+nav .nav-links a:hover::after{width:100%}
+nav .nav-cta{background:var(--accent);color:var(--on-accent)!important;padding:8px 22px;border-radius:6px;font-weight:500;font-size:.875rem;transition:background .3s var(--ease-out),transform .3s var(--ease-out),box-shadow .3s var(--ease-out)}
+nav .nav-cta::after{display:none}
+nav .nav-cta:hover{background:var(--accent-light)!important;transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
+.mobile-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--text)}
+.mobile-toggle span{display:block;width:24px;height:2px;background:currentColor;margin:5px 0;border-radius:2px;transition:transform .3s var(--ease-out),opacity .3s var(--ease-out)}
+
+.page-header{padding:96px 0 48px;position:relative}
+.page-header::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;max-width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.page-header h1{font-family:'Petrona',Georgia,'Times New Roman',serif;font-size:clamp(2rem,3vw + 0.5rem,2.8rem);font-weight:600;letter-spacing:-.035em;line-height:1.1;margin-bottom:12px;text-wrap:balance}
+.page-header p{font-size:1rem;color:var(--muted);max-width:600px}
+.page-header .last-updated{font-size:.75rem;color:var(--muted);margin-top:16px;opacity:.7}
+
+.content{padding:0 0 80px}
+.content h2{font-family:'Petrona',Georgia,'Times New Roman',serif;font-size:1.35rem;font-weight:600;letter-spacing:-.015em;margin-top:48px;margin-bottom:12px;color:var(--text)}
+.content h2:first-child{margin-top:0}
+.content p{font-size:.9375rem;color:var(--muted);line-height:1.75;margin-bottom:16px}
+.content ul{margin:12px 0 20px;padding-left:24px}
+.content li{font-size:.9375rem;color:var(--muted);line-height:1.75;margin-bottom:6px}
+.content li strong{color:var(--text);font-weight:500}
+.content a{color:var(--accent);text-decoration:none;transition:color .2s var(--ease-out)}
+.content a:hover{color:var(--accent-light)}
+.content .highlight-box{background:var(--accent-glow);border:1px solid var(--border);border-radius:10px;padding:24px 28px;margin:24px 0}
+.content .highlight-box p:last-child{margin-bottom:0}
+
+footer{border-top:1px solid var(--border);padding:40px 0}
+footer .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;max-width:1200px}
+footer .links{display:flex;gap:28px;flex-wrap:wrap}
+footer .links a{font-size:.8125rem;color:var(--muted);text-decoration:none;transition:color .3s var(--ease-out)}
+footer .links a:hover{color:var(--text)}
+footer p{font-size:.75rem;color:var(--muted);letter-spacing:.02em}
+@media(max-width:620px){footer .container{flex-direction:column;text-align:center}}
+
+@media(max-width:620px){
+  .mobile-toggle{display:block}
+  nav .nav-links{display:none;position:absolute;top:68px;left:0;right:0;background:oklch(0.975 0.005 50 / 0.98);backdrop-filter:blur(20px);flex-direction:column;padding:20px 24px 28px;border-bottom:1px solid var(--border);gap:20px;align-items:flex-start}
+  nav .nav-links.open{display:flex}
+  nav .nav-links a::after{display:none}
+  .page-header{padding:64px 0 32px}
+  .content{padding:0 0 48px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="container">
+<a href="/" class="logo">Kub<em>era</em></a>
+<div class="nav-links" id="navLinks">
+<a href="/">Home</a>
+<a href="/privacy">Privacy</a>
+<a href="/terms">Terms</a>
+<a href="https://github.com/sdachary/kubera" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+  Source
+</a>
+</div>
+<button class="mobile-toggle" data-toggle aria-label="Toggle navigation" aria-expanded="false">
+<span></span><span></span><span></span>
+</button>
+</div>
+</nav>
+
+<section class="page-header">
+<div class="container">
+<h1>Terms of Service</h1>
+<p>Kubera is free, open-source software. These terms govern your use of the software.</p>
+<p class="last-updated">Last updated: May 2026</p>
+</div>
+</section>
+
+<section class="content">
+<div class="container">
+
+<div class="highlight-box">
+<p><strong>Short version:</strong> Kubera is self-hosted software licensed under AGPL-3.0. You run it, you control it. There is no cloud service, no subscription, no account on our systems. These terms are minimal because we don't have access to your installation or your data.</p>
+</div>
+
+<h2>1. Software License</h2>
+<p>Kubera is released under the <strong>GNU Affero General Public License v3.0 (AGPL-3.0)</strong>. You are free to:</p>
+<ul>
+<li>Run Kubera for any purpose, personal or commercial</li>
+<li>Modify the software to suit your needs</li>
+<li>Share copies of the software with others</li>
+<li>Distribute modified versions, provided they also carry the AGPL-3.0 license</li>
+</ul>
+<p>For the full license text, see the <a href="https://github.com/sdachary/kubera?tab=AGPL-3.0-1-ov-file#readme" target="_blank" rel="noopener">LICENSE file in the repository</a>.</p>
+
+<h2>2. No Cloud Service</h2>
+<p>Kubera is <strong>not a hosted service</strong>. We do not operate a cloud instance, do not maintain servers for public use, and do not store or process any user data. The software is provided "as-is" for you to install and run on your own infrastructure.</p>
+<p>There is no registration, no account creation, no subscription fee. You download the code, you run it yourself.</p>
+
+<h2>3. No Warranty</h2>
+<p>Kubera is provided without any warranty, express or implied. The software is a tool for tracking personal finances; it is not financial advice. We are not responsible for any financial decisions you make based on information displayed by the software.</p>
+
+<h2>4. Limitation of Liability</h2>
+<p>In no event shall the authors or copyright holders be liable for any claim, damages, or other liability arising from the use of the software. You use Kubera entirely at your own risk.</p>
+
+<h2>5. Data Responsibility</h2>
+<p>Because Kubera is self-hosted, <strong>you are solely responsible</strong> for:</p>
+<ul>
+<li>Securing your installation and database</li>
+<li>Creating and maintaining backups</li>
+<li>Protecting access to your server</li>
+<li>Complying with any laws that apply to the financial data you store</li>
+</ul>
+<p>We have no ability to recover, access, or export your data.</p>
+
+<h2>6. AI Feature Disclaimer</h2>
+<p>Kubera's optional AI features provide suggestions and analysis based on your financial data. These are <strong>not financial advice</strong>. Always verify AI-generated recommendations with a qualified financial professional before acting on them.</p>
+
+<h2>7. Changes</h2>
+<p>These terms may be updated from time to time. Changes will be reflected in the repository with an updated "Last updated" date. Since Kubera is self-hosted, you control whether and when to update your installation.</p>
+
+<h2>8. Contact</h2>
+<p>For questions about these terms, please <a href="https://github.com/sdachary/kubera/issues" target="_blank" rel="noopener">open an issue on GitHub</a>. For license inquiries, refer to the <a href="https://github.com/sdachary/kubera?tab=AGPL-3.0-1-ov-file#readme" target="_blank" rel="noopener">AGPL-3.0 license text</a>.</p>
+
+</div>
+</section>
+
+<footer>
+<div class="container">
+<div class="links">
+<a href="/privacy">Privacy</a>
+<a href="/terms">Terms</a>
+<a href="https://github.com/sdachary/kubera#readme" target="_blank" rel="noopener">Docs</a>
+<a href="https://github.com/sdachary/kubera/issues" target="_blank" rel="noopener">Contact</a>
+</div>
+<p>&copy; 2026 Kubera. All rights reserved.</p>
+</div>
+</footer>
+
+<script>
+document.querySelector('[data-toggle]')?.addEventListener('click', function() {
+  var nav = document.getElementById('navLinks');
+  var expanded = this.getAttribute('aria-expanded') === 'true';
+  nav.classList.toggle('open');
+  this.setAttribute('aria-expanded', !expanded);
+});
+</script>
+</body>
+</html>
