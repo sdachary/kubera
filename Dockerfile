@@ -2,7 +2,7 @@ FROM ruby:3.3.8-slim-bookworm AS base
 
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    build-essential libpq-dev libvips curl git && \
+    build-essential libpq-dev libvips libyaml-dev curl git && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /rails
@@ -12,7 +12,7 @@ ENV RAILS_ENV=production \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT=development:test
 
-COPY Gemfile Gemfile ./
+COPY Gemfile Gemfile.lock .ruby-version ./
 RUN bundle install
 
 COPY . .
