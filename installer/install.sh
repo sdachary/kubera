@@ -101,8 +101,10 @@ for i in $(seq 1 30); do
         echo "   Search for 'Kubera' in your app menu"
         echo "   Or run: xdg-open http://localhost:$PORT"
         echo
-        echo "🛑 Stop: $INSTALL_DIR/installer/kubera-stop.sh"
-        echo "   Or run: kill \$(lsof -ti :$PORT)"
+echo "🛑 Stop: $INSTALL_DIR/installer/kubera-stop.sh"
+echo "   Or run: kill \$(lsof -ti :$PORT)"
+echo
+echo "🗑️  Uninstall: $INSTALL_DIR/installer/uninstall.sh"
         exit 0
     fi
     printf "."

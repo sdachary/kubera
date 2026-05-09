@@ -1,4 +1,4 @@
-var CACHE = "kubera-v1";
+var CACHE = "kubera-v2";
 
 self.addEventListener("install", function (event) {
   event.waitUntil(

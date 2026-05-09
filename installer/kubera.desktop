@@ -5,4 +5,6 @@ Comment=Personal Finance OS — From liabilities to assets
 Exec=INSTALL_DIR/installer/kubera-start.sh
 Icon=INSTALL_DIR/public/android-chrome-192x192.png
 Terminal=false
+StartupNotify=true
+StartupWMClass=Kubera
 Categories=Finance;Office;
