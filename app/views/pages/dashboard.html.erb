@@ -8,11 +8,12 @@
 
     <%# Quick Stats %>
     <div class="p-3 space-y-2 border-b border-slate-800/50" data-controller="stats">
+      <% symbol = @currency_symbol %>
       <% stats = [
-        { label: "Total Debt", value: number_to_currency(@total_debt, unit: "₹"), color: "text-red-400" },
-        { label: "Investments", value: number_to_currency(@total_investments, unit: "₹"), color: "text-emerald-400" },
-        { label: "Net Worth", value: number_to_currency(@net_worth, unit: "₹"), color: @net_worth >= 0 ? "text-emerald-400" : "text-red-400" },
-        { label: "Monthly Expenses", value: number_to_currency(@monthly_expenses, unit: "₹"), color: "text-amber-400" }
+        { label: "Total Debt", value: number_to_currency(@total_debt, unit: symbol), color: "text-red-400" },
+        { label: "Investments", value: number_to_currency(@total_investments, unit: symbol), color: "text-emerald-400" },
+        { label: "Net Worth", value: number_to_currency(@net_worth, unit: symbol), color: @net_worth >= 0 ? "text-emerald-400" : "text-red-400" },
+        { label: "Monthly Expenses", value: number_to_currency(@monthly_expenses, unit: symbol), color: "text-amber-400" }
       ] %>
       <% stats.each do |stat| %>
         <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-800/30">
@@ -20,6 +21,10 @@
           <span class="text-sm font-medium <%= stat[:color] %>"><%= stat[:value] %></span>
         </div>
       <% end %>
+      <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-800/30">
+        <span class="text-xs text-slate-400">Currency</span>
+        <span class="text-sm font-medium text-slate-300"><%= @base_currency %> (<%= @currency_symbol %>)</span>
+      </div>
       <% if @journey&.zero_day_target %>
         <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-teal-900/20 border border-teal-800/30">
           <span class="text-xs text-teal-400">Debt Free Date</span>
@@ -69,11 +74,11 @@
                   <button data-action="click->chat#setPrompt" data-prompt="Setup AI" class="block w-full text-left px-3 py-2 rounded-lg bg-teal-900/30 border border-teal-800/40 text-teal-300 text-sm hover:bg-teal-800/40 transition-colors">
                     "Setup AI" — configure AI (local or cloud)
                   </button>
-                  <button data-action="click->chat#setPrompt" data-prompt="I have a credit card debt of ₹50,000 at 24% interest" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
-                    "I have a credit card debt of ₹50,000 at 24% interest"
+                  <button data-action="click->chat#setPrompt" data-prompt="I have a credit card debt of <%= @currency_symbol %>50,000 at 24% interest" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
+                    "I have a credit card debt of <%= @currency_symbol %>50,000 at 24% interest"
                   </button>
-                  <button data-action="click->chat#setPrompt" data-prompt="I want to start investing ₹5,000/month in dividend stocks" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
-                    "I want to start investing ₹5,000/month in dividend stocks"
+                  <button data-action="click->chat#setPrompt" data-prompt="I want to start investing <%= @currency_symbol %>5,000/month in dividend stocks" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
+                    "I want to start investing <%= @currency_symbol %>5,000/month in dividend stocks"
                   </button>
                   <button data-action="click->chat#setPrompt" data-prompt="Show me my financial overview" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
                     "Show me my financial overview"

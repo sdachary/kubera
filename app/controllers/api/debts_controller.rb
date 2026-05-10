@@ -25,7 +25,7 @@ class Api::DebtsController < Api::BaseController
 
   def debt_params
     params.permit(:name, :category, :amount, :interest_rate, :emi_amount,
-                  :due_date, :status, :started_at, :paid_amount, :notes)
+                  :due_date, :status, :started_at, :paid_amount, :notes, :currency_code)
   end
 
   def debt_json(d)
@@ -34,6 +34,7 @@ class Api::DebtsController < Api::BaseController
       due_date: d.due_date, status: d.status, paid_amount: d.paid_amount.to_f,
       remaining: d.remaining_amount.to_f, progress: d.progress_percentage,
       debt_free_date: d.debt_free_date, months_remaining: d.months_remaining,
-      started_at: d.started_at, notes: d.notes, created_at: d.created_at }
+      started_at: d.started_at, notes: d.notes, created_at: d.created_at,
+      currency_code: d.currency_code, currency_symbol: Currency.symbol_for(d.currency_code) }
   end
 end

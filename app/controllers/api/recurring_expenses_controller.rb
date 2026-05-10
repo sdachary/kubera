@@ -26,7 +26,7 @@ class Api::RecurringExpensesController < Api::BaseController
 
   def expense_params
     params.permit(:name, :amount, :frequency, :next_due_date, :category,
-                  :auto_debit, :active, :notes)
+                  :auto_debit, :active, :notes, :currency_code)
   end
 
   def expense_json(e)
@@ -34,6 +34,7 @@ class Api::RecurringExpensesController < Api::BaseController
       next_due_date: e.next_due_date, next_due_days: e.next_due_days,
       monthly_amount: e.monthly_amount.to_f, category: e.category,
       auto_debit: e.auto_debit, active: e.active, notes: e.notes,
-      created_at: e.created_at }
+      created_at: e.created_at, currency_code: e.currency_code,
+      currency_symbol: Currency.symbol_for(e.currency_code) }
   end
 end

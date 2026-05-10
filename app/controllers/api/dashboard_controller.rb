@@ -8,6 +8,7 @@ class Api::DashboardController < Api::BaseController
     net_worth = total_investments - total_debt
     journey = user.journeys.first
 
+    base_currency = user.currency
     render json: {
       total_debt: total_debt,
       total_investments: total_investments,
@@ -20,8 +21,10 @@ class Api::DashboardController < Api::BaseController
       sip_count: DividendSip.joins(portfolio: :user)
                             .where(users: { id: user.id }, status: "active").count,
       unread_notifications: user.notifications.unread.count,
+      base_currency: base_currency,
+      currency_symbol: Currency.symbol_for(base_currency),
       recent_snapshots: user.net_worth_snapshots.recent.limit(12).map { |s|
-        { date: s.snapshot_date, net_worth: s.net_worth.to_f }
+        { date: s.snapshot_date, net_worth: s.net_worth.to_f, currency_code: s.currency_code }
       }
     }
   end

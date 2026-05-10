@@ -3,6 +3,26 @@ class Providers::YahooFinanceAdapter
   SEARCH_URL = "https://query1.finance.yahoo.com/v1/finance/search"
   TIMEOUT = 5
 
+  EXCHANGE_COUNTRY_MAP = {
+    "NSE" => "IN", "BSE" => "IN",
+    "NYQ" => "US", "NAS" => "US", "PCX" => "US",
+    "LSE" => "UK", "LON" => "UK",
+    "TSE" => "JP", "OSA" => "JP",
+    "FRA" => "DE", "GER" => "DE", "XETRA" => "DE",
+    "ASX" => "AU",
+    "HKG" => "HK", "HKEX" => "HK",
+    "TOR" => "CA", "TSX" => "CA",
+    "SWX" => "CH", "EBS" => "CH",
+    "STO" => "SE", "HEL" => "FI",
+    "CPH" => "DK", "OSL" => "NO",
+    "MCE" => "ES", "MIL" => "IT",
+    "EPA" => "FR", "AMS" => "NL",
+    "BRU" => "BE", "VIE" => "AT",
+    "KRX" => "KR", "KOSDAQ" => "KR",
+    "TPE" => "TW", "TWO" => "TW",
+    "SGX" => "SG", "BOM" => "IN"
+  }.freeze
+
   def fetch_quote(symbol)
     response = HTTParty.get("#{BASE_URL}/#{symbol}", timeout: TIMEOUT,
       headers: { "User-Agent" => "Mozilla/5.0" })
@@ -22,7 +42,9 @@ class Providers::YahooFinanceAdapter
       previous_close: meta["previousClose"],
       day_high: quote.dig("high", idx),
       day_low: quote.dig("low", idx),
-      volume: quote.dig("volume", idx)
+      volume: quote.dig("volume", idx),
+      exchange: meta["exchangeName"],
+      exchange_timezone: meta["exchangeTimezoneName"]
     }
   rescue HTTParty::Error, Net::OpenTimeout => e
     Rails.logger.warn "[YahooFinance] Failed to fetch #{symbol}: #{e.message}"
@@ -34,7 +56,15 @@ class Providers::YahooFinanceAdapter
       headers: { "User-Agent" => "Mozilla/5.0" })
     return [] unless response.success?
     (response["quotes"] || []).select { |q| q["typeDisp"] == "Equity" }.map do |q|
-      { symbol: q["symbol"], name: q["longname"] || q["shortname"], exchange: q["exchange"] }
+      exchange = q["exchange"]
+      country = EXCHANGE_COUNTRY_MAP[exchange]
+      {
+        symbol: q["symbol"],
+        name: q["longname"] || q["shortname"],
+        exchange: exchange,
+        country: country,
+        currency: country_currency(country)
+      }
     end
   rescue HTTParty::Error
     []
@@ -64,5 +94,21 @@ class Providers::YahooFinanceAdapter
     symbol = "#{from}#{to}=X"
     quote = fetch_quote(symbol)
     quote ? quote[:price] : nil
+  end
+
+  private
+
+  CURRENCY_MAP = {
+    "IN" => "INR", "US" => "USD", "UK" => "GBP", "JP" => "JPY",
+    "DE" => "EUR", "FR" => "EUR", "IT" => "EUR", "ES" => "EUR",
+    "NL" => "EUR", "BE" => "EUR", "AT" => "EUR", "FI" => "EUR",
+    "AU" => "AUD", "CA" => "CAD", "CH" => "CHF", "SG" => "SGD",
+    "HK" => "HKD", "SE" => "SEK", "NO" => "NOK", "DK" => "DKK",
+    "KR" => "KRW", "TW" => "TWD", "ZA" => "ZAR", "BR" => "BRL",
+    "MX" => "MXN", "NG" => "NGN", "KE" => "KES"
+  }.freeze
+
+  def country_currency(country)
+    CURRENCY_MAP[country] || "USD"
   end
 end

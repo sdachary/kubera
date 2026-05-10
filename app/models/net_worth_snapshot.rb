@@ -12,10 +12,20 @@ class NetWorthSnapshot < ApplicationRecord
   end
 
   def self.create_snapshot(user)
-    debts_total = Debt.where(user: user, status: "active").sum(:amount)
-    portfolio_value = Portfolio.where(user: user).sum(&:total_value)
-    total_assets = portfolio_value
-    total_liabilities = debts_total
+    currency = user.currency
+    exchange_service = ExchangeRateService.new
+    debts_total = Debt.where(user: user, status: "active")
+    portfolio_value = Portfolio.where(user: user)
+
+    total_liabilities = debts_total.sum do |d|
+      exchange_service.convert(d.amount, from: d.currency_code, to: currency) || d.amount
+    end
+
+    total_assets = portfolio_value.sum do |p|
+      pv = p.total_value
+      exchange_service.convert(pv, from: p.currency_code, to: currency) || pv
+    end
+
     net_worth = total_assets - total_liabilities
 
     create!(
@@ -24,7 +34,12 @@ class NetWorthSnapshot < ApplicationRecord
       total_assets: total_assets,
       total_liabilities: total_liabilities,
       net_worth: net_worth,
-      breakdown: { debts: debts_total, portfolios: portfolio_value }
+      currency_code: currency,
+      breakdown: {
+        debts: total_liabilities,
+        portfolios: total_assets,
+        base_currency: currency
+      }
     )
   end
 end

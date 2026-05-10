@@ -33,7 +33,7 @@ class Api::DividendSipsController < Api::BaseController
 
   def sip_params
     params.permit(:portfolio_id, :name, :amount, :frequency, :status,
-                  :target_income, :next_execution)
+                  :target_income, :next_execution, :currency_code)
   end
 
   def sip_json(s)
@@ -42,6 +42,7 @@ class Api::DividendSipsController < Api::BaseController
       target_income: s.target_income&.to_f,
       monthly_contribution: s.monthly_contribution.to_f,
       projected_annual_income: s.projected_annual_income.to_f,
-      next_execution: s.next_execution, created_at: s.created_at }
+      next_execution: s.next_execution, created_at: s.created_at,
+      currency_code: s.currency_code, currency_symbol: Currency.symbol_for(s.currency_code) }
   end
 end

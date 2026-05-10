@@ -18,7 +18,8 @@ class Api::DebtPayoffsController < Api::BaseController
       total_interest_paid: p.total_interest_paid&.to_f,
       total_interest_saved: p.total_interest_saved&.to_f,
       total_debt: p.total_debt.to_f, debt_count: p.debts.count,
-      debts: p.debts.map { |d| { id: d.id, name: d.name, amount: d.amount.to_f } },
-      schedule: p.schedule, created_at: p.created_at }
+      debts: p.debts.map { |d| { id: d.id, name: d.name, amount: d.amount.to_f, currency_code: d.currency_code } },
+      schedule: p.schedule, created_at: p.created_at,
+      currency_code: p.currency_code, currency_symbol: Currency.symbol_for(p.currency_code) }
   end
 end

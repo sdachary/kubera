@@ -1,12 +1,14 @@
 class WealthJourneyTracker
   def initialize(user)
     @user = user
+    @exchange_service = ExchangeRateService.new
+    @base_currency = user.currency
   end
 
   def debt_progress
     debts = Debt.where(user: @user, status: "active")
-    total_debt = debts.sum(:amount)
-    total_emi = debts.sum(:emi_amount)
+    total_debt = debts.sum { |d| convert(d.amount, d.currency_code) }
+    total_emi = debts.sum { |d| convert(d.emi_amount.to_f, d.currency_code) }
 
     {
       total_debt: total_debt,
@@ -15,11 +17,13 @@ class WealthJourneyTracker
       months_to_zero: debts.map(&:months_remaining).max || 0,
       estimated_debt_free_date: debts.map(&:debt_free_date).compact.max,
       progress_percentage: debts.any? ? debts.sum(&:progress_percentage) / debts.count : 100.0,
+      base_currency: @base_currency,
       debts: debts.map { |d|
         {
           id: d.id, name: d.name, amount: d.amount, interest_rate: d.interest_rate,
           emi_amount: d.emi_amount, due_date: d.due_date, status: d.status,
-          months_remaining: d.months_remaining, debt_free_date: d.debt_free_date
+          months_remaining: d.months_remaining, debt_free_date: d.debt_free_date,
+          currency_code: d.currency_code
         }
       }
     }
@@ -27,9 +31,9 @@ class WealthJourneyTracker
 
   def sip_progress
     sips = DividendSip.where(status: "active")
-    total_monthly = sips.sum(&:monthly_contribution)
+    total_monthly = sips.sum { |s| convert(s.monthly_contribution, s.currency_code) }
     projected_annual = total_monthly * 12 * 0.08
-    target_income = sips.first&.target_income || 50_000
+    target_income = convert(sips.first&.target_income.to_f, sips.first&.currency_code || @base_currency)
 
     {
       active_sips: sips.count,
@@ -37,11 +41,13 @@ class WealthJourneyTracker
       target_monthly_income: target_income,
       projected_monthly_income: projected_annual / 12,
       progress: target_income > 0 ? [(projected_annual / 12 / target_income * 100).round(1), 100.0].min : 0,
+      base_currency: @base_currency,
       sips: sips.map { |s|
         {
           id: s.id, amount: s.amount, frequency: s.frequency,
           target_income: s.target_income, status: s.status,
-          monthly_contribution: s.monthly_contribution
+          monthly_contribution: s.monthly_contribution,
+          currency_code: s.currency_code
         }
       }
     }
@@ -50,7 +56,7 @@ class WealthJourneyTracker
   def net_worth_trajectory(months: 12)
     current = NetWorthSnapshot.current(@user)
     debts = Debt.where(user: @user, status: "active")
-    total_emi = debts.sum(:emi_amount)
+    total_emi = debts.sum { |d| convert(d.emi_amount.to_f, d.currency_code) }
 
     trajectory = (0..months).map do |m|
       month_date = Date.today + m.months
@@ -72,6 +78,7 @@ class WealthJourneyTracker
       total_assets: current.total_assets,
       total_liabilities: current.total_liabilities,
       breakdown: current.breakdown,
+      base_currency: @base_currency,
       trajectory: trajectory,
       projection_12m: trajectory.last[:net_worth]
     }
@@ -80,7 +87,7 @@ class WealthJourneyTracker
   def wealth_growth_projection
     current = NetWorthSnapshot.current(@user)
     yearly_rate = 0.10
-    monthly_contribution = DividendSip.where(status: "active").sum(&:monthly_contribution)
+    monthly_contribution = DividendSip.where(status: "active").sum { |s| convert(s.monthly_contribution, s.currency_code) }
 
     (1..30).map do |year|
       year_date = Date.today + year.years
@@ -108,7 +115,8 @@ class WealthJourneyTracker
       reached: false,
       estimated_date: est_date,
       months_remaining: max_months,
-      total_debt: debts.sum(:amount),
+      total_debt: debts.sum { |d| convert(d.amount, d.currency_code) },
+      base_currency: @base_currency,
       message: max_months > 0 ? "Debt-free by #{est_date.strftime('%b %Y')}" : "No active debts"
     }
   end
@@ -136,12 +144,17 @@ class WealthJourneyTracker
         assets: net[:total_assets],
         liabilities: net[:total_liabilities]
       },
+      base_currency: @base_currency,
       zero_day: zero,
       score: calculate_wealth_score(debt, sip, net)
     }
   end
 
   private
+
+  def convert(amount, from_currency)
+    @exchange_service.convert(amount, from: from_currency || @base_currency, to: @base_currency) || amount
+  end
 
   def calculate_wealth_score(debt, sip, net)
     debt_score = debt[:total_debt] > 0 ? [(1 - debt[:total_debt] / [net[:current_net_worth], 1].max) * 40, 0].max : 40

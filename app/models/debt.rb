@@ -11,6 +11,7 @@ class Debt < ApplicationRecord
   validates :category, inclusion: {
     in: %w[credit_card loan personal mortgage education other]
   }, allow_nil: true
+  validates :currency_code, inclusion: { in: Currency::CURRENCY_SYMBOLS.keys }, allow_nil: true
 
   scope :active, -> { where(status: "active") }
 

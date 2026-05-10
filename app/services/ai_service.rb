@@ -17,6 +17,20 @@ class AiService
     AiResponse.new(text: text)
   end
 
+  def ask_with_actions(prompt)
+    result = ask(prompt)
+
+    if result.text.include?("[CREATE_TRANSACTION]")
+      create_transaction_from_nl(prompt)
+    elsif result.text.include?("[CREATE_BUDGET]")
+      create_budget_from_nl(prompt)
+    elsif result.text.include?("[CATEGORIZE]")
+      categorize_transactions_from_nl(prompt)
+    end
+
+    result
+  end
+
   def configured?
     provider_setting.present?
   end
@@ -157,21 +171,32 @@ class AiService
     nil
   end
 
+  def currency_code
+    @user.currency.presence || "INR"
+  end
+
+  def currency_symbol
+    Currency.symbol_for(currency_code)
+  end
+
   def system_prompt
     debts = @user.debts.active
     portfolios = @user.portfolios
     journey = @user.journeys.first
+    symbol = currency_symbol
+    code = currency_code
 
     context = []
     if debts.any?
-      context << "User's debts: #{debts.map { |d| "#{d.name}: ₹#{d.amount.to_i} at #{d.interest_rate}%" }.join(', ')}"
+      context << "User's debts: #{debts.map { |d| "#{d.name}: #{symbol}#{d.amount.to_i} at #{d.interest_rate}% (#{d.currency_code})" }.join(', ')}"
     end
     if portfolios.any?
-      context << "User's portfolios: #{portfolios.map(&:name).join(', ')}"
+      context << "User's portfolios: #{portfolios.map(&:name).join(', ')} (#{code})"
     end
     if journey
       context << "Journey phase: #{journey.phase}, debt-free target: #{journey.zero_day_target}"
     end
+    context << "User's base currency: #{code} (#{symbol})"
     context_str = context.any? ? "\n\nCurrent financial data:\n#{context.join("\n")}" : ""
 
     provider_notice = if cloud_provider?
@@ -186,10 +211,14 @@ class AiService
       personal finances with a "debt-first" philosophy: negative (debt) → zero (free) →
       positive (wealthy).
 
+      The user's base currency is #{code} (#{symbol}). Use #{symbol} or #{code} when
+      discussing their finances. The user may have assets and debts in multiple currencies
+      (USD, EUR, GBP, INR, etc.) — note the currency when discussing specific items.
+
       Guidelines:
       - Explain concepts simply, like talking to a friend who isn't tech-savvy
       - Never give specific stock picks — suggest strategies, not securities
-      - Focus on Indian market (NSE/BSE) when discussing stocks
+      - Support both Indian (NSE/BSE) and international markets (NYSE, NASDAQ, LSE)
       - Keep responses concise and actionable (2-4 paragraphs max)
       - Reference the user's saved financial data when relevant
       - Be encouraging — financial journeys are hard
@@ -204,7 +233,19 @@ class AiService
   def rule_response(prompt)
     down = prompt.to_s.downcase
 
-    if down.include?("debt") || down.include?("loan") || down.include?("emi") || down.include?("credit card")
+    if transaction_request?(down, prompt)
+      create_transaction_from_nl(prompt)
+    elsif budget_request?(down)
+      create_budget_from_nl(prompt)
+    elsif categorize_request?(down)
+      categorize_recent_transactions(prompt)
+    elsif anomaly_request?(down)
+      anomaly_report
+    elsif forecast_request?(down)
+      cash_flow_forecast
+    elsif export_request?(down)
+      export_instructions
+    elsif down.include?("debt") || down.include?("loan") || down.include?("emi") || down.include?("credit card")
       debt_advice
     elsif down.include?("invest") || down.include?("sip") || down.include?("dividend") || down.include?("stock")
       invest_advice
@@ -219,6 +260,42 @@ class AiService
     end
   end
 
+  def transaction_request?(down, prompt)
+    amounts = prompt.scan(/[\d,.]+/)
+    (down.include?("spent") || down.include?("paid") || down.include?("earned") ||
+     down.include?("received") || down.include?("bought") || down.include?("purchased")) &&
+     amounts.any? { |a| a.gsub(/[,.]/, "").to_i > 0 }
+  end
+
+  def budget_request?(down)
+    down.include?("set a budget") || down.include?("create a budget") ||
+    down.include?("budget for") || (down.include?("limit") && down.include?("category"))
+  end
+
+  def categorize_request?(down)
+    (down.include?("categorize") || down.include?("sort") || down.include?("organize")) &&
+    (down.include?("transaction") || down.include?("expense") || down.include?("spending"))
+  end
+
+  def anomaly_request?(down)
+    down.include?("anomaly") || down.include?("unusual") || down.include?("abnormal") ||
+    down.include?("suspicious") || down.include?("detect") || down.include?("irregular")
+  end
+
+  def forecast_request?(down)
+    down.include?("forecast") || down.include?("projection") || down.include?("predict") ||
+    down.include?("future") || (down.include?("cash flow") && down.include?("look"))
+  end
+
+  def export_request?(down)
+    down.include?("export") || down.include?("download") ||
+    (down.include?("generate") && (down.include?("report") || down.include?("csv")))
+  end
+
+  def sym
+    currency_symbol
+  end
+
   def debt_advice
     debts = @user.debts.active
     return "You don't have any debts tracked yet. Want to add one? Just tell me the name, amount, and interest rate!" if debts.empty?
@@ -227,11 +304,11 @@ class AiService
     highest = debts.max_by(&:interest_rate)
     lowest = debts.min_by(&:amount)
 
-    text = "You have #{debts.count} active #{'debt'.pluralize(debts.count)} totaling ₹#{format_rupee(total)}.\n\n"
+    text = "You have #{debts.count} active #{'debt'.pluralize(debts.count)} totaling #{sym}#{format_rupee(total)}.\n\n"
     text += "**Strategy**: Since your highest interest debt is #{highest.name} at #{highest.interest_rate}%, "
     text += "I recommend the **avalanche method** — pay minimum on everything, "
     text += "put extra toward #{highest.name} first. It saves the most in interest.\n\n"
-    text += "Alternatively, the **snowball method** (pay off #{lowest.name} first — ₹#{format_rupee(lowest.amount)} — for quick wins) " if lowest != highest
+    text += "Alternatively, the **snowball method** (pay off #{lowest.name} first — #{sym}#{format_rupee(lowest.amount)} — for quick wins) " if lowest != highest
     text += "\nWant me to create a detailed payoff plan?"
     text
   end
@@ -239,12 +316,12 @@ class AiService
   def invest_advice
     portfolios = @user.portfolios
     return "You don't have any investment portfolios yet. Want to start one? " \
-           "A monthly SIP of ₹5,000 in large-cap stocks is a great beginning." if portfolios.empty?
+           "A monthly SIP of #{sym}5,000 in large-cap stocks is a great beginning." if portfolios.empty?
 
     total = portfolios.sum(&:total_value)
-    "You have #{portfolios.count} portfolio(s) worth ₹#{format_rupee(total)}.\n\n" \
-    "For Indian market dividend investing:\n" \
-    "• Look for NIFTY 50 companies with 5+ years of consistent dividends\n" \
+    "You have #{portfolios.count} portfolio(s) worth #{sym}#{format_rupee(total)}.\n\n" \
+    "For dividend investing:\n" \
+    "• Look for companies with 5+ years of consistent dividends\n" \
     "• Target dividend yield of 2-4%\n" \
     "• Reinvest dividends to compound returns\n\n" \
     "Want me to suggest a SIP allocation for your portfolio?"
@@ -255,11 +332,11 @@ class AiService
     return "No recurring expenses tracked yet. List your monthly bills and I'll help you optimize!" if expenses.empty?
 
     total = expenses.sum(&:monthly_amount)
-    "You have #{expenses.count} recurring #{'expense'.pluralize(expenses.count)} at ₹#{format_rupee(total)}/month.\n\n" \
+    "You have #{expenses.count} recurring #{'expense'.pluralize(expenses.count)} at #{sym}#{format_rupee(total)}/month.\n\n" \
     "**50/30/20 rule**:\n" \
-    "• 50% Needs (₹#{format_rupee((total * 0.5).round)})\n" \
-    "• 30% Wants (₹#{format_rupee((total * 0.3).round)})\n" \
-    "• 20% Savings (₹#{format_rupee((total * 0.2).round)})\n\n" \
+    "• 50% Needs (#{sym}#{format_rupee((total * 0.5).round)})\n" \
+    "• 30% Wants (#{sym}#{format_rupee((total * 0.3).round)})\n" \
+    "• 20% Savings (#{sym}#{format_rupee((total * 0.2).round)})\n\n" \
     "Does your current spending match this? Want to review specific categories?"
   end
 
@@ -273,14 +350,23 @@ class AiService
     total_debt = debts.sum(&:amount)
     total_inv = portfolios.sum(&:total_value)
     net = total_inv - total_debt
-    parts << "💰 **Net Worth**: ₹#{format_rupee(net)} (#{net >= 0 ? '✅ positive' : '⚠️ negative'})"
-    parts << "💳 **Debt**: ₹#{format_rupee(total_debt)} (#{debts.count} active)" if debts.any?
-    parts << "📈 **Investments**: ₹#{format_rupee(total_inv)}" if portfolios.any?
-    parts << "📅 **Monthly Expenses**: ₹#{format_rupee(expenses.sum(&:monthly_amount))}" if expenses.any?
+    parts << "💰 **Net Worth**: #{sym}#{format_rupee(net)} (#{net >= 0 ? '✅ positive' : '⚠️ negative'})"
+    parts << "💳 **Debt**: #{sym}#{format_rupee(total_debt)} (#{debts.count} active)" if debts.any?
+    parts << "📈 **Investments**: #{sym}#{format_rupee(total_inv)}" if portfolios.any?
+    parts << "📅 **Monthly Expenses**: #{sym}#{format_rupee(expenses.sum(&:monthly_amount))}" if expenses.any?
     if journey&.zero_day_target
       parts << "🎯 **Debt Free**: #{journey.zero_day_target.strftime('%b %Y')} (#{(journey.zero_day_target - Date.today).to_i} days)"
     end
     parts.join("\n")
+  end
+
+  def format_rupee(amount)
+    int = amount.to_i.to_s
+    return int if int.length <= 3
+    last3 = int[-3..]
+    front = int[0...-3]
+    front = front.reverse.gsub(/(\d{2})(?=\d)/, '\\1,').reverse
+    "#{front},#{last3}"
   end
 
   def greeting
@@ -291,17 +377,174 @@ class AiService
     "Try saying: \"I have a credit card debt\" or \"Show me my overview\"."
   end
 
-  def general_fallback(prompt)
-    if prompt.length < 15
-      "I'm here to help with your finances! Try:\n" \
-      "• \"I have ₹50,000 in credit card debt at 24%\"\n" \
-      "• \"Help me start investing ₹5,000/month\"\n" \
-      "• \"Show me my financial overview\""
-    else
-      "I understand you're asking about \"#{prompt.truncate(60)}\". While I use my built-in knowledge " \
-      "(no AI configured yet), I can best help with debt planning, investments, budgeting, and financial overviews. " \
-      "Could you rephrase your question in those areas?"
+  # ─── NL Transaction Creation ──────────────────────────────────────────
+
+  def create_transaction_from_nl(prompt)
+    amounts = prompt.scan(/[\d,.]+/).map { |a| a.gsub(/[,\s]/, "").to_f }.reject(&:zero?)
+    return "I couldn't find an amount in your message. Try: \"I spent ₹500 on groceries\"" if amounts.empty?
+
+    amount = amounts.first
+    type = expense_income_type(prompt)
+    description = extract_description(prompt)
+    category = extract_category(prompt)
+
+    transaction = @user.transactions.create!(
+      description: description,
+      amount: amount,
+      transaction_type: type,
+      transaction_date: Date.today,
+      currency_code: @user.currency,
+      budget_category: category
+    )
+
+    cat_name = category&.name || "Uncategorized"
+    "✅ Recorded: #{type == 'expense' ? 'Spent' : 'Received'} #{sym}#{format_rupee(amount)} on #{description} (#{cat_name})"
+  rescue ActiveRecord::RecordInvalid => e
+    "Sorry, I couldn't save that transaction: #{e.message}"
+  end
+
+  def create_budget_from_nl(prompt)
+    amounts = prompt.scan(/[\d,.]+/).map { |a| a.gsub(/[,\s]/, "").to_f }.reject(&:zero?)
+    return "I couldn't find a budget amount. Try: \"Set a ₹10,000 budget for Food\"" if amounts.empty?
+
+    amount = amounts.first
+    cat_name = extract_category_name(prompt)
+    category = BudgetCategory.find_or_create_by!(user: @user, name: cat_name) do |c|
+      c.sort_order = BudgetCategory::DEFAULT_CATEGORIES.index(cat_name) || 99
+      c.color = BudgetCategory.category_colors[rand(BudgetCategory.category_colors.length)]
     end
+
+    budget = @user.budgets.create!(
+      budget_category: category,
+      monthly_limit: amount,
+      currency_code: @user.currency,
+      period: "monthly"
+    )
+
+    "✅ Budget set: #{sym}#{format_rupee(amount)}/month for #{category.name}"
+  rescue ActiveRecord::RecordInvalid => e
+    "Sorry, I couldn't create that budget: #{e.message}"
+  end
+
+  def categorize_recent_transactions(prompt)
+    uncategorized = @user.transactions.uncategorized.recent.limit(20)
+    return "No uncategorized transactions found!" if uncategorized.empty?
+
+    categorized = 0
+    uncategorized.each do |t|
+      cat = suggest_category(t)
+      if cat
+        t.update!(budget_category: cat)
+        categorized += 1
+      end
+    end
+
+    "✅ Categorized #{categorized} transactions. #{uncategorized.count - categorized} need manual review."
+  end
+
+  def anomaly_report
+    anomalies = AnomalyDetectionService.new(@user).detect
+
+    if anomalies.empty?
+      return "✅ No anomalies detected! Your spending patterns look normal."
+    end
+
+    text = "⚠️ #{anomalies.length} anomaly(ies) detected:\n\n"
+    anomalies.first(5).each do |a|
+      icon = a[:severity] >= 8 ? "🔴" : a[:severity] >= 4 ? "🟡" : "🟢"
+      text += "#{icon} **#{a[:title]}**: #{a[:description]}\n"
+    end
+    if anomalies.length > 5
+      text += "\n...and #{anomalies.length - 5} more. Check your dashboard for details."
+    end
+    text
+  end
+
+  def cash_flow_forecast
+    forecast = CashFlowForecastService.new(@user).summary
+
+    text = "📊 **Cash Flow Forecast**\n\n"
+    text += "Monthly Income: #{sym}#{format_rupee(forecast[:monthly_income])}\n"
+    text += "Monthly Expenses: #{sym}#{format_rupee(forecast[:monthly_expenses])}\n"
+    text += "Net: #{sym}#{format_rupee(forecast[:net_monthly])}\n"
+    text += "Health: #{forecast[:health].upcase}\n"
+    if forecast[:runway_months]
+      text += "⚠️ At current burn rate, savings will last #{forecast[:runway_months]} months\n"
+    end
+    text
+  end
+
+  def export_instructions
+    "📁 **Export Options**:\n\n" \
+    "• Say \"export my debts\" for CSV\n" \
+    "• Say \"export transactions\" for CSV\n" \
+    "• Say \"export portfolio\" for CSV\n" \
+    "• Say \"export net worth\" for CSV\n" \
+    "• Say \"generate annual report\" for a full-year summary\n\n" \
+    "Exports are available from the Reports section of your dashboard."
+  end
+
+  private
+
+  def expense_income_type(prompt)
+    down = prompt.to_s.downcase
+    if down.include?("earned") || down.include?("received") || down.include?("salary") ||
+       down.include?("income") || down.include?("deposited") || down.include?("paid me")
+      "income"
+    else
+      "expense"
+    end
+  end
+
+  def extract_description(prompt)
+    prompt = prompt.to_s
+    prompt = prompt.gsub(/\b(spent|paid|earned|received|bought|purchased|for|on)\b/i, "")
+    prompt = prompt.gsub(/[\d,. ₹$€£¥]+/, "").strip
+    prompt = prompt.gsub(/\b(anomaly|unusual|abnormal|suspicious)\b/i, "").strip
+    prompt = prompt.gsub(/\b(setup|configure|ai|ollama|openrouter)\b/i, "").strip
+    prompt.presence || "General expense"
+  end
+
+  def extract_category(prompt)
+    down = prompt.to_s.downcase
+    BudgetCategory.where(user: @user).active.each do |cat|
+      return cat if down.include?(cat.name.downcase)
+    end
+    nil
+  end
+
+  def extract_category_name(prompt)
+    down = prompt.to_s.downcase
+    BudgetCategory::DEFAULT_CATEGORIES.each do |name|
+      return name if down.include?(name.downcase)
+    end
+    "Other"
+  end
+
+  def suggest_category(transaction)
+    desc = transaction.description.to_s.downcase
+
+    keywords = {
+      "Food" => %w[food restaurant grocery cafe lunch dinner snack zomato swiggy],
+      "Transport" => %w[uber ola petrol fuel taxi bus train metro parking],
+      "Utilities" => %w[electricity water gas bill broadband phone mobile],
+      "Rent" => %w[rent lease apartment housing],
+      "Entertainment" => %w[movie netflix spotify amazon prime game music],
+      "Healthcare" => %w[hospital doctor medicine pharmacy clinic health],
+      "Shopping" => %w[amazon flipkart cloth shoe apparel purchase],
+      "Education" => %w[course book udemy coursera tuition fee class],
+      "Insurance" => %w[insurance premium policy],
+      "Savings" => %w[savings deposit fd fixed recurring rd],
+      "Salary" => %w[salary payroll wage income],
+      "Freelance" => %w[freelance contract project payment upwork fiverr],
+      "Business" => %w[business revenue invoice vendor supplier]
+    }
+
+    keywords.each do |category, words|
+      return BudgetCategory.find_or_create_by!(user: @user, name: category) if words.any? { |w| desc.include?(w) }
+    end
+
+    nil
   end
 
   def ai_setup_prompt
@@ -348,12 +591,4 @@ class AiService
     text[/sk-or-[a-zA-Z0-9]{32,}/] || text[/sk-[a-zA-Z0-9]{32,}/] || text.strip
   end
 
-  def format_rupee(amount)
-    int = amount.to_i.to_s
-    return int if int.length <= 3
-    last3 = int[-3..]
-    front = int[0...-3]
-    front = front.reverse.gsub(/(\d{2})(?=\d)/, '\\1,').reverse
-    "#{front},#{last3}"
-  end
 end

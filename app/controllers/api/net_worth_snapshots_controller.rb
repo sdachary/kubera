@@ -21,6 +21,7 @@ class Api::NetWorthSnapshotsController < Api::BaseController
       total_assets: s.total_assets&.to_f,
       total_liabilities: s.total_liabilities&.to_f,
       net_worth: s.net_worth&.to_f, breakdown: s.breakdown,
-      created_at: s.created_at }
+      created_at: s.created_at, currency_code: s.currency_code,
+      currency_symbol: Currency.symbol_for(s.currency_code) }
   end
 end

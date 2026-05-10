@@ -3,6 +3,7 @@ class Journey < ApplicationRecord
 
   validates :phase, inclusion: { in: %w[negative zero positive] }
   validates :monthly_sip_goal, numericality: { greater_than: 0 }, allow_nil: true
+  validates :currency_code, inclusion: { in: Currency::CURRENCY_SYMBOLS.keys }, allow_nil: true
 
   def progress_percentage
     return 0.0 if monthly_sip_goal.nil? || monthly_sip_goal <= 0

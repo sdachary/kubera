@@ -4,6 +4,7 @@ class RecurringExpense < ApplicationRecord
   validates :name, :amount, :frequency, presence: true
   validates :amount, numericality: { greater_than: 0 }
   validates :frequency, inclusion: { in: %w[weekly monthly quarterly yearly] }
+  validates :currency_code, inclusion: { in: Currency::CURRENCY_SYMBOLS.keys }, allow_nil: true
 
   scope :active, -> { where(active: true) }
 
