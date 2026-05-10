@@ -32,7 +32,7 @@ Negative  →  Zero  →  Positive
 
 The app follows one rule: **clear your liabilities before building wealth.** It doesn't block you — but it always shows debt freedom progress front and center, and investment suggestions only strengthen once debt is under control.
 
-### ✅ Completed Phases (v0.1 → Phase 6)
+### ✅ Completed Phases (v0.1 → v2.3)
 - 🔧 **v0.1** — Single-line installer (`curl ... | bash`), Docker setup, AI connector
 - 💳 **v0.2** — Debt Payoff Module (Avalanche/Snowball, EMI calendar, simulation)
 - 📈 **v0.3** — Dividend SIP Planner (AI stock suggestions, NSE/BSE screener)
@@ -40,12 +40,21 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 - 🔔 **v0.5** — Recurring Expense Tracker (EMI/subscription calendar, notifications)
 - 🛡️ **v1.0** — Security audit & standalone architecture
 - 🧹 **Phase 6** — Architecture refinement: routes cleanup (442→57 lines), dead code removal, mailer views, initializer simplification, importmap-compatible JS
+- 🌍 **v2.0** — Multi-Currency & International Markets (32 currencies, exchange rates, international stock exchanges)
+- 🤖 **v2.1** — Advanced AI Features (NL budget creation, transaction categorization, cash flow forecasting, anomaly detection)
+- 📊 **v2.2** — Reporting & Export (CSV/JSON export, annual reports, goal charts, income vs expenses)
+- 👨‍👩‍👧‍👦 **v2.3** — Collaboration & Sharing (households, member management, shared finances, family dashboard)
 
 - 💳 **Debt payoff tracker** — loans, EMIs, avalanche/snowball strategies
 - 📈 **Dividend SIP planner** — AI suggests stocks based on your income target
 - 🔄 **Portfolio rebalancing** — monthly check-ins, on/off track status
 - 🔔 **Recurring expense reminders** — never miss an EMI or subscription
 - 🤖 **Free AI** — works with free models via OpenRouter, or fully local via Ollama
+- 🌍 **Multi-currency** — 32 currencies, auto-exchange rates, international exchange support (NYSE, NASDAQ, LSE, TSE, ASX, etc.)
+- 💬 **NL budget creation** — "I spent ₹500 on groceries" creates a categorized transaction automatically
+- 🔍 **Anomaly detection** — automatically flags unusual spending patterns and budget breaches
+- 📊 **Reporting** — CSV/JSON exports, annual tax-ready reports, goal progress charts
+- 👨‍👩‍👧‍👦 **Household sharing** — multi-user households with shared tracking and family dashboard
 - 🇮🇳 **NSE/BSE support** — built with Indian markets in mind
 - 🧹 **Clean architecture** — refined routes (57 lines), no dead code, simplified initializers
 
@@ -58,12 +67,19 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 | Self-hosted | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Free (no subscription) | ✅ | ❌ ~$15/mo | Was free | Freemium | Freemium |
 | **Debt-first philosophy** | ✅ Core | Partial | ❌ | ❌ | ❌ |
+| Multi-currency | ✅ 32 currencies | ❌ | ❌ | ❌ | ❌ |
+| International exchanges | ✅ NYSE/NASDAQ/LSE/TSE | ❌ | ❌ | ❌ | ❌ |
 | Indian markets (NSE/BSE) | ✅ Built-in | ❌ | ❌ | ❌ | ❌ |
+| NL transaction creation | ✅ "I spent ₹500" | ❌ | ❌ | ❌ | ❌ |
+| Anomaly detection | ✅ 3-sigma algorithm | ❌ | ❌ | ❌ | ❌ |
+| Cash flow forecasting | ✅ 12-month projection | ❌ | ❌ | ✅ | ❌ |
+| Household sharing | ✅ Multi-user | ❌ | ❌ | ❌ | ✅ |
 | Free AI options | ✅ OpenRouter/Ollama | ❌ | ❌ | ❌ | ❌ |
 | Local AI (Ollama) | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Open source (AGPL-3.0) | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Portfolio rebalancing | ✅ | Limited | Basic | ✅ | ❌ |
 | SIP planning | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Reporting & export | ✅ CSV/JSON/annual | ✅ | ❌ | ✅ | ✅ |
 
 † Mint shut down March 2024
 
@@ -71,9 +87,10 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 1. **Philosophy-first** — "Debt first, then wealth" isn't a feature, it's the foundation
 2. **Your data stays yours** — self-hosted, no surveillance capitalism
 3. **Free AI from day one** — no $20/month for AI features
-4. **Built for India** — NSE/BSE, EMIs, SIPs, ₹ currency
-5. **Community-driven** — features serve users, not shareholders
-6. **Standalone Architecture** — No external dependencies, all data stays local
+4. **Multi-currency from day one** — 32 currencies, auto-exchange rates, global market support
+5. **Built for India** — NSE/BSE, EMIs, SIPs, ₹ currency
+6. **Community-driven** — features serve users, not shareholders
+7. **Standalone Architecture** — No external dependencies, all data stays local
 
 ---
 
@@ -127,8 +144,12 @@ Kubera is a **native Rails 7.2 application** built for self-hosting.
 
 - **Frontend**: Tailwind CSS + Hotwire (Turbo/Stimulus)
 - **Backend**: Ruby on Rails, PostgreSQL, Redis
+- **Background jobs**: Sidekiq with cron schedules for market data, exchange rates, and maintenance
 - **Security**: Local-only data storage, no external bank sync required
 - **AI**: Pluggable architecture supporting local (Ollama) and cloud (OpenRouter) models
+- **Multi-currency**: Exchange rates cached from Yahoo Finance, updated every 6 hours
+- **Export**: CSV and JSON export for all financial modules
+- **Households**: Multi-user sharing with role-based access control
 
 ---
 
@@ -158,6 +179,10 @@ See [docs/roadmap-updated.md](docs/roadmap-updated.md) for the full plan.
 - ✅ v0.5 — Recurring expense tracker
 - ✅ v1.0 — Security audit & standalone architecture
 - ✅ Phase 6 — Architecture refinement (routes, dead code, mailers, initializers)
+- ✅ v2.0 — Multi-Currency & International Markets
+- ✅ v2.1 — Advanced AI Features (NL budgets, categorization, forecasting, anomaly detection)
+- ✅ v2.2 — Reporting & Export (CSV/JSON, annual reports, goal charts)
+- ✅ v2.3 — Collaboration & Sharing (households, multi-user, family dashboard)
 
 ---
 

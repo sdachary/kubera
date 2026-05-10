@@ -2,7 +2,7 @@
 
 ## Overview
 
-Kubera is a Rails 7.2 application with a ViewComponent + Tailwind CSS frontend. It follows a debt-first financial philosophy: **Negative → Zero → Positive**.
+Kubera is a Rails 7.2 application with a Tailwind CSS + Hotwire frontend. It follows a debt-first financial philosophy: **Negative → Zero → Positive**.
 
 ## Tech Stack
 
@@ -10,10 +10,13 @@ Kubera is a Rails 7.2 application with a ViewComponent + Tailwind CSS frontend. 
 |-------|-----------|
 | Framework | Rails 7.2 (API + server-rendered views) |
 | Database | PostgreSQL (via sqlite3 in dev) |
-| Frontend | ViewComponents + Tailwind CSS + Stimulus + Turbo |
-| Background | Sidekiq (Redis) |
-| Auth | BCrypt/Argon2 + OAuth 2.0 (Doorkeeper) |
+| Frontend | Tailwind CSS + Stimulus + Turbo |
+| Background | Sidekiq (Redis) + Sidekiq-Cron |
+| Auth | BCrypt/Argon2 |
 | AI | OpenAI-compatible API (OpenRouter, Ollama, Claude) |
+| Market Data | Yahoo Finance (free, no API key) |
+| Exchange Rates | Yahoo Finance → cached in DB, refreshed every 6h |
+| Format Support | CSV, JSON exports |
 | Testing | RSpec + FactoryBot + SimpleCov |
 
 ## Directory Structure
@@ -21,43 +24,94 @@ Kubera is a Rails 7.2 application with a ViewComponent + Tailwind CSS frontend. 
 ```
 kubera/
 ├── app/
-│   ├── components/       # ViewComponents (Sidebar, Debt, Portfolio, etc.)
 │   ├── controllers/      # Rails controllers + API::V1 namespace
-│   ├── javascript/       # Stimulus controllers
+│   │   └── api/          # v2.0+: exports, reports, households, budgets, transactions
+│   ├── javascript/       # Stimulus controllers (chat, stats, clipboard, conversations)
 │   ├── jobs/             # ActiveJob base classes
-│   ├── mailers/          # ActionMailer classes
-│   ├── models/           # ActiveRecord models
+│   ├── mailers/          # ActionMailer classes + notification templates
+│   ├── models/           # 20+ ActiveRecord models
 │   ├── services/         # Business logic services
-│   │   ├── providers/    # Market data adapters (Yahoo Finance, etc.)
+│   │   ├── providers/    # Yahoo Finance adapter (v2.0: exchange/currency detection)
 │   ├── views/            # ERB templates
-│   └── workers/          # Sidekiq workers
-├── config/               # Rails config + tailwind.config.js
+│   └── workers/          # Sidekiq workers (v2.0: ImportMarketData, ExchangeRateSync)
+├── config/
+│   ├── initializers/     # v2.0+: sidekiq_schedule.rb (cron jobs)
+│   └── sidekiq.yml       # v2.0+: market_data, maintenance queues
 ├── db/
-│   ├── migrate/          # Squashed initial migration
-│   │   └── archive/      # Archived per-change migrations
+│   ├── migrate/          # Squashed + 4 new migrations (v2.0-v2.3)
 │   └── schema.rb         # Current database schema
-├── lib/                  # Custom libraries (Money, generators)
-├── docs/                 # Architecture docs
-└── packages/
-    └── kubera-ui/        # Design tokens (colors, typography, spacing)
+├── lib/                  # Money, AiResponse, Semver, SystemDetector
+├── docs/                 # Architecture + roadmap docs
+└── spec/                 # RSpec tests (v2.0-v2.3: 17 new spec files)
 ```
+
+## Models (20 total)
+
+### Core Financial
+- `User` — settings, preferences, currency, household memberships
+- `Debt` — loans, credit cards, EMIs (v2.0: currency_code)
+- `DebtPayoff` — avalanche/snowball strategies
+- `Portfolio` — investment portfolios (v2.0: currency_code)
+- `Investment` — individual securities (v2.0: currency_code, exchange, yahoo_symbol)
+- `DividendSip` — recurring investment plans
+- `RecurringExpense` — regular bills/subscriptions (v2.0: currency_code)
+- `Journey` — financial phase tracking (v2.0: currency_code)
+- `NetWorthSnapshot` — point-in-time net worth (v2.0: currency_code, currency-aware aggregation)
+
+### v2.0 — Multi-Currency
+- `Currency` — 32 currencies with symbols, decimal places, active/inactive
+- `ExchangeRate` — cached FX rates with 24h TTL, auto-inversion
+
+### v2.1 — Advanced AI
+- `BudgetCategory` — 16 default categories with icons, colors, sorting
+- `Transaction` — expense/income/tracking with categories, merchants, recurring flags, anomaly detection
+- `Budget` — monthly spending limits per category, usage/on-track tracking
+
+### v2.3 — Collaboration
+- `Household` — multi-user groups with shared currency
+- `HouseholdMembership` — roles (owner/admin/member/viewer), invite status
+
+### Supporting
+- `Conversation`, `Message` — AI chat
+- `Setting` — key-value user settings
+- `Notification` — in-app notifications
 
 ## Key Services
 
-### Debt Payoff (`DebtPayoffService`)
-Implements Avalanche (highest interest first) and Snowball (lowest balance first) strategies. Generates month-by-month payoff schedules.
+### v0.x — Core Financial
+- `DebtPayoffService` — Avalanche/Snowball payoff strategies
+- `DividendSipService` — SIP allocation recommendations
+- `DividendScreenerService` — v2.0: market-aware screening (IN/US/UK/JP/CA)
+- `PortfolioService` — MPT optimization (expected return, volatility, Sharpe ratio)
+- `WealthJourneyTracker` — v2.0: currency-aware debt/SIP/net-worth aggregation
+- `RecurringExpenseService` — event generation for calendar
 
-### Dividend SIP (`DividendSipService`, `DividendScreenerService`)
-Screens dividend stocks via Yahoo Finance API. Allocates investments using weighted scoring (yield 60%, growth 40%).
+### v2.0 — Multi-Currency
+- `ExchangeRateService` — fetch, cache, convert; plugs into Yahoo Finance
+- `Providers::YahooFinanceAdapter` — v2.0: exchange/currency detection, `EXCHANGE_COUNTRY_MAP`, `CURRENCY_MAP`
 
-### Portfolio Optimization (`PortfolioService`)
-Calculates optimal asset weights, expected return, volatility, and Sharpe ratio using Modern Portfolio Theory.
+### v2.1 — Advanced AI
+- `CashFlowForecastService` — 12-month financial projection, runway calculation, health scoring
+- `AnomalyDetectionService` — 3-sigma outlier detection, spending surges, budget breaches
+- `AiService` — v2.1: NL transaction/budget creation, categorization, anomaly/forecast/export commands
 
-### Wealth Journey (`WealthJourneyTracker`)
-12-month net worth projection + 30-year wealth growth model. Computes debt-free (zero-day) milestone.
+### v2.2 — Reporting
+- `ExportService` — CSV/JSON for debts, portfolios, transactions, net worth
+- `AnnualReportService` — yearly report with monthly/category/net-worth analysis
+- `GoalChartService` — debt-free projection, 30-year wealth growth, budget charts, income vs expenses
 
-### Market Data (`Providers::YahooFinanceAdapter`)
-Fetches real-time quotes, dividend data, and exchange rates from Yahoo Finance (free, no API key). Pluggable architecture supports Twelve Data and Alpha Vantage.
+### v2.3 — Collaboration
+- `HouseholdDashboardService` — aggregated net worth, member finances, shared asset summary
+
+## Background Jobs (v2.0)
+
+| Worker | Schedule | Purpose |
+|--------|----------|---------|
+| `ImportMarketDataWorker` | Weekdays after market close | Refresh all investment prices and dividends |
+| `ExchangeRateSyncWorker` | Every 6 hours | Sync all currency exchange rates via Yahoo Finance |
+| `SecurityHealthCheckJob` | Daily 2AM | Detect stale investments, queue imports |
+| `SyncCleanerJob` | Every hour | Trigger rate sync if rates are stale |
+| `DataCleanerJob` | Daily 3AM | Purge expired associations and exports |
 
 ## Data Flow
 
@@ -65,35 +119,44 @@ Fetches real-time quotes, dividend data, and exchange rates from Yahoo Finance (
 User → Rails Controller → Service Object → Model → PostgreSQL
                                 ↕
                         Market Data Provider
-                        (Yahoo Finance API)
+                        (Yahoo Finance API — quotes, dividends, FX)
                                 ↕
-                        Sidekiq Worker
-                        (ImportMarketDataWorker)
+                        Sidekiq Workers
+                        (ImportMarketData, ExchangeRateSync, HealthCheck)
 ```
 
-## Frontend Architecture
+## API Endpoints
 
-- **ViewComponents** render all app UI (debt cards, portfolio dashboard, SIP calculator)
-- **Tailwind CSS** with custom `kubera/` color palette for theming
-- **Stimulus controllers** handle interactivity (clipboard, form behaviors)
-- **Turbo** enables SPA-like navigation without writing JavaScript
-- Dark mode via `class` strategy with CSS custom properties
+### Core (v0.x)
+- `GET/POST/PUT/DELETE /api/debts` — Debt CRUD
+- `GET /api/debt_payoffs` — Payoff plan list
+- `GET /api/portfolios` — Portfolio list with investments
+- `GET/POST/PUT/DELETE /api/investments` — Investment CRUD
+- `GET/POST/PUT/DELETE /api/dividend_sips` — SIP CRUD
+- `GET /api/journey` — Current financial journey
+- `GET /api/net_worth_snapshots` — Net worth history
+- `GET/POST/PUT/DELETE /api/recurring_expenses` — Recurring expense CRUD
+- `GET/PUT /api/notifications` — Notifications
 
-## Background Jobs
+### v2.0 — Multi-Currency
+- Currency and exchange rate data available through all existing endpoints (currency_code, currency_symbol in JSON)
 
-| Worker | Schedule | Purpose |
-|--------|----------|---------|
-| `ImportMarketDataWorker` | Weekdays 5PM EST | Refresh security prices after market close |
-| `SyncCleanerJob` | Every hour | Clean stale sync records |
-| `SecurityHealthCheckJob` | Weekdays 2AM EST | Verify security data integrity |
-| `DataCleanerJob` | Daily 3AM | Purge expired associations and exports |
+### v2.1 — Advanced AI
+- `GET/POST/PUT/DELETE /api/budget_categories` — Category CRUD + seed
+- `GET/POST/PUT/DELETE /api/transactions` — Transaction CRUD + monthly_totals
+- `GET/POST/PUT/DELETE /api/budgets` — Budget CRUD + overview
+- NL commands through AI chat (`/api/conversations/:id/messages`)
 
-## Design Tokens
+### v2.2 — Reporting
+- `GET /api/exports/debts|portfolios|transactions|net_worth` — CSV/JSON downloads
+- `GET /api/reports/annual|cash_flow_forecast|anomalies|goal_charts` — JSON reports
 
-Design tokens (colors, typography, spacing) are defined in two places:
-1. `packages/kubera-ui/src/theme/` — JavaScript source of truth
-2. `config/tailwind.config.js` — Tailwind CSS integration
-3. `app/views/layouts/application.html.erb` — CSS custom properties for runtime theming
+### v2.3 — Collaboration
+- `GET/POST/PUT/DELETE /api/households` — Household CRUD
+- `GET /api/households/:id/members` — List members
+- `POST /api/households/:id/invite` — Invite user
+- `DELETE /api/households/:id/leave` — Leave household
+- `GET /api/households/:id/dashboard` — Family dashboard
 
 ## Configuration
 

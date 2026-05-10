@@ -55,31 +55,45 @@
 - Curl command CTA (`curl -s https://api.kubera.com/v1/start`)
 - Responsive design, mobile hamburger, reduced-motion support
 
-## 🔜 Upcoming
-
 ### v2.0 — Multi-Currency & International Markets
-- Multi-currency support (USD, EUR, GBP, etc.)
-- International stock exchanges (NYSE, NASDAQ, LSE)
-- Exchange rate auto-updates
-- Currency-aware net worth calculation
+- **32 currencies** seeded (INR, USD, EUR, GBP, JPY, AUD, CAD, etc.) with symbols and decimal places
+- **Exchange rate engine** — auto-fetched from Yahoo Finance, cached in DB, refreshed every 6 hours
+- **CurrencyCode** column on all monetary models (debts, portfolios, investments, recurring expenses, etc.)
+- **International exchange support** — NSE, BSE, NYSE, NASDAQ, LSE, TSE, FRA, ASX, HKEX, TSX with Yahoo Finance suffix mapping
+- **YahooFinanceAdapter** upgraded — exchange/currency detection, `EXCHANGE_COUNTRY_MAP`, `CURRENCY_MAP`
+- **Currency-aware net worth** — snapshots convert all assets/liabilities to user's base currency
+- **Dynamic currency symbol** in UI — dashboard, AI responses, all currency displays adapt to user's setting
+- **ExchangeRateService** — rate lookup with auto-inversion, caching, Yahoo Finance integration
+- **ExchangeRateSyncWorker** — Sidekiq cron every 6 hours
+- **Money library** — existing `lib/money.rb` enhanced with exchange support
 
 ### v2.1 — Advanced AI Features
-- natural language budget creation from chat
-- AI-powered spending categorization
-- Predictive cash flow forecasting
-- Anomaly detection (unusual transactions)
+- **Budget Category model** — 16 default categories (Food, Transport, Utilities, Rent, etc.) with color coding and icons
+- **Transaction model** — expense/income/tracking with categories, merchants, recurring flags
+- **Budget model** — monthly spending limits per category, usage tracking, on-track status
+- **Natural language transaction creation** — "I spent ₹500 on groceries" auto-creates categorized transactions
+- **NL budget creation** — "Set ₹10,000 budget for Food" creates budgets from chat
+- **AI spending categorization** — keyword-based auto-tagging for uncategorized transactions
+- **CashFlowForecastService** — 12-month projection using recurring + historical averages, financial health scoring
+- **AnomalyDetectionService** — 3-sigma outlier detection, spending surge detection (>50% MoM), budget breach alerts
+- **AiService integration** — all NL commands, anomaly reports, cash flow summaries from chat
 
 ### v2.2 — Reporting & Export
-- PDF/CSV export for all modules
-- Annual financial report (tax-ready)
-- Custom date-range reporting
-- Goal progress charts
+- **ExportService** — CSV and JSON export for debts, portfolios, transactions, net worth snapshots
+- **AnnualReportService** — comprehensive yearly report: monthly breakdowns, category analysis, net worth trajectory, savings rate
+- **GoalChartService** — debt-free projection curve, 30-year wealth growth (conservative/moderate/aggressive), budget charts, income vs expenses
+- **API endpoints** — `GET /api/exports/{debts,portfolios,transactions,net_worth}`, `GET /api/reports/{annual,cash_flow_forecast,anomalies,goal_charts}`
+- Custom date-range filtering for transaction exports
 
 ### v2.3 — Collaboration & Sharing
-- Multi-user household support
-- Shared debt/investment tracking
-- Permission-based access control
-- Family financial dashboard
+- **Household model** — multi-user groups with shared currency and aggregated finances
+- **HouseholdMembership** — role-based access (owner/admin/member/viewer), invite status tracking
+- **HouseholdDashboardService** — aggregated net worth, per-member financial summaries, shared asset tracking
+- **Shared resources** — debts, portfolios, recurring expenses, transactions, budgets can belong to households
+- **API endpoints** — CRUD households, invite/remove members, family dashboard
+- Household-level aggregated net worth calculation
+
+## 🔜 Upcoming
 
 ### v2.4 — Mobile Companion
 - PWA with offline support
