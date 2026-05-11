@@ -28,4 +28,10 @@ if defined?(Sidekiq::Cron)
     cron: "0 3 * * *",
     class: "DataCleanerJob"
   )
+
+  Sidekiq::Cron::Job.create_or_update(
+    name: "Expense Reminder Check — daily 9 AM",
+    cron: "0 9 * * *",
+    class: "ExpenseReminderCheckJob"
+  )
 end

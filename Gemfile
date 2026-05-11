@@ -22,6 +22,7 @@ gem "matrix"
 gem "sidekiq"
 gem "sidekiq-cron"
 gem "ruby-openai"
+gem "rack-attack"
 
 group :development, :test do
   gem "rspec-rails"

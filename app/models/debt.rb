@@ -15,6 +15,8 @@ class Debt < ApplicationRecord
 
   scope :active, -> { where(status: "active") }
 
+  after_create :schedule_reminders
+
   def months_remaining
     return 0 if emi_amount.nil? || emi_amount <= 0 || amount <= 0
     remaining = amount - paid_amount
@@ -33,5 +35,12 @@ class Debt < ApplicationRecord
 
   def remaining_amount
     amount - paid_amount
+  end
+
+  private
+
+  def schedule_reminders
+    return unless emi_amount&.positive?
+    ExpenseReminderJob.set(wait: 1.day).perform_later("debt", id)
   end
 end
