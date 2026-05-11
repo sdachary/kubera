@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   helper_method :current_user
 
+  before_action :require_onboarding
+
   rescue_from Exception, with: :handle_exception unless Rails.env.development?
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActiveRecord::RecordInvalid, with: :unprocessable
@@ -15,6 +17,11 @@ class ApplicationController < ActionController::Base
       end
       user
     end
+  end
+
+  def require_onboarding
+    return if current_user.onboarded?
+    redirect_to onboarding_path
   end
 
   def run_first_boot_setup!

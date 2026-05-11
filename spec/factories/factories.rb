@@ -77,6 +77,7 @@ FactoryBot.define do
     email { "test@example.com" }
     password { "password123" }
     currency { "INR" }
+    onboarded { false }
   end
 
   factory :notification do
