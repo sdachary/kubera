@@ -10,6 +10,7 @@ module SystemDetector
       ollama_running: ollama_running?,
       docker_available: docker_available?,
       can_run_local: can_run_local_ai?,
+      local_ai_viable?: local_ai_viable?,
       platform: RUBY_PLATFORM
     }
   end
