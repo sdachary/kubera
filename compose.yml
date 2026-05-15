@@ -26,11 +26,14 @@ services:
       - "${PORT:-3002}:3000"
     environment:
       <<: *app_env
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     volumes:
       - app-storage:/rails/storage
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - kubera_net
     healthcheck:
@@ -55,9 +58,25 @@ services:
     networks:
       - kubera_net
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kubera_net
+
 volumes:
   app-storage:
   postgres-data:
+  redis-data:
 
 networks:
   kubera_net:
