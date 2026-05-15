@@ -44,6 +44,7 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 - 🤖 **v2.1** — Advanced AI Features (NL budget creation, transaction categorization, cash flow forecasting, anomaly detection)
 - 📊 **v2.2** — Reporting & Export (CSV/JSON export, annual reports, goal charts, income vs expenses)
 - 👨‍👩‍👧‍👦 **v2.3** — Collaboration & Sharing (households, member management, shared finances, family dashboard)
+- ⚡ **Phase 5** — Optimization & Refactoring (Modular AI namespace, standardized API responses, lean model architecture, 100% schema sync)
 
 - 💳 **Debt payoff tracker** — loans, EMIs, avalanche/snowball strategies
 - 📈 **Dividend SIP planner** — AI suggests stocks based on your income target
@@ -55,8 +56,10 @@ The app follows one rule: **clear your liabilities before building wealth.** It 
 - 🔍 **Anomaly detection** — automatically flags unusual spending patterns and budget breaches
 - 📊 **Reporting** — CSV/JSON exports, annual tax-ready reports, goal progress charts
 - 👨‍👩‍👧‍👦 **Household sharing** — multi-user households with shared tracking and family dashboard
+- ⚡ **Modular AI** — Refactored orchestrator with specialized services (Parser, Advice, Setup, Provider)
+- 🛠️ **Standardized API** — Consistent JSON responses across all 17 financial controllers
 - 🇮🇳 **NSE/BSE support** — built with Indian markets in mind
-- 🧹 **Clean architecture** — refined routes (57 lines), no dead code, simplified initializers
+- 🧹 **Clean architecture** — refined routes (57 lines), no dead code, simplified initializers, lean models
 
 ---
 
@@ -113,12 +116,12 @@ You define the goal: *"₹25,000/month passive income by 2030."* Kubera reverse-
 curl -fsSL https://raw.githubusercontent.com/sdachary/kubera/main/installer/install.sh | bash
 ```
 
-The installer clones the repo, installs Ruby and Node dependencies, runs setup, and starts the server on `http://localhost:3000`:
+The installer clones the repo, installs Ruby and Node dependencies, runs setup, and starts the server on `http://localhost:3002`:
 
 - ✅ Clones the repository into `~/kubera`
 - ✅ Installs Ruby gems and Node packages
 - ✅ Runs `bin/setup` (database creation, migration, seeding)
-- ✅ Starts the Rails server on port 3000
+- ✅ Starts the Rails server on port 3002
 
 ---
 
@@ -146,7 +149,8 @@ Kubera is a **native Rails 7.2 application** built for self-hosting.
 - **Backend**: Ruby on Rails, PostgreSQL, Redis
 - **Background jobs**: Sidekiq with cron schedules for market data, exchange rates, and maintenance
 - **Security**: Local-only data storage, no external bank sync required
-- **AI**: Pluggable architecture supporting local (Ollama) and cloud (OpenRouter) models
+- **AI**: Modular `Ai::` namespace with pluggable providers (Ollama, OpenRouter) and specialized service handlers
+- **API**: Standardized JSON response layer in `Api::BaseController` with global exception handling
 - **Multi-currency**: Exchange rates cached from Yahoo Finance, updated every 6 hours
 - **Export**: CSV and JSON export for all financial modules
 - **Households**: Multi-user sharing with role-based access control
@@ -183,6 +187,7 @@ See [docs/roadmap-updated.md](docs/roadmap-updated.md) for the full plan.
 - ✅ v2.1 — Advanced AI Features (NL budgets, categorization, forecasting, anomaly detection)
 - ✅ v2.2 — Reporting & Export (CSV/JSON, annual reports, goal charts)
 - ✅ v2.3 — Collaboration & Sharing (households, multi-user, family dashboard)
+- ✅ Phase 5 — Optimization & Refactoring (Modular AI, Standardized API, 100% Schema Sync)
 
 ---
 
