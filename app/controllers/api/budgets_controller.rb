@@ -1,28 +1,28 @@
 class Api::BudgetsController < Api::BaseController
   def index
     budgets = current_user.budgets.includes(:budget_category).order(created_at: :desc)
-    render json: budgets.map { |b| budget_json(b) }
+    render_success(budgets.map { |b| budget_json(b) })
   end
 
   def create
     budget = current_user.budgets.create!(budget_params)
-    render json: budget_json(budget), status: :created
+    render_success(budget_json(budget), status: :created)
   end
 
   def update
     budget = current_user.budgets.find(params[:id])
     budget.update!(budget_params)
-    render json: budget_json(budget)
+    render_success(budget_json(budget))
   end
 
   def destroy
     current_user.budgets.find(params[:id]).destroy!
-    head :no_content
+    render_success({}, message: "Budget deleted")
   end
 
   def overview
     budgets = current_user.budgets.includes(:budget_category)
-    render json: budgets.map { |b| budget_detail(b) }
+    render_success(budgets.map { |b| budget_detail(b) })
   end
 
   private

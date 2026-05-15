@@ -1,25 +1,26 @@
 # frozen_string_literal: true
+
 class Api::RecurringExpensesController < Api::BaseController
   def index
     expenses = current_user.recurring_expenses.order(next_due_date: :asc)
-    render json: expenses.map { |e| expense_json(e) }
+    render_success(expenses.map { |e| expense_json(e) })
   end
 
   def create
     expense = current_user.recurring_expenses.create!(expense_params)
-    render json: expense_json(expense), status: :created
+    render_success(expense_json(expense), status: :created)
   end
 
   def update
     expense = current_user.recurring_expenses.find(params[:id])
     expense.update!(expense_params)
-    render json: expense_json(expense)
+    render_success(expense_json(expense))
   end
 
   def destroy
     expense = current_user.recurring_expenses.find(params[:id])
     expense.destroy!
-    head :no_content
+    render_success({}, message: "Recurring expense deleted")
   end
 
   private

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
+
 class Api::JourneyController < Api::BaseController
   def show
     journey = current_user.journeys.first || current_user.journeys.create!(phase: "negative")
     currency = current_user.currency
-    render json: {
+    render_success({
       id: journey.id, phase: journey.phase, zero_day_target: journey.zero_day_target,
       monthly_sip_goal: journey.monthly_sip_goal&.to_f,
       wealth_score: journey.wealth_score&.to_f,
@@ -14,6 +15,6 @@ class Api::JourneyController < Api::BaseController
       notes: journey.notes, created_at: journey.created_at,
       currency_code: journey.currency_code || currency,
       currency_symbol: Currency.symbol_for(journey.currency_code || currency)
-    }
+    })
   end
 end

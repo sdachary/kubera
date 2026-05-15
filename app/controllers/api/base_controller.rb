@@ -1,14 +1,48 @@
 # frozen_string_literal: true
+
 class Api::BaseController < ActionController::API
   before_action :authenticate
+
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity
+
+  protected
+
+  def render_success(data = {}, message: nil, status: :ok)
+    render json: {
+      success: true,
+      message: message,
+      data: data
+    }, status: status
+  end
+
+  def render_error(message, status: :unprocessable_entity, errors: nil)
+    render json: {
+      success: false,
+      message: message,
+      errors: errors
+    }, status: status
+  end
+
+  def render_unauthorized(message = "Unauthorized")
+    render_error(message, status: :unauthorized)
+  end
+
+  def render_not_found(exception)
+    render_error(exception.message, status: :not_found)
+  end
+
+  def render_unprocessable_entity(exception)
+    render_error("Validation failed", status: :unprocessable_entity, errors: exception.record.errors.full_messages)
+  end
 
   private
 
   def current_user
-    @current_user ||= User.first
+    @current_user ||= User.first # Single-user system for now
   end
 
   def authenticate
-    head :unauthorized unless current_user
+    render_unauthorized unless current_user
   end
 end

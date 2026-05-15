@@ -1,13 +1,14 @@
 # frozen_string_literal: true
+
 class Api::PortfoliosController < Api::BaseController
   def index
     portfolios = current_user.portfolios.order(created_at: :desc)
-    render json: portfolios.map { |p| portfolio_json(p) }
+    render_success(portfolios.map { |p| portfolio_json(p) })
   end
 
   def show
     portfolio = current_user.portfolios.find(params[:id])
-    render json: portfolio_json(portfolio)
+    render_success(portfolio_json(portfolio))
   end
 
   private

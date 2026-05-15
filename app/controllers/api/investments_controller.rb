@@ -1,29 +1,29 @@
 # frozen_string_literal: true
+
 class Api::InvestmentsController < Api::BaseController
   def index
     investments = current_user.portfolios
       .includes(:investments).flat_map(&:investments)
-    render json: investments.map { |i| investment_json(i) }
+    render_success(investments.map { |i| investment_json(i) })
   end
 
   def create
     portfolio = current_user.portfolios.find(params[:portfolio_id])
     investment = portfolio.investments.create!(investment_params)
-    render json: investment_json(investment), status: :created
+    render_success(investment_json(investment), status: :created)
   end
 
   def update
-    investment = current_user.portfolios
-      .includes(:investments).flat_map(&:investments)
-      .find { |i| i.id == params[:id].to_i }
+    # Note: Using find_by for safety with manual selection from flat_map
+    investment = Investment.joins(portfolio: :user).where(users: { id: current_user.id }).find(params[:id])
     investment.update!(investment_params)
-    render json: investment_json(investment)
+    render_success(investment_json(investment))
   end
 
   def destroy
-    investment = Investment.find(params[:id])
+    investment = Investment.joins(portfolio: :user).where(users: { id: current_user.id }).find(params[:id])
     investment.destroy!
-    head :no_content
+    render_success({}, message: "Investment deleted")
   end
 
   private

@@ -1,13 +1,14 @@
 # frozen_string_literal: true
+
 class Api::DebtPayoffsController < Api::BaseController
   def index
     payoffs = current_user.debt_payoffs.order(created_at: :desc)
-    render json: payoffs.map { |p| payoff_json(p) }
+    render_success(payoffs.map { |p| payoff_json(p) })
   end
 
   def show
     payoff = current_user.debt_payoffs.find(params[:id])
-    render json: payoff_json(payoff)
+    render_success(payoff_json(payoff))
   end
 
   private

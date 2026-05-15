@@ -1,24 +1,25 @@
 # frozen_string_literal: true
+
 class Api::DebtsController < Api::BaseController
   def index
     debts = current_user.debts.order(created_at: :desc)
-    render json: debts.map { |d| debt_json(d) }
+    render_success(debts.map { |d| debt_json(d) })
   end
 
   def create
     debt = current_user.debts.create!(debt_params)
-    render json: debt_json(debt), status: :created
+    render_success(debt_json(debt), status: :created)
   end
 
   def update
     debt = current_user.debts.find(params[:id])
     debt.update!(debt_params)
-    render json: debt_json(debt)
+    render_success(debt_json(debt))
   end
 
   def destroy
     current_user.debts.find(params[:id]).destroy!
-    head :no_content
+    render_success({}, message: "Debt deleted")
   end
 
   private

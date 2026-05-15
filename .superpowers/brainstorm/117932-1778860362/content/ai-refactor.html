@@ -1,0 +1,83 @@
+<h2>Optimizing AiService Structure</h2>
+<p class="subtitle">Breaking down the 600-line monolithic service into focused components</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Current: Monolithic AiService</div>
+    <div class="mockup-body">
+      <div class="section">
+        <div class="label" style="background:#fee2e2;color:#991b1b">Monolith</div>
+        <ul class="mock-list">
+          <li><strong>AiService.rb (595 lines)</strong></li>
+          <li class="indent">Setup Flow Logic</li>
+          <li class="indent">OpenAI / Ollama API calls</li>
+          <li class="indent">Natural Language Parsing</li>
+          <li class="indent">Rule-based Fallbacks</li>
+          <li class="indent">Financial Advice Logic</li>
+          <li class="indent">Data Formatting (Rupee)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Proposed: Decomposed Architecture</div>
+    <div class="mockup-body">
+      <div class="section">
+        <div class="label" style="background:#dcfce7;color:#166534">Decomposed</div>
+        <ul class="mock-list">
+          <li><strong>Ai::Orchestrator</strong> (The coordinator)</li>
+          <li><strong>Ai::SetupFlow</strong> (Configuration & detection)</li>
+          <li><strong>Ai::Provider</strong> (API integrations)</li>
+          <li><strong>Ai::CommandParser</strong> (NL -> Actions)</li>
+          <li><strong>Advice::Base</strong> (Financial knowledge base)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Why this is better:</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>Benefits</h4>
+      <ul>
+        <li><strong>Maintainability</strong>: Smaller files are easier to test and modify.</li>
+        <li><strong>Isolation</strong>: Changing the AI provider won't break the setup flow.</li>
+        <li><strong>Reusability</strong>: Advice logic can be used in other parts of the app.</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>Trade-offs</h4>
+      <ul>
+        <li>More files to manage (but better organized).</li>
+        <li>Small amount of boilerplate for namespacing.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="refactor_ai" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Refactor AiService</h3>
+      <p>Break down the monolith into specialized components.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="simplify_controllers" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Simplify API Controllers</h3>
+      <p>Standardize responses and move business logic to services.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="fix_local_env" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Fix Local Environment</h3>
+      <p>Resolve gem build issues to enable local testing.</p>
+    </div>
+  </div>
+</div>

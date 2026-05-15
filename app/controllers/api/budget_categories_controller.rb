@@ -1,28 +1,28 @@
 class Api::BudgetCategoriesController < Api::BaseController
   def index
     categories = current_user.budget_categories.active.ordered
-    render json: categories.map { |c| category_json(c) }
+    render_success(categories.map { |c| category_json(c) })
   end
 
   def create
     cat = current_user.budget_categories.create!(category_params)
-    render json: category_json(cat), status: :created
+    render_success(category_json(cat), status: :created)
   end
 
   def update
     cat = current_user.budget_categories.find(params[:id])
     cat.update!(category_params)
-    render json: category_json(cat)
+    render_success(category_json(cat))
   end
 
   def destroy
     current_user.budget_categories.find(params[:id]).destroy!
-    head :no_content
+    render_success({}, message: "Category deleted")
   end
 
   def seed
     BudgetCategory.seed_for(current_user)
-    render json: current_user.budget_categories.active.ordered.map { |c| category_json(c) }
+    render_success(current_user.budget_categories.active.ordered.map { |c| category_json(c) })
   end
 
   private

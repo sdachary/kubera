@@ -1,16 +1,17 @@
 # frozen_string_literal: true
+
 class Api::DividendSipsController < Api::BaseController
   def index
     sips = DividendSip.joins(portfolio: :user)
                       .where(users: { id: current_user.id })
                       .order(created_at: :desc)
-    render json: sips.map { |s| sip_json(s) }
+    render_success(sips.map { |s| sip_json(s) })
   end
 
   def create
     portfolio = current_user.portfolios.find(params[:portfolio_id])
     sip = portfolio.dividend_sips.create!(sip_params)
-    render json: sip_json(sip), status: :created
+    render_success(sip_json(sip), status: :created)
   end
 
   def update
@@ -18,7 +19,7 @@ class Api::DividendSipsController < Api::BaseController
                      .where(users: { id: current_user.id })
                      .find(params[:id])
     sip.update!(sip_params)
-    render json: sip_json(sip)
+    render_success(sip_json(sip))
   end
 
   def destroy
@@ -26,7 +27,7 @@ class Api::DividendSipsController < Api::BaseController
                      .where(users: { id: current_user.id })
                      .find(params[:id])
     sip.destroy!
-    head :no_content
+    render_success({}, message: "Dividend SIP deleted")
   end
 
   private

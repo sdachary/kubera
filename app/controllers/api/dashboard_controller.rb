@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class Api::DashboardController < Api::BaseController
   def show
     user = current_user
@@ -9,7 +10,7 @@ class Api::DashboardController < Api::BaseController
     journey = user.journeys.first
 
     base_currency = user.currency
-    render json: {
+    render_success({
       total_debt: total_debt,
       total_investments: total_investments,
       monthly_expenses: monthly_expenses.round(2),
@@ -26,7 +27,7 @@ class Api::DashboardController < Api::BaseController
       recent_snapshots: user.net_worth_snapshots.recent.limit(12).map { |s|
         { date: s.snapshot_date, net_worth: s.net_worth.to_f, currency_code: s.currency_code }
       }
-    }
+    })
   end
 
   def projection
@@ -44,6 +45,6 @@ class Api::DashboardController < Api::BaseController
         net_worth: (invested - remaining_debt).round(2) }
     end
 
-    render json: { projection: projection }
+    render_success({ projection: projection })
   end
 end

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 class Api::NetWorthSnapshotsController < Api::BaseController
   def index
     snapshots = current_user.net_worth_snapshots.recent
-    render json: snapshots.map { |s| snapshot_json(s) }
+    render_success(snapshots.map { |s| snapshot_json(s) })
   end
 
   def show
@@ -11,7 +12,7 @@ class Api::NetWorthSnapshotsController < Api::BaseController
     else
       snapshot = current_user.net_worth_snapshots.find(params[:id])
     end
-    render json: snapshot_json(snapshot)
+    render_success(snapshot_json(snapshot))
   end
 
   private
