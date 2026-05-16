@@ -7,10 +7,12 @@ RUN apt-get update -qq && \
 
 WORKDIR /rails
 
+ARG BUNDLE_WITHOUT_GROUPS=development:test
 ENV RAILS_ENV=production \
-    BUNDLE_DEPLOYMENT=1 \
     BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_WITHOUT=development:test
+    BUNDLE_WITHOUT=${BUNDLE_WITHOUT_GROUPS}
+
+RUN gem install bundler --no-document
 
 COPY Gemfile Gemfile.lock .ruby-version ./
 RUN bundle install
