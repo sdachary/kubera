@@ -17,7 +17,7 @@ class Api::BudgetCategoriesController < Api::BaseController
 
   def destroy
     current_user.budget_categories.find(params[:id]).destroy!
-    render_success({}, message: "Category deleted")
+    head :no_content
   end
 
   def seed

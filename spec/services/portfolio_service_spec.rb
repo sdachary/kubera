@@ -80,7 +80,8 @@ RSpec.describe PortfolioService, type: :service do
 
     it 'calculates positive sharpe ratio' do
       assets = [
-        { symbol: 'A', expected_return: 12.0, volatility: 15.0 }
+        { symbol: 'A', expected_return: 12.0, volatility: 15.0 },
+        { symbol: 'B', expected_return: 8.0, volatility: 10.0 }
       ]
       service = PortfolioService.new(assets, risk_tolerance: 0.5)
       result = service.optimize

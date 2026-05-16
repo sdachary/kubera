@@ -4,28 +4,29 @@ RSpec.describe 'Transactions API', type: :request do
   let!(:user) { create(:user) }
 
   before do
-    allow_any_instance_of(Api::V1::BaseController).to receive(:current_user).and_return(user)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
   end
 
   describe 'GET /api/v1/transactions' do
     it 'returns empty array when no transactions' do
       get '/api/v1/transactions'
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to eq([])
+      json = JSON.parse(response.body)
+      expect(json['transactions']).to eq([])
     end
 
     it 'returns all transactions' do
-      create(:transaction, description: 'Groceries', amount: 500)
+      create(:transaction, user: user, description: 'Groceries', amount: 500)
       get '/api/v1/transactions'
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
-      expect(json.length).to eq(1)
+      expect(json['transactions'].length).to eq(1)
     end
   end
 
   describe 'GET /api/v1/transactions/:id' do
     it 'returns transaction by id' do
-      transaction = create(:transaction, description: 'Rent')
+      transaction = create(:transaction, user: user, description: 'Rent')
       get "/api/v1/transactions/#{transaction.id}"
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -51,7 +52,7 @@ RSpec.describe 'Transactions API', type: :request do
 
   describe 'PUT /api/v1/transactions/:id' do
     it 'updates transaction' do
-      transaction = create(:transaction, description: 'Old')
+      transaction = create(:transaction, user: user, description: 'Old')
       params = { transaction: { description: 'Updated' } }
       put "/api/v1/transactions/#{transaction.id}", params: params
       expect(response).to have_http_status(:success)
@@ -62,7 +63,7 @@ RSpec.describe 'Transactions API', type: :request do
 
   describe 'DELETE /api/v1/transactions/:id' do
     it 'deletes transaction' do
-      transaction = create(:transaction)
+      transaction = create(:transaction, user: user)
       expect { delete "/api/v1/transactions/#{transaction.id}" }.to change(Transaction, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end

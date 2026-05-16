@@ -4,7 +4,7 @@ RSpec.describe 'Portfolio API', type: :request do
   let!(:user) { create(:user) }
 
   before do
-    allow_any_instance_of(Api::V1::BaseController).to receive(:current_user).and_return(user)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
   end
 
   describe 'GET /api/v1/portfolios' do
@@ -15,8 +15,8 @@ RSpec.describe 'Portfolio API', type: :request do
     end
 
     it 'returns all portfolios' do
-      create(:portfolio, name: 'Equity Portfolio')
-      create(:portfolio, name: 'Debt Portfolio')
+      create(:portfolio, user: user, name: 'Equity Portfolio')
+      create(:portfolio, user: user, name: 'Debt Portfolio')
       get '/api/v1/portfolios'
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -26,7 +26,7 @@ RSpec.describe 'Portfolio API', type: :request do
 
   describe 'GET /api/v1/portfolios/:id' do
     it 'returns portfolio by id' do
-      portfolio = create(:portfolio, name: 'Test Portfolio')
+      portfolio = create(:portfolio, user: user, name: 'Test Portfolio')
       get "/api/v1/portfolios/#{portfolio.id}"
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -59,7 +59,7 @@ RSpec.describe 'Portfolio API', type: :request do
 
   describe 'PUT /api/v1/portfolios/:id' do
     it 'updates portfolio with valid params' do
-      portfolio = create(:portfolio, name: 'Old Name')
+      portfolio = create(:portfolio, user: user, name: 'Old Name')
       params = { portfolio: { name: 'Updated Name' } }
       put "/api/v1/portfolios/#{portfolio.id}", params: params
       expect(response).to have_http_status(:success)
@@ -70,7 +70,7 @@ RSpec.describe 'Portfolio API', type: :request do
 
   describe 'DELETE /api/v1/portfolios/:id' do
     it 'deletes portfolio' do
-      portfolio = create(:portfolio)
+      portfolio = create(:portfolio, user: user)
       expect { delete "/api/v1/portfolios/#{portfolio.id}" }.to change(Portfolio, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end
@@ -78,7 +78,7 @@ RSpec.describe 'Portfolio API', type: :request do
 
   describe 'POST /api/v1/portfolios/:id/rebalance' do
     it 'returns rebalance result' do
-      portfolio = create(:portfolio, risk_tolerance: 0.5)
+      portfolio = create(:portfolio, user: user, risk_tolerance: 0.5)
       post "/api/v1/portfolios/#{portfolio.id}/rebalance"
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)

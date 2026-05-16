@@ -5,6 +5,10 @@ class ExchangeRate < ApplicationRecord
   scope :recent, -> { where(fetched_at: 24.hours.ago..) }
   scope :stale, -> { where(fetched_at: ..24.hours.ago) }
 
+  def recent?
+    fetched_at > 24.hours.ago
+  end
+
   def self.rate(from:, to:)
     return 1.0 if from == to
     record = find_by(from_currency: from, to_currency: to)

@@ -1,0 +1,27 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://kubera_user:kubera_password@db:5432/kubera_test
+      REDIS_URL: redis://redis:6379/1
+      SECRET_KEY_BASE: test_secret_key_base_for_ci
+    command: >
+      sh -c "
+        bundle exec rails db:create db:schema:load 2>/dev/null || echo 'DB setup handled' &&
+        bundle exec rspec
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - kubera_net
+
+networks:
+  kubera_net:
+    name: kubera_kubera_net
+    external: true

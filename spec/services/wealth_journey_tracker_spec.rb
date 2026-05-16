@@ -5,7 +5,7 @@ RSpec.describe WealthJourneyTracker, type: :service do
 
   describe '#debt_progress' do
     it 'returns debt progress hash' do
-      create(:debt, amount: 50000, emi_amount: 1000)
+      create(:debt, user: user, amount: 50000, emi_amount: 1000)
       tracker = WealthJourneyTracker.new(user)
       result = tracker.debt_progress
       expect(result).to have_key(:total_debt)
@@ -15,16 +15,16 @@ RSpec.describe WealthJourneyTracker, type: :service do
     end
 
     it 'calculates total debt correctly' do
-      create(:debt, amount: 30000)
-      create(:debt, amount: 20000)
+      create(:debt, user: user, amount: 30000)
+      create(:debt, user: user, amount: 20000)
       tracker = WealthJourneyTracker.new(user)
       result = tracker.debt_progress
       expect(result[:total_debt]).to eq(50000)
     end
 
     it 'calculates total emi correctly' do
-      create(:debt, emi_amount: 500)
-      create(:debt, emi_amount: 300)
+      create(:debt, user: user, emi_amount: 500)
+      create(:debt, user: user, emi_amount: 300)
       tracker = WealthJourneyTracker.new(user)
       result = tracker.debt_progress
       expect(result[:total_emi]).to eq(800)
@@ -67,7 +67,7 @@ RSpec.describe WealthJourneyTracker, type: :service do
     end
 
     it 'calculates net worth based on debts' do
-      create(:debt, amount: 100000)
+      create(:debt, user: user, amount: 100000)
       tracker = WealthJourneyTracker.new(user)
       result = tracker.net_worth_trajectory
       expect(result[:liabilities]).to eq(100000)

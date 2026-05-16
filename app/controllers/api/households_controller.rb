@@ -24,7 +24,7 @@ class Api::HouseholdsController < Api::BaseController
 
   def destroy
     find_household.destroy!
-    render_success({}, message: "Household deleted")
+    head :no_content
   end
 
   def members

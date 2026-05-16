@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_10_000004) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
@@ -184,6 +184,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000004) do
     t.uuid "user_id", null: false
     t.string "name", null: false
     t.string "goal"
+    t.jsonb "current_allocation", default: {}
     t.decimal "risk_tolerance", precision: 3, scale: 2
     t.jsonb "target_allocation"
     t.string "currency_code", default: "INR", null: false

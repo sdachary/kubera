@@ -9,11 +9,7 @@ class Api::BaseController < ActionController::API
   protected
 
   def render_success(data = {}, message: nil, status: :ok)
-    render json: {
-      success: true,
-      message: message,
-      data: data
-    }, status: status
+    render json: data, status: status
   end
 
   def render_error(message, status: :unprocessable_entity, errors: nil)

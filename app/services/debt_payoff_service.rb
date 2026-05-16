@@ -31,7 +31,7 @@ class DebtPayoffService
         total_interest += interest
         monthly_min = [debt[:min_payment], debt[:balance]].min
         debt[:balance] -= monthly_min
-        payment += monthly_min if debt == debts.find { |d| d[:balance] > 0 && !debts.find { |pd| pd[:id] == d[:id]&.() } }
+        payment += monthly_min if debt == debts.find { |d| d[:balance] > 0 }
       end
 
       priority_debt = debts.find { |d| d[:balance] > 0 }

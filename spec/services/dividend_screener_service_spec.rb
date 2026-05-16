@@ -52,11 +52,12 @@ RSpec.describe DividendScreenerService do
       allow(provider).to receive(:fetch_quote).with("LOW.NS").and_return(low_yield_quote)
       allow(provider).to receive(:fetch_dividend).with("LOW.NS").and_return(low_yield_div)
 
-      results = described_class.new(provider: provider).tap { |s| s.send(:fetch_candidates) }
-      allow(results).to receive(:fetch_candidates).and_return([{ symbol: "LOW.NS" }])
+      screener_with_low = described_class.new(provider: provider)
+      allow(screener_with_low).to receive(:fetch_candidates).and_return([{ symbol: "LOW.NS" }])
 
-      screened = double
-      expect(screener.screen).to be_an(Array)
+      results = screener_with_low.screen
+      expect(results).to be_an(Array)
+      expect(results).to be_empty
     end
 
     context "with target income" do
@@ -80,7 +81,7 @@ RSpec.describe DividendScreenerService do
   describe "private methods" do
     describe "#fetch_candidates" do
       it "returns default candidates plus ETF candidates" do
-        candidates = screener.send(:fetch_candidates)
+        candidates = screener.send(:fetch_candidates, "IN")
         expect(candidates.size).to eq(8)
         expect(candidates.map { |c| c[:symbol] }).to include("ITC.NS", "RELIANCE.NS", "NIFTYBEES.NS")
       end

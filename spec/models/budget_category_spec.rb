@@ -3,7 +3,13 @@ require "rails_helper"
 RSpec.describe BudgetCategory, type: :model do
   describe "validations" do
     it { should validate_presence_of(:name) }
-    it { should validate_uniqueness_of(:name).scoped_to(:user_id) }
+    it "validates uniqueness of name scoped to user_id" do
+      user = create(:user)
+      create(:budget_category, user: user, name: "Food")
+      new_category = build(:budget_category, user: user, name: "Food")
+      expect(new_category).not_to be_valid
+      expect(new_category.errors[:name]).to include("has already been taken")
+    end
   end
 
   describe "associations" do

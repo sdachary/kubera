@@ -4,6 +4,11 @@ class Api::BudgetsController < Api::BaseController
     render_success(budgets.map { |b| budget_json(b) })
   end
 
+  def show
+    budget = current_user.budgets.find(params[:id])
+    render_success(budget_json(budget))
+  end
+
   def create
     budget = current_user.budgets.create!(budget_params)
     render_success(budget_json(budget), status: :created)
@@ -17,7 +22,7 @@ class Api::BudgetsController < Api::BaseController
 
   def destroy
     current_user.budgets.find(params[:id]).destroy!
-    render_success({}, message: "Budget deleted")
+    head :no_content
   end
 
   def overview
@@ -28,7 +33,8 @@ class Api::BudgetsController < Api::BaseController
   private
 
   def budget_params
-    params.permit(:budget_category_id, :monthly_limit, :currency_code,
+    source = params[:budget].presence || params
+    source.permit(:budget_category_id, :monthly_limit, :currency_code,
                   :period, :start_date, :end_date, :notes, :household_id)
   end
 

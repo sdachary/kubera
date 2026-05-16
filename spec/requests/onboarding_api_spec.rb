@@ -29,7 +29,7 @@ RSpec.describe 'Onboarding', type: :request do
     end
 
     it 'returns error with missing required params' do
-      put '/onboarding', params: { user: { first_name: '' } }
+      put '/onboarding', params: {}
       expect(response).to have_http_status(:unprocessable_entity)
       expect(user.reload.onboarded).to be false
     end

@@ -6,6 +6,11 @@ class Api::RecurringExpensesController < Api::BaseController
     render_success(expenses.map { |e| expense_json(e) })
   end
 
+  def show
+    expense = current_user.recurring_expenses.find(params[:id])
+    render_success(expense_json(expense))
+  end
+
   def create
     expense = current_user.recurring_expenses.create!(expense_params)
     render_success(expense_json(expense), status: :created)
@@ -20,13 +25,23 @@ class Api::RecurringExpensesController < Api::BaseController
   def destroy
     expense = current_user.recurring_expenses.find(params[:id])
     expense.destroy!
-    render_success({}, message: "Recurring expense deleted")
+    head :no_content
+  end
+
+  def calendar
+    expenses = if params[:id]
+                 [current_user.recurring_expenses.find(params[:id])]
+               else
+                 current_user.recurring_expenses
+               end
+    render_success({ expenses: expenses.map { |e| expense_json(e) } })
   end
 
   private
 
   def expense_params
-    params.permit(:name, :amount, :frequency, :next_due_date, :category,
+    source = params[:recurring_expense].presence || params
+    source.permit(:name, :amount, :frequency, :next_due_date, :category,
                   :auto_debit, :active, :notes, :currency_code)
   end
 

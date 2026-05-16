@@ -41,4 +41,16 @@ class Investment < ApplicationRecord
   def projected_annual_income
     current_value * (dividend_yield || 0) / 100.0
   end
+
+  def calculate_sip(monthly_amount, months)
+    total_invested = monthly_amount * months
+    rate_per_period = (dividend_yield || 0) / 100.0 / 12
+    projected_value = monthly_amount * (((1 + rate_per_period) ** months - 1) / rate_per_period) * (1 + rate_per_period)
+    projected_value = rate_per_period > 0 ? projected_value : total_invested
+    { projected_value: projected_value.round(2), total_invested: total_invested }
+  end
+
+  def project_income(principal)
+    principal * (dividend_yield || 0) / 100.0
+  end
 end

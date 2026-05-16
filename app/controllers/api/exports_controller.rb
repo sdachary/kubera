@@ -1,5 +1,22 @@
 class Api::ExportsController < Api::BaseController
   FORMATS = %w[csv json].freeze
+  EXPORT_TYPES = %w[debts portfolios transactions net_worth].freeze
+
+  def index
+    render_success({ formats: FORMATS, types: EXPORT_TYPES })
+  end
+
+  def csv
+    type = params.dig(:export, :type) || "transactions"
+    export = ExportService.new(current_user).send("export_#{type}", format: "csv")
+    send_data export, filename: "#{type}_#{Date.today}.csv", type: "text/csv"
+  end
+
+  def export_json
+    type = params.dig(:export, :type) || "transactions"
+    export = ExportService.new(current_user).send("export_#{type}", format: "json")
+    send_data export, filename: "#{type}_#{Date.today}.json", type: "application/json"
+  end
 
   def debts
     export = ExportService.new(current_user).export_debts(format: format)

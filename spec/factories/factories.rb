@@ -1,4 +1,6 @@
 FactoryBot.define do
+  sequence(:user_email) { |n| "test#{n}@example.com" }
+
   factory :currency do
     code { "INR" }
     name { "Indian Rupee" }
@@ -41,6 +43,7 @@ FactoryBot.define do
   end
 
   factory :recurring_expense do
+    association :user
     amount { 2000.0 }
     frequency { "monthly" }
     next_due_date { Date.today + 1.week }
@@ -51,8 +54,14 @@ FactoryBot.define do
   end
 
   factory :debt_payoff do
+    association :user
     strategy { "avalanche" }
     currency_code { "INR" }
+  end
+
+  factory :debt_payoff_debt do
+    association :debt_payoff
+    association :debt
   end
 
   factory :dividend_sip do
@@ -74,7 +83,7 @@ FactoryBot.define do
   end
 
   factory :user do
-    email { "test@example.com" }
+    email { generate(:user_email) }
     password { "password123" }
     currency { "INR" }
     onboarded { false }

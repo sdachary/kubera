@@ -7,7 +7,8 @@ RSpec.describe SecurityHealthCheckJob, type: :worker do
       portfolio = create(:portfolio, user: user)
       create(:investment, portfolio: portfolio, symbol: "AAPL", current_price: nil)
 
-      expect { subject.perform }.to change { ImportMarketDataWorker.jobs.size }.by(1)
+      expect(ImportMarketDataWorker).to receive(:perform_async).once
+      subject.perform
     end
 
     it "does not queue import when all investments have prices" do
@@ -15,7 +16,8 @@ RSpec.describe SecurityHealthCheckJob, type: :worker do
       portfolio = create(:portfolio, user: user)
       create(:investment, portfolio: portfolio, symbol: "AAPL", current_price: 150.0)
 
-      expect { subject.perform }.not_to change { ImportMarketDataWorker.jobs.size }
+      expect(ImportMarketDataWorker).not_to receive(:perform_async)
+      subject.perform
     end
   end
 end

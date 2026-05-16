@@ -15,8 +15,8 @@ RSpec.describe 'Debt Payoff API', type: :request do
     end
 
     it 'returns all debts' do
-      create(:debt, name: 'Home Loan', amount: 100000)
-      create(:debt, name: 'Car Loan', amount: 20000)
+      create(:debt, user: user, name: 'Home Loan', amount: 100000)
+      create(:debt, user: user, name: 'Car Loan', amount: 20000)
       get '/api/v1/debt_payoffs'
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -26,7 +26,7 @@ RSpec.describe 'Debt Payoff API', type: :request do
 
   describe 'GET /api/v1/debt_payoffs/:id' do
     it 'returns debt by id' do
-      debt = create(:debt, name: 'Personal Loan')
+      debt = create(:debt, user: user, name: 'Personal Loan')
       get "/api/v1/debt_payoffs/#{debt.id}"
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -65,7 +65,7 @@ RSpec.describe 'Debt Payoff API', type: :request do
 
   describe 'PUT /api/v1/debt_payoffs/:id' do
     it 'updates debt with valid params' do
-      debt = create(:debt, name: 'Old Name')
+      debt = create(:debt, user: user, name: 'Old Name')
       params = { debt: { name: 'Updated Name' } }
       put "/api/v1/debt_payoffs/#{debt.id}", params: params
       expect(response).to have_http_status(:success)
@@ -74,7 +74,7 @@ RSpec.describe 'Debt Payoff API', type: :request do
     end
 
     it 'returns errors with invalid params' do
-      debt = create(:debt)
+      debt = create(:debt, user: user)
       params = { debt: { amount: -100 } }
       put "/api/v1/debt_payoffs/#{debt.id}", params: params
       expect(response).to have_http_status(:unprocessable_entity)
@@ -83,7 +83,7 @@ RSpec.describe 'Debt Payoff API', type: :request do
 
   describe 'DELETE /api/v1/debt_payoffs/:id' do
     it 'deletes debt' do
-      debt = create(:debt)
+      debt = create(:debt, user: user)
       expect { delete "/api/v1/debt_payoffs/#{debt.id}" }.to change(Debt, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end
@@ -91,7 +91,7 @@ RSpec.describe 'Debt Payoff API', type: :request do
 
   describe 'POST /api/v1/debt_payoffs/:id/simulate' do
     it 'returns simulation result' do
-      debt = create(:debt, balance: 10000, interest_rate: 10.0, min_payment: 500)
+      debt = create(:debt, user: user, amount: 10000, interest_rate: 10.0, emi_amount: 500)
       post "/api/v1/debt_payoffs/#{debt.id}/simulate", params: { extra_monthly_payment: 100 }
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)

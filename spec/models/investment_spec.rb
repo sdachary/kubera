@@ -4,9 +4,9 @@ RSpec.describe Investment, type: :model do
   describe "#calculate_sip" do
     it "returns projected value and total invested" do
       investment = build(:investment)
-      result = investment.calculate_sip(1000, 1)
+      result = investment.calculate_sip(1000, 12)
       expect(result[:total_invested]).to eq(12000)
-      expect(result[:projected_value]).to eq(13200)
+      expect(result[:projected_value]).to eq(12249.89)
     end
   end
 

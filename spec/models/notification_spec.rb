@@ -25,7 +25,7 @@ RSpec.describe Notification, type: :model do
 
     describe ".recent" do
       it "orders by created_at descending and limits to 50" do
-        expect(described_class.recent.to_sql).to include("ORDER BY created_at DESC")
+        expect(described_class.recent.to_sql).to include('ORDER BY "notifications"."created_at" DESC')
         expect(described_class.recent.to_sql).to include("LIMIT 50")
       end
     end

@@ -4,7 +4,7 @@ RSpec.describe 'Households API', type: :request do
   let!(:user) { create(:user) }
 
   before do
-    allow_any_instance_of(Api::V1::BaseController).to receive(:current_user).and_return(user)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
   end
 
   describe 'GET /api/v1/households' do
@@ -15,7 +15,8 @@ RSpec.describe 'Households API', type: :request do
     end
 
     it 'returns all households' do
-      create(:household, name: 'Family')
+      household = create(:household, name: 'Family')
+      create(:household_membership, household: household, user: user, role: 'owner')
       get '/api/v1/households'
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -26,6 +27,7 @@ RSpec.describe 'Households API', type: :request do
   describe 'GET /api/v1/households/:id' do
     it 'returns household by id' do
       household = create(:household, name: 'Test Family')
+      create(:household_membership, household: household, user: user, role: 'owner')
       get "/api/v1/households/#{household.id}"
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -35,7 +37,7 @@ RSpec.describe 'Households API', type: :request do
 
   describe 'POST /api/v1/households' do
     it 'creates household with valid params' do
-      params = { household: { name: 'New Family' } }
+      params = { name: 'New Family', currency: 'INR' }
       post '/api/v1/households', params: params
       expect(response).to have_http_status(:created)
       json = JSON.parse(response.body)
@@ -43,7 +45,7 @@ RSpec.describe 'Households API', type: :request do
     end
 
     it 'returns errors with invalid params' do
-      params = { household: { name: '' } }
+      params = { name: '' }
       post '/api/v1/households', params: params
       expect(response).to have_http_status(:unprocessable_entity)
     end
@@ -52,7 +54,8 @@ RSpec.describe 'Households API', type: :request do
   describe 'PUT /api/v1/households/:id' do
     it 'updates household' do
       household = create(:household, name: 'Old Name')
-      params = { household: { name: 'Updated Name' } }
+      create(:household_membership, household: household, user: user, role: 'owner')
+      params = { name: 'Updated Name' }
       put "/api/v1/households/#{household.id}", params: params
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -63,6 +66,7 @@ RSpec.describe 'Households API', type: :request do
   describe 'DELETE /api/v1/households/:id' do
     it 'deletes household' do
       household = create(:household)
+      create(:household_membership, household: household, user: user, role: 'owner')
       expect { delete "/api/v1/households/#{household.id}" }.to change(Household, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end

@@ -1,6 +1,6 @@
 class Currency < ApplicationRecord
   validates :code, presence: true, uniqueness: true
-  validates :name, :symbol, presence: true
+  validates :name, presence: true
 
   scope :active, -> { where(active: true) }
 

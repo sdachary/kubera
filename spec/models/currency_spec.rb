@@ -3,9 +3,13 @@ require "rails_helper"
 RSpec.describe Currency, type: :model do
   describe "validations" do
     it { should validate_presence_of(:code) }
-    it { should validate_uniqueness_of(:code) }
+    it "validates uniqueness of code" do
+      create(:currency)
+      new_currency = build(:currency)
+      expect(new_currency).not_to be_valid
+      expect(new_currency.errors[:code]).to include("has already been taken")
+    end
     it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:symbol) }
   end
 
   describe ".symbol_for" do

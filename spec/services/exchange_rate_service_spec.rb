@@ -9,11 +9,11 @@ RSpec.describe ExchangeRateService, type: :service do
     end
 
     it "fetches and caches rate from provider" do
-      VCR.use_cassette("yahoo_finance/exchange_rate_usd_inr") do
-        rate = service.fetch_rate(from: "USD", to: "INR")
-        expect(rate).to be_a(Numeric)
-        expect(rate).to be > 0
-      end
+      stub_request(:get, /query1\.finance\.yahoo\.com/)
+        .to_return(status: 200, body: '{"chart":{"result":[{"meta":{"regularMarketPrice":83.5}}]}}')
+      rate = service.fetch_rate(from: "USD", to: "INR")
+      expect(rate).to be_a(Numeric)
+      expect(rate).to be > 0
     end
   end
 
@@ -34,8 +34,11 @@ RSpec.describe ExchangeRateService, type: :service do
       create(:currency, code: "GBP", name: "Pound", symbol: "£")
       create(:currency, code: "USD", name: "Dollar", symbol: "$")
 
-      expect(ExchangeRateSyncWorker).to receive(:perform_async)
-      ExchangeRateSyncWorker.new.perform("USD")
+      stub_request(:get, /query1\.finance\.yahoo\.com/)
+        .to_return(status: 200, body: '{"chart":{"result":[{"meta":{"regularMarketPrice": 1.0}}]}}')
+
+      expect { ExchangeRateService.sync_all(base_currency: "USD") }
+        .to change { ExchangeRate.count }.by(2)
     end
   end
 end

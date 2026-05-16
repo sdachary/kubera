@@ -1,8 +1,9 @@
 class OnboardingController < ApplicationController
+  layout false
   skip_before_action :require_onboarding, only: [:show, :update]
 
   def show
-    redirect_to root_path if current_user.onboarded?
+    redirect_to(root_path) && return if current_user.onboarded?
   end
 
   def update
@@ -12,6 +13,9 @@ class OnboardingController < ApplicationController
       flash.now[:alert] = "Please fill in all required fields."
       render :show, status: :unprocessable_entity
     end
+  rescue ActionController::ParameterMissing
+    flash.now[:alert] = "Please fill in all required fields."
+    render :show, status: :unprocessable_entity
   end
 
   private

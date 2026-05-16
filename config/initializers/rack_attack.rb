@@ -3,7 +3,7 @@ class Rack::Attack
 
   # Throttle all POST/PUT/PATCH/DELETE to /api/ (write operations)
   throttle("api/write", limit: 30, period: 1.minute) do |req|
-    req.ip if req.path.start_with?("/api/") && req.write_request?
+    req.ip if req.path.start_with?("/api/") && (req.post? || req.put? || req.patch? || req.delete?)
   end
 
   # Throttle conversation creation

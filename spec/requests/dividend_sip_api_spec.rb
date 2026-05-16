@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Dividend SIP API', type: :request do
   let!(:user) { create(:user) }
-  let!(:portfolio) { create(:portfolio) }
+  let!(:portfolio) { create(:portfolio, user: user) }
 
   before do
-    allow_any_instance_of(Api::V1::BaseController).to receive(:current_user).and_return(user)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
   end
 
   describe 'GET /api/v1/dividend_sips' do
@@ -43,6 +43,7 @@ RSpec.describe 'Dividend SIP API', type: :request do
           name: 'New SIP',
           monthly_investment: 5000,
           target_income: 10000,
+          frequency: 'monthly',
           dividend_yield: 3.5
         }
       }
@@ -53,7 +54,7 @@ RSpec.describe 'Dividend SIP API', type: :request do
     end
 
     it 'returns errors with invalid params' do
-      params = { dividend_sip: { name: '', monthly_investment: nil } }
+      params = { dividend_sip: { name: '', monthly_investment: nil, frequency: '' } }
       post '/api/v1/dividend_sips', params: params
       expect(response).to have_http_status(:unprocessable_entity)
     end

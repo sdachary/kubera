@@ -27,7 +27,8 @@ class Providers::YahooFinanceAdapter
     response = HTTParty.get("#{BASE_URL}/#{symbol}", timeout: TIMEOUT,
       headers: { "User-Agent" => "Mozilla/5.0" })
     return nil unless response.success?
-    result = response.dig("chart", "result", 0)
+    parsed = JSON.parse(response.body)
+    result = parsed.dig("chart", "result", 0)
     return nil unless result
 
     meta = result["meta"] || {}
@@ -55,7 +56,8 @@ class Providers::YahooFinanceAdapter
     response = HTTParty.get("#{SEARCH_URL}?q=#{CGI.escape(query)}", timeout: TIMEOUT,
       headers: { "User-Agent" => "Mozilla/5.0" })
     return [] unless response.success?
-    (response["quotes"] || []).select { |q| q["typeDisp"] == "Equity" }.map do |q|
+    parsed = JSON.parse(response.body)
+    (parsed["quotes"] || []).select { |q| q["typeDisp"] == "Equity" }.map do |q|
       exchange = q["exchange"]
       country = EXCHANGE_COUNTRY_MAP[exchange]
       {
@@ -74,7 +76,8 @@ class Providers::YahooFinanceAdapter
     url = "https://query1.finance.yahoo.com/v8/finance/chart/#{symbol}?range=1y&interval=1mo"
     response = HTTParty.get(url, timeout: TIMEOUT, headers: { "User-Agent" => "Mozilla/5.0" })
     return nil unless response.success?
-    result = response.dig("chart", "result", 0)
+    parsed = JSON.parse(response.body)
+    result = parsed.dig("chart", "result", 0)
     return nil unless result
 
     events = result.dig("events", "dividends")

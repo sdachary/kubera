@@ -24,7 +24,7 @@ RSpec.describe 'Transactions API', type: :request do
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
       expect(json['transactions'].length).to eq(2)
-      expect(json['total']).to eq(2)
+      expect(json['pagination']['total']).to eq(2)
     end
   end
 

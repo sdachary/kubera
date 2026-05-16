@@ -1,4 +1,9 @@
 class Api::TransactionsController < Api::BaseController
+  def show
+    transaction = current_user.transactions.find(params[:id])
+    render_success(transaction_json(transaction))
+  end
+
   def index
     scope = current_user.transactions.order(transaction_date: :desc)
 
@@ -32,7 +37,7 @@ class Api::TransactionsController < Api::BaseController
 
   def destroy
     current_user.transactions.find(params[:id]).destroy!
-    render_success({}, message: "Transaction deleted")
+    head :no_content
   end
 
   def monthly_totals
@@ -43,7 +48,8 @@ class Api::TransactionsController < Api::BaseController
   private
 
   def transaction_params
-    params.permit(:description, :amount, :transaction_type, :transaction_date,
+    source = params[:transaction].presence || params
+    source.permit(:description, :amount, :transaction_type, :transaction_date,
                   :budget_category_id, :currency_code, :merchant, :notes,
                   :recurring, :recurring_frequency, :household_id)
   end

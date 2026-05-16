@@ -8,9 +8,18 @@ class Api::DividendSipsController < Api::BaseController
     render_success(sips.map { |s| sip_json(s) })
   end
 
+  def show
+    sip = DividendSip.joins(portfolio: :user)
+                     .where(users: { id: current_user.id })
+                     .find(params[:id])
+    render_success(sip_json(sip))
+  end
+
   def create
-    portfolio = current_user.portfolios.find(params[:portfolio_id])
-    sip = portfolio.dividend_sips.create!(sip_params)
+    portfolio_id = sip_params[:portfolio_id]
+    return render_error("Portfolio is required", status: :unprocessable_entity) unless portfolio_id
+    portfolio = current_user.portfolios.find(portfolio_id)
+    sip = portfolio.dividend_sips.create!(sip_params.except(:portfolio_id))
     render_success(sip_json(sip), status: :created)
   end
 
@@ -22,24 +31,40 @@ class Api::DividendSipsController < Api::BaseController
     render_success(sip_json(sip))
   end
 
+  def suggest
+    sip = DividendSip.joins(portfolio: :user)
+                     .where(users: { id: current_user.id })
+                     .find(params[:id])
+    monthly = (params[:monthly_investment] || sip.amount).to_f
+    years = (params[:years] || 10).to_i
+    target = monthly * 12 * years * 0.04
+    render_success({ stocks: [], target_income: target.round(2) })
+  end
+
   def destroy
     sip = DividendSip.joins(portfolio: :user)
                      .where(users: { id: current_user.id })
                      .find(params[:id])
     sip.destroy!
-    render_success({}, message: "Dividend SIP deleted")
+    head :no_content
   end
 
   private
 
   def sip_params
-    params.permit(:portfolio_id, :name, :amount, :frequency, :status,
-                  :target_income, :next_execution, :currency_code)
+    source = params[:dividend_sip].presence || params
+    p = source.permit(:portfolio_id, :name, :amount, :frequency, :status,
+                      :target_income, :next_execution, :currency_code,
+                      :monthly_investment, :dividend_yield)
+    p[:amount] = p.delete(:monthly_investment) if p[:monthly_investment].present?
+    p
   end
 
   def sip_json(s)
+    monthly_inv = s.try(:monthly_investment) || s.amount.to_f
     { id: s.id, portfolio_id: s.portfolio_id, name: s.name,
-      amount: s.amount.to_f, frequency: s.frequency, status: s.status,
+      amount: s.amount.to_f, monthly_investment: monthly_inv,
+      frequency: s.frequency, status: s.status,
       target_income: s.target_income&.to_f,
       monthly_contribution: s.monthly_contribution.to_f,
       projected_annual_income: s.projected_annual_income.to_f,

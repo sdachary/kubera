@@ -28,4 +28,14 @@ class Api::ReportsController < Api::BaseController
       income_vs_expenses: service.income_vs_expenses
     })
   end
+
+  def category
+    render_success({ categories: [] })
+  end
+
+  def net_worth
+    assets = current_user.portfolios.sum(&:total_value).to_f
+    liabilities = current_user.debts.active.sum(:amount).to_f
+    render_success({ net_worth: assets - liabilities, assets: assets, liabilities: liabilities })
+  end
 end

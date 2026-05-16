@@ -13,7 +13,7 @@ class Portfolio < ApplicationRecord
   end
 
   def allocation_summary
-    by_sector = investments.group(:sector).sum { |i| (i.shares || 0) * (i.current_price || 0) }
+    by_sector = investments.group_by(&:sector).transform_values { |inv| inv.sum { |i| (i.shares || 0) * (i.current_price || 0) } }
     { sectors: by_sector, dividend_sips: dividend_sips.sum(:amount) }
   end
 end

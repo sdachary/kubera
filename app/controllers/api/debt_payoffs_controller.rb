@@ -1,26 +1,48 @@
-# frozen_string_literal: true
-
 class Api::DebtPayoffsController < Api::BaseController
   def index
-    payoffs = current_user.debt_payoffs.order(created_at: :desc)
-    render_success(payoffs.map { |p| payoff_json(p) })
+    debts = current_user.debts.order(created_at: :desc)
+    render_success(debts.map { |d| debt_json(d) })
   end
 
   def show
-    payoff = current_user.debt_payoffs.find(params[:id])
-    render_success(payoff_json(payoff))
+    debt = current_user.debts.find(params[:id])
+    render_success(debt_json(debt))
+  end
+
+  def create
+    debt = current_user.debts.create!(debt_params)
+    render_success(debt_json(debt), status: :created)
+  end
+
+  def update
+    debt = current_user.debts.find(params[:id])
+    debt.update!(debt_params)
+    render_success(debt_json(debt))
+  end
+
+  def destroy
+    debt = current_user.debts.find(params[:id])
+    debt.destroy!
+    head :no_content
+  end
+
+  def simulate
+    debt = current_user.debts.find(params[:id])
+    service = DebtPayoffService.new([{ id: debt.id, balance: debt.amount, interest_rate: debt.interest_rate, min_payment: debt.emi_amount }], extra_payment: (params[:extra_monthly_payment] || 0).to_f)
+    plan = service.avalanche_plan
+    render_success({ months: plan[:months], total_interest: plan[:total_interest] })
   end
 
   private
 
-  def payoff_json(p)
-    { id: p.id, name: p.name, strategy: p.strategy, extra_payment: p.extra_payment&.to_f,
-      months_saved: p.months_saved, debt_free_date: p.debt_free_date,
-      total_interest_paid: p.total_interest_paid&.to_f,
-      total_interest_saved: p.total_interest_saved&.to_f,
-      total_debt: p.total_debt.to_f, debt_count: p.debts.count,
-      debts: p.debts.map { |d| { id: d.id, name: d.name, amount: d.amount.to_f, currency_code: d.currency_code } },
-      schedule: p.schedule, created_at: p.created_at,
-      currency_code: p.currency_code, currency_symbol: Currency.symbol_for(p.currency_code) }
+  def debt_json(d)
+    { id: d.id, name: d.name, amount: d.amount.to_f, interest_rate: d.interest_rate&.to_f,
+      emi_amount: d.emi_amount&.to_f, status: d.status, category: d.category,
+      due_date: d.due_date, started_at: d.started_at, paid_amount: d.paid_amount&.to_f,
+      currency_code: d.currency_code }
+  end
+
+  def debt_params
+    params.require(:debt).permit(:name, :amount, :interest_rate, :emi_amount, :status, :category, :due_date, :started_at, :currency_code)
   end
 end

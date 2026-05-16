@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   get "up" => "health#show", as: :rails_health_check
 
-  resource :onboarding, only: [:show, :update]
+  resource :onboarding, only: [:show, :update], controller: 'onboarding'
   root "pages#dashboard"
 
   # Conversations (primary AI chat interface)
@@ -14,15 +14,37 @@ Rails.application.routes.draw do
   end
 
   # Quick data endpoints (used by AI to read/write financial data)
-  namespace :api do
+  scope '/api/v1', module: 'api', as: 'api' do
     resources :debts, only: [:index, :create, :update, :destroy]
-    resources :debt_payoffs, only: [:index, :show]
-    resources :portfolios, only: [:index, :show]
+    resources :debt_payoffs do
+      member do
+        post :simulate
+      end
+    end
+    resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
+      member do
+        post :rebalance
+      end
+    end
     resources :investments, only: [:index, :create, :update, :destroy]
-    resources :dividend_sips, only: [:index, :create, :update, :destroy]
-    resource :journey, only: [:show]
+    resources :dividend_sips, only: [:index, :show, :create, :update, :destroy] do
+      member do
+        get :suggest
+      end
+    end
+    resource :journey, only: [:show], controller: 'journey' do
+      get :progress
+      get :net_worth
+    end
     resources :net_worth_snapshots, only: [:index, :show]
-    resources :recurring_expenses, only: [:index, :create, :update, :destroy]
+    resources :recurring_expenses, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        get :calendar
+      end
+      member do
+        get :calendar
+      end
+    end
     resources :notifications, only: [:index, :update] do
       collection { post :mark_all_read }
     end
@@ -33,25 +55,30 @@ Rails.application.routes.draw do
     resources :budget_categories, only: [:index, :create, :update, :destroy] do
       collection { post :seed }
     end
-    resources :transactions, only: [:index, :create, :update, :destroy] do
+    resources :transactions, only: [:index, :show, :create, :update, :destroy] do
       collection { get :monthly_totals }
     end
-    resources :budgets, only: [:index, :create, :update, :destroy] do
+    resources :budgets, only: [:index, :show, :create, :update, :destroy] do
       collection { get :overview }
     end
 
     # v2.2 — Reporting & Export
-    namespace :exports do
+    get 'exports', to: 'exports#index'
+    post 'exports/csv', to: 'exports#csv'
+    post 'exports/json', to: 'exports#export_json'
+    scope 'exports', controller: 'exports' do
       get :debts
       get :portfolios
       get :transactions
       get :net_worth
     end
-    namespace :reports do
+    scope 'reports', controller: 'reports' do
       get :annual
       get :cash_flow_forecast
       get :anomalies
       get :goal_charts
+      get :category
+      get :net_worth
     end
 
     # v2.3 — Collaboration & Sharing

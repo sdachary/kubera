@@ -4,7 +4,7 @@ RSpec.describe 'Budgets API', type: :request do
   let!(:user) { create(:user) }
 
   before do
-    allow_any_instance_of(Api::V1::BaseController).to receive(:current_user).and_return(user)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
   end
 
   describe 'GET /api/v1/budgets' do
@@ -15,8 +15,8 @@ RSpec.describe 'Budgets API', type: :request do
     end
 
     it 'returns all budgets' do
-      category = create(:budget_category)
-      create(:budget, budget_category: category, monthly_limit: 50000)
+      category = create(:budget_category, user: user)
+      create(:budget, user: user, budget_category: category, monthly_limit: 50000)
       get '/api/v1/budgets'
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -26,8 +26,8 @@ RSpec.describe 'Budgets API', type: :request do
 
   describe 'GET /api/v1/budgets/:id' do
     it 'returns budget by id' do
-      category = create(:budget_category)
-      budget = create(:budget, budget_category: category)
+      category = create(:budget_category, user: user)
+      budget = create(:budget, user: user, budget_category: category)
       get "/api/v1/budgets/#{budget.id}"
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -37,12 +37,12 @@ RSpec.describe 'Budgets API', type: :request do
 
   describe 'POST /api/v1/budgets' do
     it 'creates budget with valid params' do
-      category = create(:budget_category)
+      category = create(:budget_category, user: user)
       params = { budget: { budget_category_id: category.id, monthly_limit: 30000, period: 'monthly' } }
       post '/api/v1/budgets', params: params
       expect(response).to have_http_status(:created)
       json = JSON.parse(response.body)
-      expect(json['monthly_limit']).to eq('30000.0')
+      expect(json['monthly_limit']).to eq(30000.0)
     end
 
     it 'returns errors with invalid params' do
@@ -53,20 +53,20 @@ RSpec.describe 'Budgets API', type: :request do
 
   describe 'PUT /api/v1/budgets/:id' do
     it 'updates budget' do
-      category = create(:budget_category)
-      budget = create(:budget, budget_category: category, monthly_limit: 30000)
+      category = create(:budget_category, user: user)
+      budget = create(:budget, user: user, budget_category: category, monthly_limit: 30000)
       params = { budget: { monthly_limit: 40000 } }
       put "/api/v1/budgets/#{budget.id}", params: params
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
-      expect(json['monthly_limit']).to eq('40000.0')
+      expect(json['monthly_limit']).to eq(40000.0)
     end
   end
 
   describe 'DELETE /api/v1/budgets/:id' do
     it 'deletes budget' do
-      category = create(:budget_category)
-      budget = create(:budget, budget_category: category)
+      category = create(:budget_category, user: user)
+      budget = create(:budget, user: user, budget_category: category)
       expect { delete "/api/v1/budgets/#{budget.id}" }.to change(Budget, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end

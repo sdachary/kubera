@@ -4,7 +4,7 @@ RSpec.describe 'Journey API', type: :request do
   let!(:user) { create(:user) }
 
   before do
-    allow_any_instance_of(Api::V1::BaseController).to receive(:current_user).and_return(user)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
   end
 
   describe 'GET /api/v1/journey' do
@@ -19,7 +19,7 @@ RSpec.describe 'Journey API', type: :request do
     end
 
     it 'returns debt progress' do
-      create(:debt, amount: 50000, emi_amount: 1000)
+      create(:debt, user: user, amount: 50000, emi_amount: 1000)
       get '/api/v1/journey'
       json = JSON.parse(response.body)
       expect(json['debt']).to have_key('total_debt')

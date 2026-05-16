@@ -1,7 +1,10 @@
 class DividendSip < ApplicationRecord
   belongs_to :portfolio
 
-  validates :amount, numericality: { greater_than: 0 }
+  attribute :monthly_investment, :decimal
+  attribute :dividend_yield, :decimal
+
+  validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :frequency, inclusion: { in: %w[monthly quarterly yearly] }
   validates :status, inclusion: { in: %w[active paused completed] }
   validates :currency_code, inclusion: { in: Currency::CURRENCY_SYMBOLS.keys }, allow_nil: true

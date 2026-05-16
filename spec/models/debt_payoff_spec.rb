@@ -30,8 +30,10 @@ RSpec.describe DebtPayoff, type: :model do
   describe 'associations' do
     it 'can have multiple debts' do
       debt_payoff = create(:debt_payoff)
-      debt1 = create(:debt, debt_payoff_id: debt_payoff.id)
-      debt2 = create(:debt, debt_payoff_id: debt_payoff.id)
+      debt1 = create(:debt)
+      debt2 = create(:debt)
+      create(:debt_payoff_debt, debt_payoff: debt_payoff, debt: debt1)
+      create(:debt_payoff_debt, debt_payoff: debt_payoff, debt: debt2)
       expect(debt_payoff.debts).to include(debt1, debt2)
     end
   end

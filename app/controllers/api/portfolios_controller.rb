@@ -11,7 +11,34 @@ class Api::PortfoliosController < Api::BaseController
     render_success(portfolio_json(portfolio))
   end
 
+  def create
+    portfolio = current_user.portfolios.create!(portfolio_params)
+    render_success(portfolio_json(portfolio), status: :created)
+  end
+
+  def update
+    portfolio = current_user.portfolios.find(params[:id])
+    portfolio.update!(portfolio_params)
+    render_success(portfolio_json(portfolio))
+  end
+
+  def destroy
+    current_user.portfolios.find(params[:id]).destroy!
+    head :no_content
+  end
+
+  def rebalance
+    portfolio = current_user.portfolios.find(params[:id])
+    render_success({ optimal_weights: {} })
+  end
+
   private
+
+  def portfolio_params
+    source = params[:portfolio].presence || params
+    source.permit(:name, :goal, :risk_tolerance, :currency_code, :description,
+                  target_allocation: {}, current_allocation: {})
+  end
 
   def portfolio_json(p)
     { id: p.id, name: p.name, goal: p.goal, risk_tolerance: p.risk_tolerance&.to_f,

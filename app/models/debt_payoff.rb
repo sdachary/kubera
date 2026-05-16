@@ -3,7 +3,7 @@ class DebtPayoff < ApplicationRecord
   has_many :debt_payoff_debts, dependent: :destroy
   has_many :debts, through: :debt_payoff_debts
 
-  validates :strategy, inclusion: { in: %w[avalanche snowball] }, allow_nil: true
+  validates :strategy, presence: true, inclusion: { in: %w[avalanche snowball] }
 
   def total_debt
     debts.sum(:amount)
