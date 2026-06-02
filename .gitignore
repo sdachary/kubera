@@ -4,6 +4,10 @@ dist/
 .DS_Store
 *.log
 
+# Rails credentials — use ENV vars instead (SECRET_KEY_BASE)
+config/master.key
+config/credentials/production.key
+
 # Bundler
 vendor/bundle
 .bundle
