@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
   get "up" => "health#show", as: :rails_health_check
+  get "/api/health", to: "health#show"
 
   resource :onboarding, only: [:show, :update], controller: 'onboarding'
   get "/privacy", to: "pages#privacy"
