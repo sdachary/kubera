@@ -53,7 +53,7 @@ If you are in the EEA, you have the right to:
 - Data portability
 - Withdraw consent at any time
 
-To exercise these rights: kubera-admin@example.com
+To exercise these rights: sdachary@gmail.com
 
 ## 7. Cookies
 We use essential cookies for authentication and session management. We do not use tracking cookies or third-party analytics cookies.
@@ -66,4 +66,4 @@ We may update this policy. Material changes will be communicated via email or in
 
 ## 10. Contact
 Kubera<br>
-kubera-admin@example.com
+sdachary@gmail.com

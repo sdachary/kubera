@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   get "up" => "health#show", as: :rails_health_check
 
   resource :onboarding, only: [:show, :update], controller: 'onboarding'
+  get "/privacy", to: "pages#privacy"
+  get "/security", to: "pages#security"
+
   root "pages#dashboard"
 
   # Conversations (primary AI chat interface)

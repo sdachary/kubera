@@ -30,5 +30,15 @@
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased min-h-screen">
   <%= yield %>
+
+  <footer class="border-t border-slate-800 mt-16">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-slate-500">&copy; <%= Time.current.year %> Kubera. Self-hosted.</p>
+      <nav class="flex gap-6 text-sm">
+        <a href="/privacy" class="text-slate-400 hover:text-white transition-colors">Privacy Policy</a>
+        <a href="/security" class="text-slate-400 hover:text-white transition-colors">Security</a>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>

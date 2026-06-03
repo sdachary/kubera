@@ -1,6 +1,14 @@
 class PagesController < ApplicationController
   layout "application"
 
+  skip_before_action :require_onboarding, only: [:privacy, :security]
+
+  def privacy
+  end
+
+  def security
+  end
+
   def dashboard
     @conversation = find_or_create_conversation
     @messages = @conversation.messages.order(created_at: :asc)
