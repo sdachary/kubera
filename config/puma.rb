@@ -38,10 +38,11 @@ if rails_env == "production"
   preload_app!
 end
 
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+# Specifies the `port` that Puma will listen on to receive requests; default is 3002.
+# (3000 is reserved for MCP Hub). Set via PORT env var if needed.
 # The bind host is controlled via the Rails-native `BINDING` env var (set to
 # `0.0.0.0` in containers, or `::` for IPv6 dual-stack). See docs/hosting/docker.md.
-port ENV.fetch("PORT") { 3000 }
+port ENV.fetch("PORT") { 3002 }
 
 # Specifies the `environment` that Puma will run in.
 environment rails_env
