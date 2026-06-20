@@ -16,6 +16,7 @@ class User < ApplicationRecord
   has_many :budget_categories, dependent: :destroy
   has_many :budgets, dependent: :destroy
   has_many :transactions, dependent: :destroy
+  has_many :trips, dependent: :destroy
   has_many :household_memberships, dependent: :destroy
   has_many :households, through: :household_memberships
 

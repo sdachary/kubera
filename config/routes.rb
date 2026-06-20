@@ -13,6 +13,17 @@ Rails.application.routes.draw do
   get '/login', to: 'sessions#new'
   delete '/account', to: 'sessions#destroy_account'
 
+  # Phase 16: Trip Mode
+  resources :trips do
+    resources :trip_members, only: [:create, :destroy]
+    resources :trip_expenses, only: [:create, :update, :destroy]
+    resources :trip_settlements, only: [:create, :index]
+    member do
+      post :settle
+      post :archive
+    end
+  end
+
   resource :onboarding, only: [:show, :update], controller: 'onboarding'
   get "/privacy", to: "pages#privacy"
   get "/security", to: "pages#security"

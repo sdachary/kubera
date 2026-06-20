@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_20_000006) do
+  # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
@@ -42,6 +43,34 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "budget_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "name", null: false
+    t.string "icon"
+    t.string "color", default: "#6366f1"
+    t.integer "sort_order", default: 0
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "name"], name: "index_budget_categories_on_user_id_and_name", unique: true
+  end
+
+  create_table "budgets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "budget_category_id", null: false
+    t.decimal "monthly_limit", precision: 19, scale: 4, null: false
+    t.string "currency_code", default: "INR", null: false
+    t.string "period", default: "monthly"
+    t.date "start_date"
+    t.date "end_date"
+    t.text "notes"
+    t.uuid "household_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id"], name: "index_budgets_on_household_id"
+    t.index ["user_id", "budget_category_id"], name: "index_budgets_on_user_id_and_budget_category_id"
+  end
+
   create_table "conversations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.string "title"
@@ -51,12 +80,23 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
     t.index ["user_id"], name: "index_conversations_on_user_id"
   end
 
+  create_table "currencies", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.string "symbol", null: false
+    t.integer "decimal_places", default: 2
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_currencies_on_code", unique: true
+  end
+
   create_table "debt_payoff_debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "debt_payoff_id", null: false
     t.uuid "debt_id", null: false
+    t.index ["debt_id"], name: "index_debt_payoff_debts_on_debt_id"
     t.index ["debt_payoff_id", "debt_id"], name: "index_debt_payoff_debts_on_payoff_and_debt", unique: true
     t.index ["debt_payoff_id"], name: "index_debt_payoff_debts_on_debt_payoff_id"
-    t.index ["debt_id"], name: "index_debt_payoff_debts_on_debt_id"
   end
 
   create_table "debt_payoffs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -109,6 +149,37 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
     t.datetime "updated_at", null: false
     t.index ["portfolio_id"], name: "index_dividend_sips_on_portfolio_id"
     t.index ["status"], name: "index_dividend_sips_on_status"
+  end
+
+  create_table "exchange_rates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "from_currency", null: false
+    t.string "to_currency", null: false
+    t.decimal "rate", precision: 19, scale: 10, null: false
+    t.string "source", default: "yahoo_finance"
+    t.datetime "fetched_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["from_currency", "to_currency"], name: "index_exchange_rates_on_from_currency_and_to_currency", unique: true
+  end
+
+  create_table "household_memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "household_id", null: false
+    t.uuid "user_id", null: false
+    t.string "role", default: "member"
+    t.string "invite_status", default: "accepted"
+    t.datetime "joined_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id", "user_id"], name: "index_household_memberships_on_household_id_and_user_id", unique: true
+    t.index ["user_id", "household_id"], name: "index_household_memberships_on_user_id_and_household_id"
+  end
+
+  create_table "households", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "currency", default: "INR"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "investments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -225,93 +296,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
     t.index ["user_id"], name: "index_settings_on_user_id"
   end
 
-  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "email", null: false
-    t.string "password_digest"
-    t.string "first_name"
-    t.string "last_name"
-    t.string "theme", default: "dark"
-    t.string "currency", default: "INR"
-    t.string "locale", default: "en"
-    t.string "timezone"
-    t.boolean "onboarded", default: false
-    t.jsonb "preferences", default: {}
-    t.jsonb "goals", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-  end
-
-  create_table "budget_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.string "name", null: false
-    t.string "icon"
-    t.string "color", default: "#6366f1"
-    t.integer "sort_order", default: 0
-    t.boolean "active", default: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id", "name"], name: "index_budget_categories_on_user_id_and_name", unique: true
-  end
-
-  create_table "budgets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.uuid "budget_category_id", null: false
-    t.decimal "monthly_limit", precision: 19, scale: 4, null: false
-    t.string "currency_code", default: "INR", null: false
-    t.string "period", default: "monthly"
-    t.date "start_date"
-    t.date "end_date"
-    t.text "notes"
-    t.uuid "household_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["household_id"], name: "index_budgets_on_household_id"
-    t.index ["user_id", "budget_category_id"], name: "index_budgets_on_user_id_and_budget_category_id"
-  end
-
-  create_table "currencies", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "code", null: false
-    t.string "name", null: false
-    t.string "symbol", null: false
-    t.integer "decimal_places", default: 2
-    t.boolean "active", default: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_currencies_on_code", unique: true
-  end
-
-  create_table "exchange_rates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "from_currency", null: false
-    t.string "to_currency", null: false
-    t.decimal "rate", precision: 19, scale: 10, null: false
-    t.string "source", default: "yahoo_finance"
-    t.datetime "fetched_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["from_currency", "to_currency"], name: "index_exchange_rates_on_from_currency_and_to_currency", unique: true
-  end
-
-  create_table "household_memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "household_id", null: false
-    t.uuid "user_id", null: false
-    t.string "role", default: "member"
-    t.string "invite_status", default: "accepted"
-    t.datetime "joined_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["household_id", "user_id"], name: "index_household_memberships_on_household_id_and_user_id", unique: true
-    t.index ["user_id", "household_id"], name: "index_household_memberships_on_user_id_and_household_id"
-  end
-
-  create_table "households", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name", null: false
-    t.string "currency", default: "INR"
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "budget_category_id"
@@ -329,9 +313,94 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["household_id"], name: "index_transactions_on_household_id"
-    t.index ["user_id", "transaction_date"], name: "index_transactions_on_user_id_and_transaction_date"
     t.index ["user_id", "budget_category_id"], name: "index_transactions_on_user_id_and_budget_category_id"
+    t.index ["user_id", "transaction_date"], name: "index_transactions_on_user_id_and_transaction_date"
     t.index ["user_id", "transaction_type"], name: "index_transactions_on_user_id_and_transaction_type"
+  end
+
+  create_table "trip_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "trip_id", null: false
+    t.string "name"
+    t.decimal "budget", precision: 12, scale: 2
+    t.string "color", default: "#6B7280"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_id"], name: "index_trip_categories_on_trip_id"
+  end
+
+  create_table "trip_expenses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "trip_id", null: false
+    t.uuid "trip_member_id", null: false
+    t.uuid "trip_category_id"
+    t.decimal "amount", precision: 12, scale: 2
+    t.string "description"
+    t.date "expense_date"
+    t.string "split_type", default: "equal"
+    t.jsonb "split_details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_category_id"], name: "index_trip_expenses_on_trip_category_id"
+    t.index ["trip_id"], name: "index_trip_expenses_on_trip_id"
+    t.index ["trip_member_id"], name: "index_trip_expenses_on_trip_member_id"
+  end
+
+  create_table "trip_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "trip_id", null: false
+    t.string "name", null: false
+    t.string "email"
+    t.string "role", default: "member"
+    t.datetime "added_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_id", "name"], name: "index_trip_members_on_trip_id_and_name", unique: true
+    t.index ["trip_id"], name: "index_trip_members_on_trip_id"
+  end
+
+  create_table "trip_settlements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "trip_id", null: false
+    t.uuid "from_trip_member_id", null: false
+    t.uuid "to_trip_member_id", null: false
+    t.decimal "amount", precision: 12, scale: 2
+    t.datetime "settled_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["from_trip_member_id"], name: "index_trip_settlements_on_from_trip_member_id"
+    t.index ["to_trip_member_id"], name: "index_trip_settlements_on_to_trip_member_id"
+    t.index ["trip_id"], name: "index_trip_settlements_on_trip_id"
+  end
+
+  create_table "trips", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "name", null: false
+    t.string "destination"
+    t.date "start_date"
+    t.date "end_date"
+    t.string "currency", default: "INR"
+    t.string "group_type", default: "friends"
+    t.string "status", default: "active"
+    t.decimal "total_budget", precision: 12, scale: 2
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_trips_on_user_id"
+  end
+
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "theme", default: "dark"
+    t.string "currency", default: "INR"
+    t.string "locale", default: "en"
+    t.string "timezone"
+    t.boolean "onboarded", default: false
+    t.jsonb "preferences", default: {}
+    t.jsonb "goals", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -341,11 +410,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
   add_foreign_key "budgets", "households"
   add_foreign_key "budgets", "users"
   add_foreign_key "conversations", "users"
-  add_foreign_key "debts", "households"
-  add_foreign_key "debts", "users"
   add_foreign_key "debt_payoff_debts", "debt_payoffs"
   add_foreign_key "debt_payoff_debts", "debts"
   add_foreign_key "debt_payoffs", "users"
+  add_foreign_key "debts", "households"
+  add_foreign_key "debts", "users"
   add_foreign_key "dividend_sips", "portfolios"
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
@@ -362,4 +431,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_10_000005) do
   add_foreign_key "transactions", "budget_categories"
   add_foreign_key "transactions", "households"
   add_foreign_key "transactions", "users"
+  add_foreign_key "trip_categories", "trips"
+  add_foreign_key "trip_expenses", "trip_categories"
+  add_foreign_key "trip_expenses", "trip_members"
+  add_foreign_key "trip_expenses", "trips"
+  add_foreign_key "trip_members", "trips"
+  add_foreign_key "trip_settlements", "trip_members", column: "from_trip_member_id"
+  add_foreign_key "trip_settlements", "trip_members", column: "to_trip_member_id"
+  add_foreign_key "trip_settlements", "trips"
+  add_foreign_key "trips", "users"
 end

@@ -1,0 +1,71 @@
+class Trip < ApplicationRecord
+  belongs_to :user
+  has_many :trip_members, dependent: :destroy
+  has_many :trip_categories, dependent: :destroy
+  has_many :trip_expenses, dependent: :destroy
+  has_many :trip_settlements, dependent: :destroy
+
+  validates :name, presence: true
+
+  scope :active, -> { where(status: "active") }
+  scope :settled, -> { where(status: "settled") }
+
+  after_create :seed_default_categories
+
+  STATUSES = %w[active archived settled].freeze
+  GROUP_TYPES = %w[family friends colleagues custom].freeze
+
+  def balance_for(member)
+    balances[member.id] || 0.0
+  end
+
+  def balances
+    member_balances = {}
+    trip_members.each { |m| member_balances[m.id] = 0.0 }
+
+    trip_expenses.each do |expense|
+      payer_id = expense.trip_member_id
+      member_balances[payer_id] = member_balances[payer_id].to_f + expense.amount.to_f
+
+      expense.split_shares.each do |member_id, share_amount|
+        member_balances[member_id] = member_balances[member_id].to_f - share_amount.to_f
+      end
+    end
+
+    trip_settlements.each do |settlement|
+      member_balances[settlement.from_trip_member_id] = member_balances[settlement.from_trip_member_id].to_f + settlement.amount.to_f
+      member_balances[settlement.to_trip_member_id] = member_balances[settlement.to_trip_member_id].to_f - settlement.amount.to_f
+    end
+
+    member_balances
+  end
+
+  def budget_vs_actual
+    trip_categories.map do |cat|
+      spent = trip_expenses.where(trip_category_id: cat.id).sum(:amount).to_f
+      { category: cat, budget: cat.budget.to_f, spent: spent, remaining: cat.budget.to_f - spent }
+    end
+  end
+
+  def total_spent
+    trip_expenses.sum(:amount).to_f
+  end
+
+  def can_settle?
+    status == "active"
+  end
+
+  private
+
+  def seed_default_categories
+    defaults = [
+      { name: "Travel", color: "#3B82F6" },
+      { name: "Commute", color: "#8B5CF6" },
+      { name: "Food", color: "#F59E0B" },
+      { name: "Stays", color: "#10B981" },
+      { name: "Activities", color: "#EC4899" },
+      { name: "Misc", color: "#6B7280" }
+    ]
+    defaults.each { |attrs| trip_categories.create!(attrs) }
+  end
+end

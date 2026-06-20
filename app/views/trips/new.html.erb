@@ -1,0 +1,18 @@
+<% content_for :title, "New Trip - Kubera" %>
+
+<div class="min-h-screen bg-slate-950">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <%= link_to trips_path, class: "inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-300 transition-colors mb-4" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back to trips
+      <% end %>
+      <h1 class="text-2xl font-bold text-slate-100">New Trip</h1>
+      <p class="text-sm text-slate-400 mt-1">Create a trip to track shared expenses</p>
+    </div>
+
+    <div class="bg-slate-900/70 border border-slate-800/50 rounded-xl p-6">
+      <%= render "form", trip: @trip %>
+    </div>
+  </div>
+</div>

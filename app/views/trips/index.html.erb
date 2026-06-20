@@ -1,0 +1,55 @@
+<% content_for :title, "Trips - Kubera" %>
+
+<div class="min-h-screen bg-slate-950">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-100">Trips</h1>
+        <p class="text-sm text-slate-400 mt-1">Track and split expenses for your trips</p>
+      </div>
+      <%= link_to new_trip_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-sm font-medium transition-colors" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        New Trip
+      <% end %>
+    </div>
+
+    <% if @trips.empty? %>
+      <div class="text-center py-16">
+        <div class="text-5xl mb-4">✈️</div>
+        <h2 class="text-lg font-medium text-slate-300 mb-2">No trips yet</h2>
+        <p class="text-sm text-slate-500 mb-6">Create your first trip to start tracking expenses</p>
+        <%= link_to "Create a Trip", new_trip_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-sm font-medium transition-colors" %>
+      </div>
+    <% else %>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <% @trips.each do |trip| %>
+          <%= link_to trip_path(trip), class: "block bg-slate-900/70 border border-slate-800/50 rounded-xl p-5 hover:border-slate-700/50 hover:bg-slate-900 transition-all group" do %>
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-base font-semibold text-slate-200 group-hover:text-teal-400 transition-colors"><%= trip.name %></h3>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= trip.status == 'active' ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-800/40' : trip.status == 'settled' ? 'bg-blue-900/40 text-blue-300 border border-blue-800/40' : 'bg-slate-800/40 text-slate-400 border border-slate-700/40' %>">
+                <%= trip.status.capitalize %>
+              </span>
+            </div>
+
+            <% if trip.destination.present? %>
+              <p class="text-sm text-slate-400 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1 -mt-0.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <%= trip.destination %>
+              </p>
+            <% end %>
+
+            <div class="flex items-center gap-4 text-xs text-slate-500">
+              <span><%= trip.trip_members.count %> member<%= 's' if trip.trip_members.count != 1 %></span>
+              <% if trip.start_date %>
+                <span><%= trip.start_date.strftime("%b %d") %><%= " - #{trip.end_date.strftime("%b %d")}" if trip.end_date %></span>
+              <% end %>
+              <% if trip.total_spent > 0 %>
+                <span class="text-teal-400">₹<%= format("%.0f", trip.total_spent) %></span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
