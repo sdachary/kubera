@@ -35,7 +35,19 @@ class Api::BaseController < ActionController::API
   private
 
   def current_user
-    @current_user ||= User.first # Single-user system for now
+    @current_user ||= begin
+      token = request.headers['Authorization']&.delete_prefix('Bearer ')
+      return nil unless token
+      session = Session.active.includes(:user).find_by(token: token)
+      session&.user
+    end
+  end
+
+  def current_session
+    @current_session ||= begin
+      token = request.headers['Authorization']&.delete_prefix('Bearer ')
+      Session.active.find_by(token: token) if token
+    end
   end
 
   def authenticate

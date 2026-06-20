@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
-  helper_method :current_user
+  helper_method :current_user, :current_session
 
-  before_action :require_onboarding
+  before_action :require_login
+  before_action :check_onboarding
 
   rescue_from Exception, with: :handle_exception unless Rails.env.development?
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -11,43 +12,41 @@ class ApplicationController < ActionController::Base
 
   def current_user
     @current_user ||= begin
-      user = User.first
-      if user.nil? && run_first_boot_setup!
-        user = User.first
-      end
-      user
+      token = cookies.signed[:session_token]
+      return nil unless token
+      session = Session.active.includes(:user).find_by(token: token)
+      session&.user
     end
   end
 
-  def require_onboarding
-    return if current_user.onboarded?
-    redirect_to onboarding_path
+  def current_session
+    @current_session ||= begin
+      token = cookies.signed[:session_token]
+      Session.active.find_by(token: token) if token
+    end
   end
 
-  def run_first_boot_setup!
-    Rails.logger.info "[Kubera] First boot detected. Running setup..."
-    begin
-      ActiveRecord::Migration.check_pending!
-    rescue ActiveRecord::PendingMigrationError
-      Rails.logger.info "[Kubera] Running pending migrations..."
-      ActiveRecord::Migration.migrate
+  def require_login
+    unless current_user
+      redirect_to login_path
     end
+  end
 
-    unless User.exists?
-      user = User.create!(
-        email: "me@kubera.local",
-        password: SecureRandom.hex(32),
-        onboarded: true,
-        theme: "dark",
-        currency: "INR"
-      )
-      user.journeys.create!(phase: "negative")
-      Rails.logger.info "[Kubera] Default user created."
+  def check_onboarding
+    if current_user && !current_user.onboarded? && request.path != onboarding_path
+      redirect_to onboarding_path
     end
-    true
-  rescue => e
-    Rails.logger.error "[Kubera] First boot setup failed: #{e.message}"
-    false
+  end
+
+  def authenticate
+    render_unauthorized unless current_user
+  end
+
+  def render_unauthorized
+    respond_to do |format|
+      format.html { redirect_to login_path }
+      format.json { render json: { error: 'Unauthorized' }, status: :unauthorized }
+    end
   end
 
   def handle_exception(exception)

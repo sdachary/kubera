@@ -7,3 +7,14 @@ queues:
   - [maintenance, 2]
   - [low_priority, 1]
   - [default, 1]
+
+:schedule:
+  weekly_backup:
+    cron: '0 9 * * 1'
+    class: WeeklyBackupJob
+    description: 'Weekly Google Sheet backup for all users'
+
+  process_deletions:
+    cron: '*/30 * * * *'
+    class: CheckDeletionsJob
+    description: 'Process scheduled account deletions'

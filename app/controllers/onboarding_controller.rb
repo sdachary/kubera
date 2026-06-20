@@ -1,6 +1,6 @@
 class OnboardingController < ApplicationController
   layout false
-  skip_before_action :require_onboarding, only: [:show, :update]
+  skip_before_action :check_onboarding, only: [:show, :update]
 
   def show
     redirect_to(root_path) && return if current_user.onboarded?

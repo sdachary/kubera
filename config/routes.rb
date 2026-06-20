@@ -6,9 +6,22 @@ Rails.application.routes.draw do
   get "up" => "health#show", as: :rails_health_check
   get "/api/health", to: "health#show"
 
+  # Phase 14: Auth
+  get '/auth/google_oauth2/callback', to: 'sessions#create'
+  get '/auth/failure', to: 'sessions#failure'
+  post '/auth/logout', to: 'sessions#destroy'
+  get '/login', to: 'sessions#new'
+  delete '/account', to: 'sessions#destroy_account'
+
   resource :onboarding, only: [:show, :update], controller: 'onboarding'
   get "/privacy", to: "pages#privacy"
   get "/security", to: "pages#security"
+  get "/dpo", to: "pages#dpo"
+
+  post "/api/dpdp/consent", to: "dpdp#consent"
+  get "/api/dpdp/consent", to: "dpdp#consent_status"
+  post "/api/dpdp/erasure", to: "dpdp#erasure"
+  post "/api/dpdp/cancel-deletion", to: "dpdp#cancel_deletion"
 
   root "pages#dashboard"
 

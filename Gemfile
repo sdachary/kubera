@@ -24,6 +24,14 @@ gem "sidekiq-cron"
 gem "ruby-openai"
 gem "rack-attack"
 
+# Phase 14: Auth + DPDP
+gem "omniauth", "~> 2.1"
+gem "omniauth-google-oauth2", "~> 1.1"
+gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "google-apis-sheets_v4", "~> 0.36"
+gem "googleauth", "~> 1.11"
+gem "rack-cors"
+
 group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
