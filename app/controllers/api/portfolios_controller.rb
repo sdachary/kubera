@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Api::PortfoliosController < Api::BaseController
   def index
     portfolios = current_user.portfolios.order(created_at: :desc)
@@ -32,6 +30,24 @@ class Api::PortfoliosController < Api::BaseController
     render_success({ optimal_weights: {} })
   end
 
+  def research
+    portfolio = current_user.portfolios.find(params[:id])
+    investments = portfolio.investments.where(investment_type: %w[stock etf])
+
+    if investments.empty?
+      return render_success({ message: "No stock or ETF investments to research" })
+    end
+
+    investments.each do |inv|
+      DexterResearchJob.perform_async(portfolio.id, inv.symbol, inv.exchange || "US")
+    end
+
+    render_success({
+      message: "Research queued for #{investments.size} investment(s)",
+      queued_count: investments.size
+    })
+  end
+
   private
 
   def portfolio_params
@@ -41,12 +57,31 @@ class Api::PortfoliosController < Api::BaseController
   end
 
   def portfolio_json(p)
-    { id: p.id, name: p.name, goal: p.goal, risk_tolerance: p.risk_tolerance&.to_f,
+    research = p.research_analyses.includes(:portfolio).successful.recent.limit(5).map do |ra|
+      analysis = ra.analysis
+      {
+        id: ra.id,
+        ticker: ra.ticker,
+        exchange: ra.exchange,
+        company_name: ra.company_name,
+        sector: ra.sector,
+        summary: ra.summary,
+        pe_category: analysis&.pe_category,
+        healthy: analysis&.healthy?,
+        ratios: ra.ratios_data,
+        researched_at: ra.researched_at
+      }
+    end
+
+    {
+      id: p.id, name: p.name, goal: p.goal, risk_tolerance: p.risk_tolerance&.to_f,
       total_value: p.total_value.to_f,
       allocation_summary: p.allocation_summary,
       investments: p.investments.map { |i| investment_json(i) },
       dividend_sips: p.dividend_sips.map { |s| sip_json(s) },
-      created_at: p.created_at }
+      research_analyses: research,
+      created_at: p.created_at
+    }
   end
 
   def investment_json(i)
@@ -54,7 +89,9 @@ class Api::PortfoliosController < Api::BaseController
       buy_price: i.buy_price&.to_f, current_price: i.current_price&.to_f,
       current_value: i.current_value.to_f, gain_loss: i.gain_loss.to_f,
       gain_loss_pct: i.gain_loss_percentage, dividend_yield: i.dividend_yield&.to_f,
-      sector: i.sector, investment_type: i.investment_type }
+      sector: i.sector, investment_type: i.investment_type,
+      currency_code: i.currency_code, currency_symbol: Currency.symbol_for(i.currency_code),
+      exchange: i.exchange }
   end
 
   def sip_json(s)

@@ -13,6 +13,7 @@ if defined?(Sidekiq::Cron)
     { name: "Sync Cleaner — every hour", cron: "0 * * * *", class: "SyncCleanerJob" },
     { name: "Data Cleaner — daily 3 AM", cron: "0 3 * * *", class: "DataCleanerJob" },
     { name: "Expense Reminder Check — daily 9 AM", cron: "0 9 * * *", class: "ExpenseReminderCheckJob" },
+    { name: "Weekly Dexter Research — Sunday 10 AM", cron: "0 10 * * 0", class: "WeeklyResearchJob" },
   ]
 
   jobs.each do |attrs|

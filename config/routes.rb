@@ -52,6 +52,7 @@ Rails.application.routes.draw do
     resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
       member do
         post :rebalance
+        post :research
       end
     end
     resources :investments, only: [:index, :create, :update, :destroy]
