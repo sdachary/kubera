@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 ruby file: ".ruby-version"
 
-gem "rails", "~> 7.2.2"
+gem "rails", "~> 8.1.3"
 gem "pg"
 gem "puma", ">= 5.0"
 
@@ -27,8 +27,8 @@ gem "rack-attack"
 # Phase 14: Auth + DPDP
 gem "omniauth", "~> 2.1"
 gem "omniauth-google-oauth2", "~> 1.1"
-gem "omniauth-rails_csrf_protection", "~> 1.0"
-gem "google-apis-sheets_v4", "~> 0.36"
+gem "omniauth-rails_csrf_protection", "~> 2.0"
+gem "google-apis-sheets_v4", "~> 0.48"
 gem "googleauth", "~> 1.11"
 gem "rack-cors"
 
