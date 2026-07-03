@@ -44,7 +44,6 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up Ruby
@@ -76,3 +75,20 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
+
+  validate-installer:
+    name: Validate installer scripts
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.modified, 'install.sh') || contains(github.event.pull_request.changed_files, 'install.sh') }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          additional_files: 'install.sh'
+          severity: warning
+      - name: Check bash syntax
+        run: bash -n install.sh && echo "Syntax OK"
+      - name: Validate compose file
+        run: docker compose -f compose.yml config --quiet && echo "compose.yml valid"
