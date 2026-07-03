@@ -1,8 +1,8 @@
 class PagesController < ApplicationController
   layout "application"
 
-  skip_before_action :require_login, only: [:privacy, :security, :dpo]
-  skip_before_action :check_onboarding, only: [:privacy, :security, :dpo]
+  skip_before_action :require_login, only: [:privacy, :security, :dpo, :terms]
+  skip_before_action :check_onboarding, only: [:privacy, :security, :dpo, :terms]
 
   def privacy
   end
@@ -11,6 +11,9 @@ class PagesController < ApplicationController
   end
 
   def dpo
+  end
+
+  def terms
   end
 
   def dashboard

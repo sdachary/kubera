@@ -3,43 +3,87 @@
 <div class="max-w-3xl mx-auto px-4 py-12">
   <h1 class="text-3xl font-bold text-white mb-6">Data Protection Officer</h1>
 
-  <div class="bg-gray-900 rounded-2xl p-8 border border-gray-800 space-y-6">
-    <div>
-      <h2 class="text-lg font-semibold text-white mb-2">Contact</h2>
-      <p class="text-gray-300">
-        For all data protection inquiries, including requests to access, correct, or delete your personal data:
-      </p>
-      <p class="mt-2 text-indigo-400 font-medium">
-        DPO: dpo@kubera.app
-      </p>
+  <div class="space-y-6">
+    <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 space-y-6">
+      <div>
+        <h2 class="text-lg font-semibold text-white mb-2">Contact</h2>
+        <p class="text-slate-300">
+          For all data protection inquiries, including requests to access, correct, or delete your personal data:
+        </p>
+        <p class="mt-2 text-teal-400 font-medium">
+          DPO: dpo@kubera.app
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-white mb-2">Your Rights Under DPDP Act 2023</h2>
+        <ul class="text-slate-300 space-y-2 list-disc list-inside">
+          <li><strong>Right to知情 (Knowledge):</strong> You have the right to know what personal data we collect and how it is used.</li>
+          <li><strong>Right to Consent:</strong> We will obtain your explicit consent before processing your data for any purpose.</li>
+          <li><strong>Right to Access:</strong> You can request a copy of all personal data we hold about you.</li>
+          <li><strong>Right to Correction:</strong> You can request correction of inaccurate or incomplete data.</li>
+          <li><strong>Right to Deletion:</strong> You can request deletion of your personal data at any time with a 48-hour cancellation window.</li>
+          <li><strong>Right to Grievance Redressal:</strong> You can file complaints regarding data processing.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-white mb-2">Data We Collect</h2>
+        <ul class="text-slate-300 space-y-1 list-disc list-inside">
+          <li>Email address and profile information (via Google OAuth)</li>
+          <li>Financial data you choose to enter (debts, investments, transactions, budgets)</li>
+          <li>Usage data to improve our services</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-white mb-2">Data Retention</h2>
+        <p class="text-slate-300">
+          We retain your data only as long as necessary to provide our services. Upon account deletion, all personal data is permanently erased within 48 hours.
+        </p>
+      </div>
     </div>
 
-    <div>
-      <h2 class="text-lg font-semibold text-white mb-2">Your Rights Under DPDP Act 2023</h2>
-      <ul class="text-gray-300 space-y-2 list-disc list-inside">
-        <li><strong>Right to知情 (Knowledge):</strong> You have the right to know what personal data we collect and how it is used.</li>
-        <li><strong>Right to Consent:</strong> We will obtain your explicit consent before processing your data for any purpose.</li>
-        <li><strong>Right to Access:</strong> You can request a copy of all personal data we hold about you.</li>
-        <li><strong>Right to Correction:</strong> You can request correction of inaccurate or incomplete data.</li>
-        <li><strong>Right to Deletion:</strong> You can request deletion of your personal data at any time.</li>
-        <li><strong>Right to Grievance Redressal:</strong> You can file complaints regarding data processing.</li>
-      </ul>
-    </div>
+    <%# Grievance Form %>
+    <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-8" data-controller="privacy-settings">
+      <h2 class="text-lg font-semibold text-white mb-2">File a Grievance</h2>
+      <p class="text-sm text-slate-400 mb-6">Submit a formal grievance under Section 14 of the DPDP Act 2023. We will acknowledge receipt within 24 hours and resolve within 90 days.</p>
 
-    <div>
-      <h2 class="text-lg font-semibold text-white mb-2">Data We Collect</h2>
-      <ul class="text-gray-300 space-y-1 list-disc list-inside">
-        <li>Email address and profile information (via Google OAuth)</li>
-        <li>Financial data you choose to enter (debts, investments, transactions, budgets)</li>
-        <li>Usage data to improve our services</li>
-      </ul>
-    </div>
-
-    <div>
-      <h2 class="text-lg font-semibold text-white mb-2">Data Retention</h2>
-      <p class="text-gray-300">
-        We retain your data only as long as necessary to provide our services. Upon account deletion, all personal data is permanently erased within 48 hours.
-      </p>
+      <form id="dpo-grievance-form" class="space-y-4" data-action="submit->privacy-settings#submitGrievance">
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Grievance Type</label>
+          <select name="grievance_type" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+            <option value="">Select type...</option>
+            <option value="access">Cannot access my data</option>
+            <option value="correction">Data correction needed</option>
+            <option value="erasure">Deletion request issue</option>
+            <option value="consent">Consent concern</option>
+            <option value="breach">Suspected data breach</option>
+            <option value="marketing">Unwanted marketing</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Your Name</label>
+          <input type="text" name="name" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Email</label>
+          <input type="email" name="email" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Phone (optional)</label>
+          <input type="tel" name="phone" placeholder="+91XXXXXXXXXX" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Description</label>
+          <textarea name="description" rows="4" required placeholder="Describe your concern in detail..." class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></textarea>
+        </div>
+        <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors">
+          Submit Grievance
+        </button>
+        <p id="dpo-grievance-result" class="hidden text-sm mt-2"></p>
+      </form>
     </div>
   </div>
 </div>

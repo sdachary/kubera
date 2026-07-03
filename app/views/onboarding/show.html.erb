@@ -30,6 +30,48 @@
         <%= f.select :theme, options_for_select([["Dark", "dark"], ["Light", "light"]], current_user.theme), {}, class: "w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" %>
       </div>
 
+      <div class="space-y-3 border-t border-slate-800 pt-4">
+        <p class="text-sm font-medium text-slate-300">Data Consent</p>
+        <p class="text-xs text-slate-500">Under the DPDP Act 2023, we need your explicit consent for the following purposes. These can be changed anytime in Privacy Settings.</p>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="consent_financial_tracking" checked class="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-teal-600 focus:ring-teal-500">
+          <div>
+            <span class="text-sm text-slate-200">Financial Tracking</span>
+            <p class="text-xs text-slate-500">Record and manage transactions, expenses, and income</p>
+          </div>
+        </label>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="consent_trip_data" checked class="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-teal-600 focus:ring-teal-500">
+          <div>
+            <span class="text-sm text-slate-200">Trip Data</span>
+            <p class="text-xs text-slate-500">Store trip plans, expenses, and member information</p>
+          </div>
+        </label>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="consent_email_updates" class="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-teal-600 focus:ring-teal-500">
+          <div>
+            <span class="text-sm text-slate-200">Email Updates</span>
+            <p class="text-xs text-slate-500">Receive account notifications, reports, and reminders</p>
+          </div>
+        </label>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="consent_marketing" class="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-teal-600 focus:ring-teal-500">
+          <div>
+            <span class="text-sm text-slate-200">Marketing</span>
+            <p class="text-xs text-slate-500">Receive product updates and promotional content</p>
+          </div>
+        </label>
+
+        <p class="text-xs text-slate-600 mt-2">
+          By clicking Get Started, you confirm you are 18 years or older and agree to our
+          <%= link_to "Privacy Policy", privacy_path, class: "text-teal-400 hover:text-teal-300 underline" %>.
+        </p>
+      </div>
+
       <%= f.submit "Get Started", class: "w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-white font-medium hover:bg-indigo-500 transition cursor-pointer" %>
     <% end %>
   </div>

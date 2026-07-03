@@ -62,4 +62,74 @@ class DpdpController < ApplicationController
 
     render json: { success: true, message: 'Deletion request cancelled.' }
   end
+
+  def full_export
+    user = current_user
+    return render json: { error: 'Not authenticated' }, status: :unauthorized unless user
+
+    export = {
+      exported_at: Time.current.iso8601,
+      user: {
+        id: user.id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        currency: user.currency,
+        locale: user.locale,
+        timezone: user.timezone,
+        onboarded: user.onboarded,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      },
+      consent_records: user.consent_records.order(created_at: :desc).map { |r|
+        { feature: r.feature, granted: r.granted, granted_at: r.granted_at, revoked_at: r.revoked_at }
+      },
+      deletion_requests: user.deletion_requests.order(created_at: :desc).map { |r|
+        { status: r.status, scheduled_for: r.scheduled_for, created_at: r.created_at }
+      },
+      debts: user.debts.order(created_at: :desc),
+      portfolios: user.portfolios.order(created_at: :desc).map { |p|
+        p.as_json(include: :investments)
+      },
+      journeys: user.journeys.order(created_at: :desc),
+      net_worth_snapshots: user.net_worth_snapshots.order(snapshot_date: :desc).limit(100),
+      recurring_expenses: user.recurring_expenses.order(created_at: :desc),
+      transactions: user.transactions.order(transaction_date: :desc).limit(500),
+      budgets: user.budgets.order(created_at: :desc),
+      trips: user.trips.order(created_at: :desc),
+      conversations: user.conversations.order(created_at: :desc).map { |c|
+        { id: c.id, title: c.title, messages: c.messages.order(created_at: :asc).map { |m|
+          { role: m.role, content: m.content, created_at: m.created_at }
+        }}
+      },
+      grievances: user.grievances.order(created_at: :desc)
+    }
+
+    render json: export
+  end
+
+  def grievance
+    user = current_user
+    return render json: { error: 'Not authenticated' }, status: :unauthorized unless user
+
+    record = user.grievances.create!(
+      name: params[:name] || "#{user.first_name} #{user.last_name}",
+      email: params[:email] || user.email,
+      phone: params[:phone],
+      grievance_type: params[:grievance_type],
+      description: params[:description],
+      acknowledged_at: Time.current
+    )
+
+    render json: {
+      success: true,
+      reference_number: record.reference_number,
+      status: 'received',
+      expected_response: '72 hours',
+      expected_resolution: '90 days',
+      message: 'Grievance received. We will respond within 72 hours.'
+    }
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
 end

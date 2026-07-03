@@ -1,0 +1,94 @@
+<% content_for :title, "Privacy Settings — Kubera" %>
+
+<div class="max-w-3xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-white">Privacy Settings</h1>
+      <p class="text-slate-400 text-sm mt-1">Manage your data and consent preferences</p>
+    </div>
+    <%= link_to "← Dashboard", root_path, class: "text-sm text-teal-400 hover:text-teal-300 transition-colors" %>
+  </div>
+
+  <div class="space-y-8" data-controller="privacy-settings">
+
+    <%# Consent Toggles %>
+    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-white mb-1">Consent Preferences</h2>
+      <p class="text-sm text-slate-400 mb-6">Your consent choices are recorded with IP and timestamp for audit. Revoking a feature may disable related functionality.</p>
+      <div id="consent-list" class="space-y-4">
+        <p class="text-sm text-slate-500" id="consent-loading">Loading consent settings...</p>
+      </div>
+    </section>
+
+    <%# Deletion Section %>
+    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6" id="deletion-section">
+      <h2 class="text-lg font-semibold text-white mb-1">Account Deletion</h2>
+      <p class="text-sm text-slate-400 mb-6">Request deletion of your account and all associated data. There is a 48-hour cooling period during which you can cancel.</p>
+
+      <div id="deletion-pending" class="hidden p-4 border border-red-800/50 bg-red-900/20 rounded-xl mb-4">
+        <div class="flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-red-400">Deletion Pending</p>
+            <p id="deletion-status-info" class="text-xs text-slate-400 mt-1"></p>
+            <button id="cancel-deletion-btn" class="mt-3 px-4 py-1.5 text-xs font-medium text-red-400 border border-red-800/50 rounded-lg hover:bg-red-900/30 transition-colors">
+              Cancel Deletion Request
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="deletion-action">
+        <button id="request-deletion-btn" class="px-4 py-2 text-sm font-medium text-red-400 border border-red-800/50 rounded-lg hover:bg-red-900/30 transition-colors">
+          Request Account Deletion
+        </button>
+      </div>
+    </section>
+
+    <%# Export Section %>
+    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-white mb-1">Export Your Data</h2>
+      <p class="text-sm text-slate-400 mb-6">Download all your personal data in machine-readable format (JSON). This includes your profile, financial records, conversations, and consent history.</p>
+      <button id="export-data-btn" class="px-4 py-2 text-sm font-medium text-teal-400 border border-teal-800/50 rounded-lg hover:bg-teal-900/30 transition-colors" data-action="privacy-settings#exportData">
+        Download My Data
+      </button>
+    </section>
+
+    <%# Grievance Section %>
+    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-white mb-1">File a Grievance</h2>
+      <p class="text-sm text-slate-400 mb-6">If you have a concern about how your personal data is being processed, you can file a grievance under Section 14 of the DPDP Act 2023.</p>
+      <form id="grievance-form" class="space-y-4" data-action="submit->privacy-settings#submitGrievance">
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Grievance Type</label>
+          <select name="grievance_type" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+            <option value="">Select type...</option>
+            <option value="access">Cannot access my data</option>
+            <option value="correction">Data correction needed</option>
+            <option value="erasure">Deletion request issue</option>
+            <option value="consent">Consent concern</option>
+            <option value="breach">Suspected data breach</option>
+            <option value="marketing">Unwanted marketing</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Description</label>
+          <textarea name="description" rows="4" required placeholder="Describe your concern in detail..." class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Phone (optional)</label>
+          <input type="tel" name="phone" placeholder="+91XXXXXXXXXX" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+        </div>
+        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors">
+          Submit Grievance
+        </button>
+        <p id="grievance-result" class="hidden text-sm"></p>
+      </form>
+    </section>
+
+    <div class="border-t border-slate-800 pt-6 text-sm text-slate-500">
+      <p>For urgent concerns, contact our DPO at <a href="mailto:dpo@kubera.app" class="text-teal-400 hover:text-teal-300">dpo@kubera.app</a></p>
+    </div>
+  </div>
+</div>

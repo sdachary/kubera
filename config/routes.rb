@@ -28,11 +28,15 @@ Rails.application.routes.draw do
   get "/privacy", to: "pages#privacy"
   get "/security", to: "pages#security"
   get "/dpo", to: "pages#dpo"
+  get "/terms", to: "pages#terms"
+  get "/privacy-settings", to: "privacy_settings#show"
 
   post "/api/dpdp/consent", to: "dpdp#consent"
   get "/api/dpdp/consent", to: "dpdp#consent_status"
   post "/api/dpdp/erasure", to: "dpdp#erasure"
   post "/api/dpdp/cancel-deletion", to: "dpdp#cancel_deletion"
+  post "/api/dpdp/full-export", to: "dpdp#full_export"
+  post "/api/dpdp/grievance", to: "dpdp#grievance"
 
   root "pages#dashboard"
 
