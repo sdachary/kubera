@@ -16,6 +16,9 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: gitleaks
+        run: npx gitleaks@latest detect -c .gitleaks.toml
+        continue-on-error: true
       - name: Run RuboCop
         run: bundle exec rubocop --parallel
 
