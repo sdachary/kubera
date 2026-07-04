@@ -1,5 +1,9 @@
 class Rack::Attack
-  cache.store = ActiveSupport::Cache::MemoryStore.new
+  cache.store = if ENV["REDIS_URL"].present?
+    ActiveSupport::Cache::RedisCacheStore.new(url: ENV["REDIS_URL"])
+  else
+    ActiveSupport::Cache::MemoryStore.new
+  end
 
   # Throttle all POST/PUT/PATCH/DELETE to /api/ (write operations)
   throttle("api/write", limit: 30, period: 1.minute) do |req|
