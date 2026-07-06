@@ -1,5 +1,5 @@
 class DpdpController < ApplicationController
-  skip_before_action :require_onboarding, only: [:consent, :consent_status]
+  skip_before_action :check_onboarding, only: [:consent, :consent_status]
 
   def consent
     user = current_user

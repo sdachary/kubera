@@ -2,7 +2,7 @@ require "open3"
 require "json"
 require "timeout"
 
-class Dexter
+module Dexter
   class Wrapper
     DEFAULT_TIMEOUT = 30
     DEFAULT_RETRIES = 2

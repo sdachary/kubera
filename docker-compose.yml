@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:16
@@ -30,7 +28,10 @@ services:
       retries: 5
 
   app:
-    build: .
+    build:
+      context: .
+      args:
+        SECRET_KEY_BUILD: ${SECRET_KEY_BUILD:-dummy-build-key-not-for-production}
     image: kubera:latest
     restart: unless-stopped
     depends_on:

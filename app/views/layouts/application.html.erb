@@ -13,22 +13,27 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
-  <style>
+  <style nonce="<%= content_security_policy_nonce %>">
     :root { --font-sans: 'Outfit', system-ui, sans-serif; --font-mono: 'Space Mono', monospace; }
     body { font-family: var(--font-sans); }
     * { scrollbar-width: thin; scrollbar-color: #1e293b transparent; }
   </style>
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js");
-    }
-  </script>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased min-h-screen">
+  <% if current_user %>
+    <nav class="border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+        <span class="font-semibold tracking-tight">Kubera</span>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-slate-400"><%= current_user.email %></span>
+          <%= button_to "Logout", "/auth/logout", method: :post, class: "text-sm text-slate-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none" %>
+        </div>
+      </div>
+    </nav>
+  <% end %>
   <%= yield %>
 
   <footer class="border-t border-slate-800 mt-16">

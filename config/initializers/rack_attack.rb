@@ -1,6 +1,6 @@
 class Rack::Attack
   cache.store = if ENV["REDIS_URL"].present?
-    ActiveSupport::Cache::RedisCacheStore.new(url: ENV["REDIS_URL"])
+    ActiveSupport::Cache::RedisCacheStore.new(url: ENV["REDIS_URL"], pool: false)
   else
     ActiveSupport::Cache::MemoryStore.new
   end
@@ -28,7 +28,7 @@ class Rack::Attack
       findtime: 10.minutes,
       bantime: 30.minutes
     ) do
-      req.path.start_with?("/admin", "/wp-", "/.env", "/login", "/register")
+      req.path.start_with?("/admin", "/wp-", "/.env", "/wp-login.php", "/xmlrpc.php")
     end
   end
 end

@@ -1,50 +1,50 @@
 class Api::PortfoliosController < Api::BaseController
   def index
-    portfolios = current_user.portfolios.order(created_at: :desc)
+    portfolios = storage.list_portfolios
     render_success(portfolios.map { |p| portfolio_json(p) })
   end
 
   def show
-    portfolio = current_user.portfolios.find(params[:id])
+    portfolio = storage.get_portfolio(id: params[:id])
     render_success(portfolio_json(portfolio))
   end
 
   def create
-    portfolio = current_user.portfolios.create!(portfolio_params)
+    portfolio = storage.create_portfolio(attrs: portfolio_params)
     render_success(portfolio_json(portfolio), status: :created)
   end
 
   def update
-    portfolio = current_user.portfolios.find(params[:id])
-    portfolio.update!(portfolio_params)
+    portfolio = storage.update_portfolio(id: params[:id], attrs: portfolio_params)
     render_success(portfolio_json(portfolio))
   end
 
   def destroy
-    current_user.portfolios.find(params[:id]).destroy!
+    storage.delete_portfolio(id: params[:id])
     head :no_content
   end
 
   def rebalance
-    portfolio = current_user.portfolios.find(params[:id])
+    portfolio = storage.get_portfolio(id: params[:id])
     render_success({ optimal_weights: {} })
   end
 
   def research
-    portfolio = current_user.portfolios.find(params[:id])
-    investments = portfolio.investments.where(investment_type: %w[stock etf])
+    portfolio = storage.get_portfolio(id: params[:id])
+    investments = storage.list_investments(filters: { portfolio_id: params[:id] })
+    stocks = investments.select { |i| %w[stock etf].include?(i.investment_type.to_s) }
 
-    if investments.empty?
+    if stocks.empty?
       return render_success({ message: "No stock or ETF investments to research" })
     end
 
-    investments.each do |inv|
-      DexterResearchJob.perform_async(portfolio.id, inv.symbol, inv.exchange || "US")
+    stocks.each do |inv|
+      DexterResearchJob.perform_async(params[:id], inv.symbol, inv.respond_to?(:exchange) ? (inv.exchange || "US") : "US")
     end
 
     render_success({
-      message: "Research queued for #{investments.size} investment(s)",
-      queued_count: investments.size
+      message: "Research queued for #{stocks.size} investment(s)",
+      queued_count: stocks.size
     })
   end
 
@@ -57,48 +57,14 @@ class Api::PortfoliosController < Api::BaseController
   end
 
   def portfolio_json(p)
-    research = p.research_analyses.includes(:portfolio).successful.recent.limit(5).map do |ra|
-      analysis = ra.analysis
-      {
-        id: ra.id,
-        ticker: ra.ticker,
-        exchange: ra.exchange,
-        company_name: ra.company_name,
-        sector: ra.sector,
-        summary: ra.summary,
-        pe_category: analysis&.pe_category,
-        healthy: analysis&.healthy?,
-        ratios: ra.ratios_data,
-        researched_at: ra.researched_at
-      }
-    end
+    total_value = p.respond_to?(:total_value) ? p.total_value.to_f : p.amount.to_f
+    base_cc = p.currency_code.presence || "INR"
 
     {
       id: p.id, name: p.name, goal: p.goal, risk_tolerance: p.risk_tolerance&.to_f,
-      total_value: p.total_value.to_f,
-      allocation_summary: p.allocation_summary,
-      investments: p.investments.map { |i| investment_json(i) },
-      dividend_sips: p.dividend_sips.map { |s| sip_json(s) },
-      research_analyses: research,
+      total_value: total_value, allocation_summary: { sectors: {}, dividend_sips: 0 },
+      investments: [], dividend_sips: [], research_analyses: [],
       created_at: p.created_at
     }
-  end
-
-  def investment_json(i)
-    { id: i.id, symbol: i.symbol, name: i.name, shares: i.shares&.to_f,
-      buy_price: i.buy_price&.to_f, current_price: i.current_price&.to_f,
-      current_value: i.current_value.to_f, gain_loss: i.gain_loss.to_f,
-      gain_loss_pct: i.gain_loss_percentage, dividend_yield: i.dividend_yield&.to_f,
-      sector: i.sector, investment_type: i.investment_type,
-      currency_code: i.currency_code, currency_symbol: Currency.symbol_for(i.currency_code),
-      exchange: i.exchange }
-  end
-
-  def sip_json(s)
-    { id: s.id, name: s.name, amount: s.amount.to_f, frequency: s.frequency,
-      status: s.status, target_income: s.target_income&.to_f,
-      monthly_contribution: s.monthly_contribution.to_f,
-      projected_annual_income: s.projected_annual_income.to_f,
-      next_execution: s.next_execution }
   end
 end

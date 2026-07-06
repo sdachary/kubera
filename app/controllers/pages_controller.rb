@@ -24,7 +24,7 @@ class PagesController < ApplicationController
     @total_debt = current_user.debts.active.sum(:amount).to_f
     @total_investments = current_user.portfolios.sum(:total_value).to_f
     @net_worth = @total_investments - @total_debt
-    @monthly_expenses = current_user.recurring_expenses.active.sum(:monthly_amount)
+    @monthly_expenses = current_user.recurring_expenses.active.to_a.sum(&:monthly_amount)
     @journey = current_user.journeys.first
     @base_currency = current_user.currency
     @currency_symbol = Currency.symbol_for(@base_currency)

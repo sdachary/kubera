@@ -1,38 +1,34 @@
-# frozen_string_literal: true
-
 class Api::RecurringExpensesController < Api::BaseController
   def index
-    expenses = current_user.recurring_expenses.order(next_due_date: :asc)
+    expenses = storage.list_recurring_expenses
     render_success(expenses.map { |e| expense_json(e) })
   end
 
   def show
-    expense = current_user.recurring_expenses.find(params[:id])
+    expense = storage.get_recurring_expense(id: params[:id])
     render_success(expense_json(expense))
   end
 
   def create
-    expense = current_user.recurring_expenses.create!(expense_params)
+    expense = storage.create_recurring_expense(attrs: expense_params)
     render_success(expense_json(expense), status: :created)
   end
 
   def update
-    expense = current_user.recurring_expenses.find(params[:id])
-    expense.update!(expense_params)
+    expense = storage.update_recurring_expense(id: params[:id], attrs: expense_params)
     render_success(expense_json(expense))
   end
 
   def destroy
-    expense = current_user.recurring_expenses.find(params[:id])
-    expense.destroy!
+    storage.delete_recurring_expense(id: params[:id])
     head :no_content
   end
 
   def calendar
     expenses = if params[:id]
-                 [current_user.recurring_expenses.find(params[:id])]
+                 [storage.get_recurring_expense(id: params[:id])]
                else
-                 current_user.recurring_expenses
+                 storage.list_recurring_expenses
                end
     render_success({ expenses: expenses.map { |e| expense_json(e) } })
   end
@@ -46,11 +42,12 @@ class Api::RecurringExpensesController < Api::BaseController
   end
 
   def expense_json(e)
+    cc = e.currency_code.presence || "INR"
     { id: e.id, name: e.name, amount: e.amount.to_f, frequency: e.frequency,
-      next_due_date: e.next_due_date, next_due_days: e.next_due_days,
-      monthly_amount: e.monthly_amount.to_f, category: e.category,
+      next_due_date: e.next_due_date, next_due_days: nil,
+      monthly_amount: e.amount.to_f, category: e.category,
       auto_debit: e.auto_debit, active: e.active, notes: e.notes,
-      created_at: e.created_at, currency_code: e.currency_code,
-      currency_symbol: Currency.symbol_for(e.currency_code) }
+      created_at: e.created_at, currency_code: cc,
+      currency_symbol: Currency.symbol_for(cc) }
   end
 end

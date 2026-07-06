@@ -1,4 +1,4 @@
-class Dexter
+module Dexter
   class Analysis
     attr_reader :ticker, :exchange, :company_name, :sector, :ratios, :statements, :summary
 

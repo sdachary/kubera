@@ -18,7 +18,7 @@
 
 ## Architecture
 
-Personal finance & expense management SaaS. Multi-tenant, Google OAuth-only auth, DPDP-compliant India hosting. Uses Rails 7.2 API + views pattern with Sidekiq for async jobs (backups, research, deletion workflows). Includes Trip Expense Mode for group trip tracking, a Dexter gem wrapper for financial analysis, and extensive DPDP compliance infrastructure (consent_records, erasure with Sheet backup, DPO page). Fully Docker-deployable to India-based VMs — zero external SaaS dependencies post-migration.
+Personal finance & expense management SaaS. Multi-tenant, email/password + Google OAuth + GitHub OAuth auth, DPDP-compliant India hosting. Uses Rails 7.2 API + views pattern with Sidekiq for async jobs (backups, research, deletion workflows). Includes Trip Expense Mode for group trip tracking, a Dexter gem wrapper for financial analysis, and extensive DPDP compliance infrastructure (consent_records, erasure with Sheet backup, DPO page). Fully Docker-deployable to India-based VMs — zero external SaaS dependencies post-migration.
 
 ---
 
@@ -27,7 +27,7 @@ Personal finance & expense management SaaS. Multi-tenant, Google OAuth-only auth
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
 | Hosting | India-only (Oracle/Hostinger) | DPDP Act data localization requirement |
-| Auth | Google OAuth only (no passwords) | Non-profit free forever; no credential management |
+| Auth | Email/password + Google OAuth + GitHub OAuth | Full auth chain for testing before OAuth creds |
 | Pricing | Free forever | Non-profit personal finance tool |
 | Consent | Opt-in per feature | DPDP Act §6 — explicit consent for each purpose |
 | DPDP | Full compliance (Phase 14-15) | Finance data is MEDIUM risk; complete consent/erasure/DPO |
@@ -56,6 +56,7 @@ Personal finance & expense management SaaS. Multi-tenant, Google OAuth-only auth
 | Service | Purpose | Data Shared | DPDP Status |
 |---------|---------|-------------|-------------|
 | Google OAuth | Authentication | email, name, google_uid | Compliant (opt-in) |
+| GitHub OAuth | Authentication | email, name, github_uid | Compliant (opt-in) |
 | PostgreSQL 16 | Primary database | All user data | Self-hosted India |
 | Redis | Sidekiq queue, cache | Job metadata | Self-hosted India |
 | Google Sheets API | Weekly backup export | User's financial data | Compliant (user-owned) |

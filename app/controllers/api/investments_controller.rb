@@ -1,29 +1,25 @@
-# frozen_string_literal: true
-
 class Api::InvestmentsController < Api::BaseController
   def index
-    investments = current_user.portfolios
-      .includes(:investments).flat_map(&:investments)
+    investments = storage.list_investments
     render_success(investments.map { |i| investment_json(i) })
   end
 
   def create
-    portfolio = current_user.portfolios.find(params[:portfolio_id])
-    investment = portfolio.investments.create!(investment_params)
-    DexterResearchJob.perform_async(portfolio.id, investment.symbol, investment.exchange || "US") if %w[stock etf].include?(investment.investment_type)
+    portfolio = storage.get_portfolio(id: params[:portfolio_id])
+    investment = storage.create_investment(attrs: investment_params.merge(portfolio_id: params[:portfolio_id]))
+    if %w[stock etf].include?(investment.investment_type.to_s)
+      DexterResearchJob.perform_async(params[:portfolio_id], investment.symbol, investment.respond_to?(:exchange) ? (investment.exchange || "US") : "US")
+    end
     render_success(investment_json(investment), status: :created)
   end
 
   def update
-    # Note: Using find_by for safety with manual selection from flat_map
-    investment = Investment.joins(portfolio: :user).where(users: { id: current_user.id }).find(params[:id])
-    investment.update!(investment_params)
+    investment = storage.update_investment(id: params[:id], attrs: investment_params)
     render_success(investment_json(investment))
   end
 
   def destroy
-    investment = Investment.joins(portfolio: :user).where(users: { id: current_user.id }).find(params[:id])
-    investment.destroy!
+    storage.delete_investment(id: params[:id])
     render_success({}, message: "Investment deleted")
   end
 
@@ -35,12 +31,21 @@ class Api::InvestmentsController < Api::BaseController
   end
 
   def investment_json(i)
-    { id: i.id, symbol: i.symbol, name: i.name, shares: i.shares&.to_f,
-      buy_price: i.buy_price&.to_f, current_price: i.current_price&.to_f,
-      current_value: i.current_value.to_f, gain_loss: i.gain_loss.to_f,
-      gain_loss_pct: i.gain_loss_percentage, dividend_yield: i.dividend_yield&.to_f,
+    shares = i.shares.to_f
+    buy_price = i.buy_price.to_f
+    current_price = i.current_price.to_f
+    current_value = shares * current_price
+    cost_basis = shares * buy_price
+    gain_loss = current_value - cost_basis
+    gain_loss_pct = cost_basis > 0 ? ((gain_loss / cost_basis) * 100).round(2) : 0
+    cc = i.currency_code.presence || "INR"
+
+    { id: i.id, symbol: i.symbol, name: i.name, shares: shares,
+      buy_price: buy_price, current_price: current_price,
+      current_value: current_value, gain_loss: gain_loss,
+      gain_loss_pct: gain_loss_pct, dividend_yield: i.dividend_yield&.to_f,
       sector: i.sector, investment_type: i.investment_type,
-      currency_code: i.currency_code, currency_symbol: Currency.symbol_for(i.currency_code),
+      currency_code: cc, currency_symbol: Currency.symbol_for(cc),
       exchange: i.exchange }
   end
 end

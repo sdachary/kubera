@@ -2,8 +2,13 @@
   <%# Sidebar %>
   <aside class="w-72 bg-slate-900/50 border-r border-slate-800/50 flex flex-col shrink-0">
     <div class="p-4 border-b border-slate-800/50">
-      <h1 class="text-lg font-semibold tracking-tight text-teal-400">Kubera</h1>
-      <p class="text-xs text-slate-500 mt-0.5">Financial Freedom OS</p>
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold text-sm">K</div>
+        <div>
+          <h1 class="text-sm font-semibold tracking-tight text-white">Kubera</h1>
+          <p class="text-[10px] text-slate-500 leading-tight">Financial Freedom OS</p>
+        </div>
+      </div>
     </div>
 
     <%# Quick Stats %>
@@ -16,30 +21,30 @@
         { label: "Monthly Expenses", value: number_to_currency(@monthly_expenses, unit: symbol), color: "text-amber-400" }
       ] %>
       <% stats.each do |stat| %>
-        <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-800/30">
+        <div class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-slate-800/30">
           <span class="text-xs text-slate-400"><%= stat[:label] %></span>
-          <span class="text-sm font-medium <%= stat[:color] %>"><%= stat[:value] %></span>
+          <span class="text-sm font-medium tabular-nums <%= stat[:color] %>"><%= stat[:value] %></span>
         </div>
       <% end %>
-      <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-800/30">
+      <div class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-slate-800/30">
         <span class="text-xs text-slate-400">Currency</span>
-        <span class="text-sm font-medium text-slate-300"><%= @base_currency %> (<%= @currency_symbol %>)</span>
+        <span class="text-sm font-medium tabular-nums text-slate-300"><%= @base_currency %> <%= @currency_symbol %></span>
       </div>
       <% if @journey&.zero_day_target %>
-        <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-teal-900/20 border border-teal-800/30">
+        <div class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-teal-900/20 border border-teal-800/30">
           <span class="text-xs text-teal-400">Debt Free Date</span>
-          <span class="text-sm font-medium text-teal-300"><%= @journey.zero_day_target.strftime("%b %Y") %></span>
+          <span class="text-sm font-medium tabular-nums text-teal-300"><%= @journey.zero_day_target.strftime("%b %Y") %></span>
         </div>
       <% end %>
     </div>
 
-    <%# Trip Mode Link %>
-    <div class="p-3 border-b border-slate-800/50 space-y-1">
-      <%= link_to trips_path, class: "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-slate-400 hover:bg-slate-800/50 hover:text-slate-200" do %>
+    <%# Navigation %>
+    <div class="p-3 border-b border-slate-800/50 space-y-0.5">
+      <%= link_to trips_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-slate-400 hover:bg-slate-800/50 hover:text-slate-200" do %>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         <span>Trips</span>
       <% end %>
-      <%= link_to privacy_settings_path, class: "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-slate-400 hover:bg-slate-800/50 hover:text-slate-200" do %>
+      <%= link_to privacy_settings_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-slate-400 hover:bg-slate-800/50 hover:text-slate-200" do %>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <span>Privacy Settings</span>
       <% end %>
@@ -47,13 +52,13 @@
 
     <%# Conversations %>
     <div class="flex-1 overflow-y-auto p-3 space-y-1" data-controller="conversations">
-      <div class="flex items-center justify-between mb-2 px-1">
-        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Conversations</span>
-        <button data-action="conversations#new" class="text-xs text-teal-400 hover:text-teal-300 transition-colors">+ New</button>
+      <div class="flex items-center justify-between mb-3 px-1">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest">Conversations</span>
+        <button data-action="conversations#new" class="text-xs text-teal-400 hover:text-teal-300 transition-colors font-medium">+ New</button>
       </div>
       <% @conversations.each do |conv| %>
         <a href="<%= root_path(conversation_id: conv.id) %>"
-           class="block px-3 py-2 rounded-lg text-sm transition-colors <%= conv.id == @conversation.id ? 'bg-teal-900/30 text-teal-200 border border-teal-800/40' : 'text-slate-300 hover:bg-slate-800/50' %>">
+           class="block px-3 py-2.5 rounded-lg text-sm transition-colors <%= conv.id == @conversation.id ? 'bg-teal-900/30 text-teal-200 border border-teal-800/40' : 'text-slate-300 hover:bg-slate-800/50' %>">
           <div class="truncate font-medium"><%= conv.title %></div>
           <div class="truncate text-xs text-slate-500 mt-0.5"><%= conv.messages.last&.content&.truncate(60) || "No messages yet" %></div>
         </a>
@@ -64,7 +69,8 @@
   <%# Main Chat Area %>
   <main class="flex-1 flex flex-col min-w-0">
     <%# Chat Header %>
-    <div class="px-6 py-3 border-b border-slate-800/50 bg-slate-900/30">
+    <div class="px-6 py-3 border-b border-slate-800/50 bg-slate-900/30 flex items-center gap-3">
+      <div class="w-7 h-7 rounded-md bg-teal-600/20 border border-teal-600/30 flex items-center justify-center text-teal-400 text-xs font-bold">K</div>
       <h2 class="text-sm font-medium text-slate-300"><%= @conversation.title %></h2>
     </div>
 
@@ -75,24 +81,26 @@
         <% if @messages.empty? %>
           <div id="messages-empty" class="flex items-center justify-center h-full">
             <div class="text-center max-w-md py-12">
-              <div class="text-4xl mb-4">🌱</div>
-              <h3 class="text-lg font-medium text-slate-300 mb-2">Welcome to Kubera</h3>
-              <p class="text-sm text-slate-500 leading-relaxed">
+              <div class="w-14 h-14 rounded-2xl bg-teal-900/30 border border-teal-800/40 flex items-center justify-center mx-auto mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5eead4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 2-2 3-2 5h-4c0-2-2-3-2-5a4 4 0 0 1 4-4z"/><path d="M9 19c-1 1-2 2-2 4h10c0-2-1-3-2-4"/><path d="M8 13h8"/></svg>
+              </div>
+              <h3 class="text-lg font-semibold text-slate-200 mb-2">Welcome to Kubera</h3>
+              <p class="text-sm text-slate-500 leading-relaxed max-w-sm mx-auto">
                 Your personal AI financial freedom assistant. Tell me about your finances and I'll help you plan your journey from debt to wealth.
               </p>
-              <div class="mt-6 space-y-2 text-left">
-                <p class="text-xs text-slate-600 font-medium uppercase tracking-wider">Try saying:</p>
+              <div class="mt-8 space-y-3 text-left">
+                <p class="text-[11px] text-slate-600 font-medium uppercase tracking-widest">Try saying</p>
                 <div class="space-y-1.5">
-                  <button data-action="click->chat#setPrompt" data-prompt="Setup AI" class="block w-full text-left px-3 py-2 rounded-lg bg-teal-900/30 border border-teal-800/40 text-teal-300 text-sm hover:bg-teal-800/40 transition-colors">
+                  <button data-action="click->chat#setPrompt" data-prompt="Setup AI" class="block w-full text-left px-3.5 py-2.5 rounded-xl bg-teal-900/30 border border-teal-800/40 text-teal-300 text-sm hover:bg-teal-800/40 transition-colors font-medium">
                     "Setup AI" — configure AI (local or cloud)
                   </button>
-                  <button data-action="click->chat#setPrompt" data-prompt="I have a credit card debt of <%= @currency_symbol %>50,000 at 24% interest" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
+                  <button data-action="click->chat#setPrompt" data-prompt="I have a credit card debt of <%= @currency_symbol %>50,000 at 24% interest" class="block w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
                     "I have a credit card debt of <%= @currency_symbol %>50,000 at 24% interest"
                   </button>
-                  <button data-action="click->chat#setPrompt" data-prompt="I want to start investing <%= @currency_symbol %>5,000/month in dividend stocks" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
+                  <button data-action="click->chat#setPrompt" data-prompt="I want to start investing <%= @currency_symbol %>5,000/month in dividend stocks" class="block w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
                     "I want to start investing <%= @currency_symbol %>5,000/month in dividend stocks"
                   </button>
-                  <button data-action="click->chat#setPrompt" data-prompt="Show me my financial overview" class="block w-full text-left px-3 py-2 rounded-lg bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
+                  <button data-action="click->chat#setPrompt" data-prompt="Show me my financial overview" class="block w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/50 text-slate-400 text-sm hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
                     "Show me my financial overview"
                   </button>
                 </div>

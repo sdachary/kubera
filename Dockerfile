@@ -1,4 +1,4 @@
-FROM ruby:3.3.8-slim-bookworm AS base
+FROM ruby:3.3.8-slim-bookworm AS builder
 
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
@@ -8,9 +8,11 @@ RUN apt-get update -qq && \
 WORKDIR /rails
 
 ARG BUNDLE_WITHOUT_GROUPS=development:test
+ARG SECRET_KEY_BUILD
 ENV RAILS_ENV=production \
     BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_WITHOUT=${BUNDLE_WITHOUT_GROUPS}
+    BUNDLE_WITHOUT=${BUNDLE_WITHOUT_GROUPS} \
+    SECRET_KEY_BASE=${SECRET_KEY_BUILD}
 
 RUN gem install bundler --no-document
 
@@ -23,10 +25,28 @@ RUN bundle exec bootsnap precompile --gemfile app/ lib/
 
 RUN bundle exec rails assets:precompile
 
+RUN rm -rf tmp/cache spec/ test/ vendor/bundle
+
+FROM ruby:3.3.8-slim-bookworm
+
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    libpq-dev libvips ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /rails
+
+ENV RAILS_ENV=production \
+    BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_WITHOUT=development:test
+
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /rails /rails
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 3000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["bundle", "exec", "puma", "-b", "tcp://0.0.0.0:3000"]
+CMD ["bundle", "exec", "puma"]

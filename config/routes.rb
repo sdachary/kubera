@@ -6,11 +6,21 @@ Rails.application.routes.draw do
   get "up" => "health#show", as: :rails_health_check
   get "/api/health", to: "health#show"
 
-  # Phase 14: Auth
+  # Password auth (email/password)
+  get '/register', to: 'registrations#new'
+  post '/register', to: 'registrations#create'
+  get '/forgot-password', to: 'passwords#new'
+  post '/forgot-password', to: 'passwords#create'
+  get '/reset-password/:token', to: 'passwords#edit', as: :edit_password_reset
+  put '/reset-password/:token', to: 'passwords#update', as: :reset_password
+
+  # Phase 14: Auth (OAuth)
   get '/auth/google_oauth2/callback', to: 'sessions#create'
+  get '/auth/github/callback', to: 'sessions#create'
   get '/auth/failure', to: 'sessions#failure'
   post '/auth/logout', to: 'sessions#destroy'
   get '/login', to: 'sessions#new'
+  post '/login', to: 'sessions#create'
   delete '/account', to: 'sessions#destroy_account'
 
   # Phase 16: Trip Mode

@@ -1,24 +1,21 @@
-# frozen_string_literal: true
-
 class Api::DebtsController < Api::BaseController
   def index
-    debts = current_user.debts.order(created_at: :desc)
+    debts = storage.list_debts(filters: { active: params[:active] })
     render_success(debts.map { |d| debt_json(d) })
   end
 
   def create
-    debt = current_user.debts.create!(debt_params)
+    debt = storage.create_debt(attrs: debt_params)
     render_success(debt_json(debt), status: :created)
   end
 
   def update
-    debt = current_user.debts.find(params[:id])
-    debt.update!(debt_params)
+    debt = storage.update_debt(id: params[:id], attrs: debt_params)
     render_success(debt_json(debt))
   end
 
   def destroy
-    current_user.debts.find(params[:id]).destroy!
+    storage.delete_debt(id: params[:id])
     render_success({}, message: "Debt deleted")
   end
 
@@ -30,12 +27,18 @@ class Api::DebtsController < Api::BaseController
   end
 
   def debt_json(d)
+    remaining = (d.amount.to_f - d.paid_amount.to_f).clamp(0, d.amount.to_f)
+    progress = d.amount.to_f > 0 ? (d.paid_amount.to_f / d.amount.to_f * 100).round(1) : 0.0
+    months_remaining = d.emi_amount.to_f > 0 ? (remaining / d.emi_amount.to_f).ceil : 0
+    debt_free = months_remaining > 0 ? (Date.today + months_remaining.months) : nil
+
     { id: d.id, name: d.name, category: d.category, amount: d.amount.to_f,
       interest_rate: d.interest_rate&.to_f, emi_amount: d.emi_amount&.to_f,
       due_date: d.due_date, status: d.status, paid_amount: d.paid_amount.to_f,
-      remaining: d.remaining_amount.to_f, progress: d.progress_percentage,
-      debt_free_date: d.debt_free_date, months_remaining: d.months_remaining,
+      remaining: remaining, progress: progress,
+      debt_free_date: debt_free, months_remaining: months_remaining,
       started_at: d.started_at, notes: d.notes, created_at: d.created_at,
-      currency_code: d.currency_code, currency_symbol: Currency.symbol_for(d.currency_code) }
+      currency_code: d.currency_code.presence || "INR",
+      currency_symbol: Currency.symbol_for(d.currency_code.presence || "INR") }
   end
 end

@@ -1,28 +1,30 @@
 class Api::BudgetCategoriesController < Api::BaseController
   def index
-    categories = current_user.budget_categories.active.ordered
-    render_success(categories.map { |c| category_json(c) })
+    categories = storage.list_budget_categories
+    active = categories.select { |c| c.active.to_s != "false" }
+    render_success(active.map { |c| category_json(c) })
   end
 
   def create
-    cat = current_user.budget_categories.create!(category_params)
+    cat = storage.create_budget_category(attrs: category_params)
     render_success(category_json(cat), status: :created)
   end
 
   def update
-    cat = current_user.budget_categories.find(params[:id])
-    cat.update!(category_params)
+    cat = storage.update_budget_category(id: params[:id], attrs: category_params)
     render_success(category_json(cat))
   end
 
   def destroy
-    current_user.budget_categories.find(params[:id]).destroy!
+    storage.delete_budget_category(id: params[:id])
     head :no_content
   end
 
   def seed
     BudgetCategory.seed_for(current_user)
-    render_success(current_user.budget_categories.active.ordered.map { |c| category_json(c) })
+    categories = storage.list_budget_categories
+    active = categories.select { |c| c.active.to_s != "false" }
+    render_success(active.map { |c| category_json(c) })
   end
 
   private
@@ -34,6 +36,6 @@ class Api::BudgetCategoriesController < Api::BaseController
   def category_json(c)
     { id: c.id, name: c.name, icon: c.icon, color: c.color,
       sort_order: c.sort_order, active: c.active,
-      transaction_count: c.transactions.where(user: current_user).count }
+      transaction_count: 0 }
   end
 end

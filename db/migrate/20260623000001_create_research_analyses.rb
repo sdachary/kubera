@@ -1,7 +1,7 @@
 class CreateResearchAnalyses < ActiveRecord::Migration[7.2]
   def change
     create_table :research_analyses do |t|
-      t.references :portfolio, null: false, foreign_key: true
+      t.references :portfolio, null: false, foreign_key: true, type: :uuid
       t.string :ticker, null: false
       t.string :exchange, default: "US"
       t.string :company_name

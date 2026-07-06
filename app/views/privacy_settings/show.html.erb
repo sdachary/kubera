@@ -1,18 +1,24 @@
 <% content_for :title, "Privacy Settings — Kubera" %>
 
 <div class="max-w-3xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-  <div class="flex items-center justify-between mb-8">
-    <div>
-      <h1 class="text-3xl font-bold text-white">Privacy Settings</h1>
-      <p class="text-slate-400 text-sm mt-1">Manage your data and consent preferences</p>
+  <div class="flex items-center justify-between mb-10">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-sm">K</div>
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-white">Privacy Settings</h1>
+        <p class="text-slate-400 text-sm mt-0.5">Manage your data and consent preferences</p>
+      </div>
     </div>
-    <%= link_to "← Dashboard", root_path, class: "text-sm text-teal-400 hover:text-teal-300 transition-colors" %>
+    <%= link_to root_path, class: "flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Dashboard
+    <% end %>
   </div>
 
   <div class="space-y-8" data-controller="privacy-settings">
 
     <%# Consent Toggles %>
-    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
       <h2 class="text-lg font-semibold text-white mb-1">Consent Preferences</h2>
       <p class="text-sm text-slate-400 mb-6">Your consent choices are recorded with IP and timestamp for audit. Revoking a feature may disable related functionality.</p>
       <div id="consent-list" class="space-y-4">
@@ -21,7 +27,7 @@
     </section>
 
     <%# Deletion Section %>
-    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6" id="deletion-section">
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8" id="deletion-section">
       <h2 class="text-lg font-semibold text-white mb-1">Account Deletion</h2>
       <p class="text-sm text-slate-400 mb-6">Request deletion of your account and all associated data. There is a 48-hour cooling period during which you can cancel.</p>
 
@@ -46,7 +52,7 @@
     </section>
 
     <%# Export Section %>
-    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
       <h2 class="text-lg font-semibold text-white mb-1">Export Your Data</h2>
       <p class="text-sm text-slate-400 mb-6">Download all your personal data in machine-readable format (JSON). This includes your profile, financial records, conversations, and consent history.</p>
       <button id="export-data-btn" class="px-4 py-2 text-sm font-medium text-teal-400 border border-teal-800/50 rounded-lg hover:bg-teal-900/30 transition-colors" data-action="privacy-settings#exportData">
@@ -55,13 +61,13 @@
     </section>
 
     <%# Grievance Section %>
-    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
       <h2 class="text-lg font-semibold text-white mb-1">File a Grievance</h2>
       <p class="text-sm text-slate-400 mb-6">If you have a concern about how your personal data is being processed, you can file a grievance under Section 14 of the DPDP Act 2023.</p>
       <form id="grievance-form" class="space-y-4" data-action="submit->privacy-settings#submitGrievance">
         <div>
-          <label class="block text-sm font-medium text-slate-300 mb-1">Grievance Type</label>
-          <select name="grievance_type" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+          <label class="block text-sm font-medium text-slate-300 mb-1.5">Grievance Type</label>
+          <select name="grievance_type" required class="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3.5 py-2.5 text-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-colors">
             <option value="">Select type...</option>
             <option value="access">Cannot access my data</option>
             <option value="correction">Data correction needed</option>
@@ -73,14 +79,14 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-300 mb-1">Description</label>
-          <textarea name="description" rows="4" required placeholder="Describe your concern in detail..." class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></textarea>
+          <label class="block text-sm font-medium text-slate-300 mb-1.5">Description</label>
+          <textarea name="description" rows="4" required placeholder="Describe your concern in detail..." class="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3.5 py-2.5 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-colors"></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-300 mb-1">Phone (optional)</label>
-          <input type="tel" name="phone" placeholder="+91XXXXXXXXXX" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+          <label class="block text-sm font-medium text-slate-300 mb-1.5">Phone (optional)</label>
+          <input type="tel" name="phone" placeholder="+91XXXXXXXXXX" class="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-3.5 py-2.5 text-white text-sm placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-colors">
         </div>
-        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors">
+        <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-teal-600 hover:bg-teal-500 rounded-lg transition-colors cursor-pointer">
           Submit Grievance
         </button>
         <p id="grievance-result" class="hidden text-sm"></p>
@@ -88,7 +94,7 @@
     </section>
 
     <div class="border-t border-slate-800 pt-6 text-sm text-slate-500">
-      <p>For urgent concerns, contact our DPO at <a href="mailto:dpo@kubera.app" class="text-teal-400 hover:text-teal-300">dpo@kubera.app</a></p>
+      <p>For urgent concerns, contact our DPO at <a href="mailto:dpo@kubera.app" class="text-teal-400 hover:text-teal-300 underline">dpo@kubera.app</a></p>
     </div>
   </div>
 </div>

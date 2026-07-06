@@ -1,4 +1,4 @@
-<% content_for :title, "Sign in - Kubera" %>
+<% content_for :title, "Sign up - Kubera" %>
 
 <div class="min-h-screen flex flex-col lg:flex-row">
   <%# Brand panel %>
@@ -10,17 +10,12 @@
         <span class="text-xl font-semibold tracking-tight text-white">Kubera</span>
       </div>
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter text-white leading-[1.1]">
-        Your financial<br>
-        <span class="text-teal-400">freedom OS</span>
+        Take control<br>
+        <span class="text-teal-400">of your finances</span>
       </h1>
       <p class="mt-4 text-lg text-slate-400 leading-relaxed max-w-md">
-        Track expenses, manage investments, and build wealth — all in one self-hosted platform.
+        Join Kubera and start tracking expenses, managing investments, and building wealth.
       </p>
-      <div class="mt-8 flex flex-wrap gap-4 text-sm text-slate-500">
-        <span class="flex items-center gap-2"><svg class="w-4 h-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Open source</span>
-        <span class="flex items-center gap-2"><svg class="w-4 h-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Self-hosted</span>
-        <span class="flex items-center gap-2"><svg class="w-4 h-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>India-first</span>
-      </div>
     </div>
   </div>
 
@@ -28,8 +23,8 @@
   <div class="lg:w-1/2 bg-slate-900 p-8 lg:p-16 flex items-center justify-center">
     <div class="w-full max-w-sm">
       <div class="mb-8">
-        <h2 class="text-2xl font-semibold tracking-tight text-white">Welcome back</h2>
-        <p class="mt-1 text-slate-400 text-sm">Sign in to your account</p>
+        <h2 class="text-2xl font-semibold tracking-tight text-white">Create an account</h2>
+        <p class="mt-1 text-slate-400 text-sm">Get started in minutes</p>
       </div>
 
       <% if flash[:alert] %>
@@ -38,35 +33,40 @@
         </div>
       <% end %>
 
-      <% if flash[:notice] %>
-        <div class="mb-6 p-3 bg-teal-900/30 border border-teal-800/50 rounded-lg text-teal-200 text-sm">
-          <%= flash[:notice] %>
+      <%= form_with model: @user, url: register_path, class: "space-y-4" do |f| %>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <%= f.label :first_name, class: "block text-sm font-medium text-slate-300 mb-1.5" %>
+            <%= f.text_field :first_name, required: true, placeholder: "First", class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
+          </div>
+          <div>
+            <%= f.label :last_name, class: "block text-sm font-medium text-slate-300 mb-1.5" %>
+            <%= f.text_field :last_name, required: true, placeholder: "Last", class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :email, class: "block text-sm font-medium text-slate-300 mb-1.5" %>
+          <%= f.email_field :email, required: true, placeholder: "you@example.com", class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
+        </div>
+
+        <div>
+          <%= f.label :password, class: "block text-sm font-medium text-slate-300 mb-1.5" %>
+          <%= f.password_field :password, required: true, placeholder: "Min. 8 characters", minlength: 8, class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
+        </div>
+
+        <div>
+          <%= f.label :password_confirmation, class: "block text-sm font-medium text-slate-300 mb-1.5" %>
+          <%= f.password_field :password_confirmation, required: true, placeholder: "Confirm password", class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
+        </div>
+
+        <%= f.submit "Create account", class: "w-full bg-teal-600 hover:bg-teal-500 text-white font-medium rounded-lg px-6 py-2.5 transition-colors cursor-pointer text-sm" %>
+
+        <div class="relative my-4">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700/50"></div></div>
+          <div class="relative flex justify-center text-xs"><span class="px-3 bg-slate-900 text-slate-500">or continue with</span></div>
         </div>
       <% end %>
-
-      <%= form_tag login_path, class: "space-y-5" do %>
-        <div>
-          <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
-          <%= email_field_tag :email, nil, id: "email", placeholder: "you@example.com", required: true, class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
-        </div>
-        <div>
-          <label for="password" class="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
-          <%= password_field_tag :password, nil, id: "password", placeholder: "••••••••", required: true, class: "w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-colors text-sm" %>
-        </div>
-        <div class="flex items-center justify-between text-sm">
-          <label class="flex items-center gap-2 text-slate-400 cursor-pointer">
-            <%= check_box_tag :remember_me, "1", false, class: "rounded bg-slate-800 border-slate-600 text-teal-600 focus:ring-teal-500/50" %>
-            Remember me
-          </label>
-          <%= link_to "Forgot password?", forgot_password_path, class: "text-teal-400 hover:text-teal-300 transition-colors" %>
-        </div>
-        <%= submit_tag "Sign in", class: "w-full bg-teal-600 hover:bg-teal-500 text-white font-medium rounded-lg px-6 py-2.5 transition-colors cursor-pointer text-sm" %>
-      <% end %>
-
-      <div class="relative my-6">
-        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700/50"></div></div>
-        <div class="relative flex justify-center text-xs"><span class="px-3 bg-slate-900 text-slate-500">or continue with</span></div>
-      </div>
 
       <div class="space-y-3">
         <%= button_to '/auth/google_oauth2', method: :post, class: "w-full flex items-center justify-center gap-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-lg px-6 py-2.5 transition-colors border border-slate-700/50 text-sm" do %>
@@ -88,18 +88,17 @@
       </div>
 
       <p class="mt-8 text-center text-sm text-slate-500">
-        Don't have an account?
-        <%= link_to "Create one", register_path, class: "text-teal-400 hover:text-teal-300 transition-colors font-medium" %>
+        Already have an account?
+        <%= link_to "Sign in", login_path, class: "text-teal-400 hover:text-teal-300 transition-colors font-medium" %>
       </p>
 
-      <div class="mt-6 text-center space-y-1">
+      <div class="mt-6 text-center">
         <p class="text-xs text-slate-600">
-          By signing in, you agree to our
+          By signing up, you agree to our
           <%= link_to "Privacy Policy", privacy_path, class: "underline hover:text-slate-400" %>
           and
           <%= link_to "Terms of Service", terms_path, class: "underline hover:text-slate-400" %>.
         </p>
-        <p class="text-xs text-slate-700">18+ only.</p>
       </div>
     </div>
   </div>

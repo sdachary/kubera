@@ -8,6 +8,14 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       prompt: 'consent',
       name: 'google_oauth2'
     }
+
+  provider :github,
+    ENV.fetch('GITHUB_CLIENT_ID', ''),
+    ENV.fetch('GITHUB_CLIENT_SECRET', ''),
+    {
+      scope: 'user:email',
+      name: 'github'
+    }
 end
 
 OmniAuth.config.allowed_request_methods = [:post]
