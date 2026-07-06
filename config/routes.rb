@@ -4,7 +4,6 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
   get "up" => "health#show", as: :rails_health_check
-  get "/api/health", to: "health#show"
 
   # Password auth (email/password)
   get '/register', to: 'registrations#new'
@@ -120,7 +119,7 @@ Rails.application.routes.draw do
       get :cash_flow_forecast
       get :anomalies
       get :goal_charts
-      get :category
+
       get :net_worth
     end
 

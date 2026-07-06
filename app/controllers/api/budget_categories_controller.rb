@@ -1,28 +1,29 @@
 class Api::BudgetCategoriesController < Api::BaseController
   def index
-    categories = storage.list_budget_categories
+    categories = current_user.budget_categories.order(sort_order: :asc)
     active = categories.select { |c| c.active.to_s != "false" }
     render_success(active.map { |c| category_json(c) })
   end
 
   def create
-    cat = storage.create_budget_category(attrs: category_params)
+    cat = current_user.budget_categories.create!(category_params)
     render_success(category_json(cat), status: :created)
   end
 
   def update
-    cat = storage.update_budget_category(id: params[:id], attrs: category_params)
+    cat = current_user.budget_categories.find(params[:id])
+    cat.update!(category_params)
     render_success(category_json(cat))
   end
 
   def destroy
-    storage.delete_budget_category(id: params[:id])
+    current_user.budget_categories.find(params[:id]).destroy!
     head :no_content
   end
 
   def seed
     BudgetCategory.seed_for(current_user)
-    categories = storage.list_budget_categories
+    categories = current_user.budget_categories.order(sort_order: :asc)
     active = categories.select { |c| c.active.to_s != "false" }
     render_success(active.map { |c| category_json(c) })
   end

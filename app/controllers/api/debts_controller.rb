@@ -1,21 +1,23 @@
 class Api::DebtsController < Api::BaseController
   def index
-    debts = storage.list_debts(filters: { active: params[:active] })
+    debts = current_user.debts.order(created_at: :desc)
+    debts = debts.active if params[:active]
     render_success(debts.map { |d| debt_json(d) })
   end
 
   def create
-    debt = storage.create_debt(attrs: debt_params)
+    debt = current_user.debts.create!(debt_params)
     render_success(debt_json(debt), status: :created)
   end
 
   def update
-    debt = storage.update_debt(id: params[:id], attrs: debt_params)
+    debt = current_user.debts.find(params[:id])
+    debt.update!(debt_params)
     render_success(debt_json(debt))
   end
 
   def destroy
-    storage.delete_debt(id: params[:id])
+    current_user.debts.find(params[:id]).destroy!
     render_success({}, message: "Debt deleted")
   end
 

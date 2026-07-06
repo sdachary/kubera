@@ -1,11 +1,16 @@
 class Api::TransactionsController < Api::BaseController
   def show
-    transaction = storage.get_transaction(id: params[:id])
+    transaction = current_user.transactions.find(params[:id])
     render_success(transaction_json(transaction))
   end
 
   def index
-    records = storage.list_transactions(filters: index_filters)
+    records = current_user.transactions.order(transaction_date: :desc)
+    records = records.where(budget_category_id: params[:budget_category_id]) if params[:budget_category_id]
+    records = records.where(transaction_type: params[:transaction_type]) if params[:transaction_type]
+    records = records.where("transaction_date >= ?", params[:start_date]) if params[:start_date]
+    records = records.where("transaction_date <= ?", params[:end_date]) if params[:end_date]
+    records = records.uncategorized if params[:uncategorized]
     page = (params[:page] || 1).to_i
     per = (params[:per] || 50).to_i
     total = records.size
@@ -18,23 +23,24 @@ class Api::TransactionsController < Api::BaseController
   end
 
   def create
-    transaction = storage.create_transaction(attrs: transaction_params)
+    transaction = current_user.transactions.create!(transaction_params)
     render_success(transaction_json(transaction), status: :created)
   end
 
   def update
-    transaction = storage.update_transaction(id: params[:id], attrs: transaction_params)
+    transaction = current_user.transactions.find(params[:id])
+    transaction.update!(transaction_params)
     render_success(transaction_json(transaction))
   end
 
   def destroy
-    storage.delete_transaction(id: params[:id])
+    current_user.transactions.find(params[:id]).destroy!
     head :no_content
   end
 
   def monthly_totals
     months = (params[:months] || 6).to_i
-    transactions = storage.list_transactions
+    transactions = current_user.transactions
     result = (0...months).map do |i|
       date = Date.today - i.months
       month_txns = transactions.select do |t|
@@ -50,13 +56,6 @@ class Api::TransactionsController < Api::BaseController
   end
 
   private
-
-  def index_filters
-    { budget_category_id: params[:budget_category_id],
-      transaction_type: params[:transaction_type],
-      start_date: params[:start_date], end_date: params[:end_date],
-      uncategorized: params[:uncategorized] }
-  end
 
   def transaction_params
     source = params[:transaction].presence || params

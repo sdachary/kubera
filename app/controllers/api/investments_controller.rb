@@ -1,12 +1,12 @@
 class Api::InvestmentsController < Api::BaseController
   def index
-    investments = storage.list_investments
+    investments = current_user.investments.order(created_at: :desc)
     render_success(investments.map { |i| investment_json(i) })
   end
 
   def create
-    portfolio = storage.get_portfolio(id: params[:portfolio_id])
-    investment = storage.create_investment(attrs: investment_params.merge(portfolio_id: params[:portfolio_id]))
+    portfolio = current_user.portfolios.find(params[:portfolio_id])
+    investment = current_user.investments.create!(investment_params.merge(portfolio_id: params[:portfolio_id]))
     if %w[stock etf].include?(investment.investment_type.to_s)
       DexterResearchJob.perform_async(params[:portfolio_id], investment.symbol, investment.respond_to?(:exchange) ? (investment.exchange || "US") : "US")
     end
@@ -14,12 +14,13 @@ class Api::InvestmentsController < Api::BaseController
   end
 
   def update
-    investment = storage.update_investment(id: params[:id], attrs: investment_params)
+    investment = current_user.investments.find(params[:id])
+    investment.update!(investment_params)
     render_success(investment_json(investment))
   end
 
   def destroy
-    storage.delete_investment(id: params[:id])
+    current_user.investments.find(params[:id]).destroy!
     render_success({}, message: "Investment deleted")
   end
 

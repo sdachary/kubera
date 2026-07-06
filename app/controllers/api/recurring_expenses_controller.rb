@@ -1,34 +1,35 @@
 class Api::RecurringExpensesController < Api::BaseController
   def index
-    expenses = storage.list_recurring_expenses
+    expenses = current_user.recurring_expenses.order(created_at: :desc)
     render_success(expenses.map { |e| expense_json(e) })
   end
 
   def show
-    expense = storage.get_recurring_expense(id: params[:id])
+    expense = current_user.recurring_expenses.find(params[:id])
     render_success(expense_json(expense))
   end
 
   def create
-    expense = storage.create_recurring_expense(attrs: expense_params)
+    expense = current_user.recurring_expenses.create!(expense_params)
     render_success(expense_json(expense), status: :created)
   end
 
   def update
-    expense = storage.update_recurring_expense(id: params[:id], attrs: expense_params)
+    expense = current_user.recurring_expenses.find(params[:id])
+    expense.update!(expense_params)
     render_success(expense_json(expense))
   end
 
   def destroy
-    storage.delete_recurring_expense(id: params[:id])
+    current_user.recurring_expenses.find(params[:id]).destroy!
     head :no_content
   end
 
   def calendar
     expenses = if params[:id]
-                 [storage.get_recurring_expense(id: params[:id])]
+                 [current_user.recurring_expenses.find(params[:id])]
                else
-                 storage.list_recurring_expenses
+                 current_user.recurring_expenses.order(created_at: :desc)
                end
     render_success({ expenses: expenses.map { |e| expense_json(e) } })
   end

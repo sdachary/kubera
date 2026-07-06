@@ -1,37 +1,38 @@
 class Api::PortfoliosController < Api::BaseController
   def index
-    portfolios = storage.list_portfolios
+    portfolios = current_user.portfolios.order(created_at: :desc)
     render_success(portfolios.map { |p| portfolio_json(p) })
   end
 
   def show
-    portfolio = storage.get_portfolio(id: params[:id])
+    portfolio = current_user.portfolios.find(params[:id])
     render_success(portfolio_json(portfolio))
   end
 
   def create
-    portfolio = storage.create_portfolio(attrs: portfolio_params)
+    portfolio = current_user.portfolios.create!(portfolio_params)
     render_success(portfolio_json(portfolio), status: :created)
   end
 
   def update
-    portfolio = storage.update_portfolio(id: params[:id], attrs: portfolio_params)
+    portfolio = current_user.portfolios.find(params[:id])
+    portfolio.update!(portfolio_params)
     render_success(portfolio_json(portfolio))
   end
 
   def destroy
-    storage.delete_portfolio(id: params[:id])
+    current_user.portfolios.find(params[:id]).destroy!
     head :no_content
   end
 
   def rebalance
-    portfolio = storage.get_portfolio(id: params[:id])
+    portfolio = current_user.portfolios.find(params[:id])
     render_success({ optimal_weights: {} })
   end
 
   def research
-    portfolio = storage.get_portfolio(id: params[:id])
-    investments = storage.list_investments(filters: { portfolio_id: params[:id] })
+    portfolio = current_user.portfolios.find(params[:id])
+    investments = current_user.investments.where(portfolio_id: params[:id])
     stocks = investments.select { |i| %w[stock etf].include?(i.investment_type.to_s) }
 
     if stocks.empty?

@@ -12,8 +12,6 @@ class RegistrationsController < ApplicationController
     @user = User.new(registration_params)
     @user.password = params[:user][:password]
     @user.password_confirmation = params[:user][:password_confirmation]
-    @user.storage_backend = "local"
-
     if @user.save
       session_record = @user.sessions.create!(
         ip_address: request.remote_ip,

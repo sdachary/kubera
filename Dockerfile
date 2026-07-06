@@ -14,8 +14,6 @@ ENV RAILS_ENV=production \
     BUNDLE_WITHOUT=${BUNDLE_WITHOUT_GROUPS} \
     SECRET_KEY_BASE=${SECRET_KEY_BUILD}
 
-RUN gem install bundler --no-document
-
 COPY Gemfile Gemfile.lock .ruby-version ./
 RUN bundle install
 
@@ -25,7 +23,7 @@ RUN bundle exec bootsnap precompile --gemfile app/ lib/
 
 RUN bundle exec rails assets:precompile
 
-RUN rm -rf tmp/cache spec/ test/ vendor/bundle
+RUN rm -rf tmp/cache spec/ test/
 
 FROM ruby:3.3.8-slim-bookworm
 

@@ -1,55 +1,39 @@
 class GoalChartService
   def initialize(user)
     @user = user
+    @tracker = WealthJourneyTracker.new(user)
   end
 
   def debt_free_progress
+    dp = @tracker.debt_progress
     debts = @user.debts.active
-    return [] if debts.empty?
-
     total = debts.sum(&:amount)
     paid = debts.sum(&:paid_amount)
-    remaining = total - paid
-
     months = debts.map(&:months_remaining).compact.max || 0
     monthly_emi = debts.sum(&:emi_amount)
-
     projection = (0..[months, 60].min).map do |m|
       month_date = Date.today + m.months
       paid_so_far = monthly_emi * m
       {
         month: month_date.strftime("%Y-%m"),
         label: month_date.strftime("%b %Y"),
-        remaining: [remaining - paid_so_far, 0].max.round(2),
+        remaining: [(total - paid) - paid_so_far, 0].max.round(2),
         target: 0
       }
     end
-
     {
-      total_debt: total.to_f,
-      paid_so_far: paid.to_f,
-      remaining: remaining.to_f,
-      progress_pct: total > 0 ? (paid / total * 100).round(1) : 0,
+      total_debt: total.to_f, paid_so_far: paid.to_f,
+      remaining: (total - paid).to_f,
+      progress_pct: dp[:progress_percentage],
       projection: projection
     }
   end
 
   def wealth_growth
-    current_nw = NetWorthSnapshot.current(@user)
-    monthly_sip = DividendSip.where(status: "active").sum(&:monthly_contribution)
-
-    (0..30).map do |year|
-      year_date = Date.today + year.years
-      projected = current_nw.net_worth.to_f * (1.10 ** year)
-      projected += monthly_sip * 12 * year * (1.05 ** year)
-
-      {
-        year: year_date.year,
-        label: year_date.year.to_s,
-        projected: projected.round(2),
-        conservative: (current_nw.net_worth.to_f * (1.07 ** year)).round(2),
-        aggressive: (current_nw.net_worth.to_f * (1.12 ** year)).round(2)
-      }
+    @tracker.wealth_growth_projection.map do |w|
+      { year: w[:year], label: w[:year].to_s, projected: w[:projected_net_worth],
+        conservative: (w[:projected_net_worth] * 0.97).round(2),
+        aggressive: (w[:projected_net_worth] * 1.02).round(2) }
     end
   end
 

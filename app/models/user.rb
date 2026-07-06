@@ -1,8 +1,6 @@
 class User < ApplicationRecord
   has_secure_password validations: false
 
-  STORAGE_BACKENDS = %w[local google_sheets].freeze
-
   has_many :conversations, dependent: :destroy
   has_many :sessions, dependent: :destroy
   has_many :consent_records, dependent: :destroy
@@ -24,17 +22,12 @@ class User < ApplicationRecord
   has_many :households, through: :household_memberships
 
   validates :email, presence: true, uniqueness: true
-  validates :storage_backend, inclusion: { in: STORAGE_BACKENDS }
   validates :password, length: { minimum: 8 }, if: :password_required?
   validates :password, confirmation: true, if: :password_required?
 
   before_save :downcase_email
 
   scope :active, -> { where(onboarded: true) }
-
-  def storage
-    @storage ||= StorageProvider.for(self)
-  end
 
   def self.from_google(auth)
     where(google_uid: auth.uid).first_or_create do |user|

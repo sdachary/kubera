@@ -33,15 +33,6 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = ENV.fetch("ACTIVE_STORAGE_SERVICE", "local").to_sym
-  config.after_initialize do
-    ActiveStorage::Current.url_options = { host: "localhost", port: 3000 }
-  end
-
-  # Set Active Storage URL expiration time to 7 days
-  config.active_storage.urls_expire_in = 7.days
-
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.delivery_method = :letter_opener

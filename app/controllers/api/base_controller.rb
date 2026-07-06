@@ -50,10 +50,6 @@ class Api::BaseController < ActionController::API
     end
   end
 
-  def storage
-    current_user&.storage
-  end
-
   def authenticate
     render_unauthorized unless current_user
   end

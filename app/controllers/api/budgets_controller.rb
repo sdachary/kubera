@@ -1,31 +1,32 @@
 class Api::BudgetsController < Api::BaseController
   def index
-    budgets = storage.list_budgets
+    budgets = current_user.budgets.includes(:budget_category).order(created_at: :desc)
     render_success(budgets.map { |b| budget_json(b) })
   end
 
   def show
-    budget = storage.get_budget(id: params[:id])
+    budget = current_user.budgets.find(params[:id])
     render_success(budget_json(budget))
   end
 
   def create
-    budget = storage.create_budget(attrs: budget_params)
+    budget = current_user.budgets.create!(budget_params)
     render_success(budget_json(budget), status: :created)
   end
 
   def update
-    budget = storage.update_budget(id: params[:id], attrs: budget_params)
+    budget = current_user.budgets.find(params[:id])
+    budget.update!(budget_params)
     render_success(budget_json(budget))
   end
 
   def destroy
-    storage.delete_budget(id: params[:id])
+    current_user.budgets.find(params[:id]).destroy!
     head :no_content
   end
 
   def overview
-    budgets = storage.list_budgets
+    budgets = current_user.budgets.includes(:budget_category)
     render_success(budgets.map { |b| budget_detail(b) })
   end
 

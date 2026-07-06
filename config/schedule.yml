@@ -1,2 +1,0 @@
-# Sidekiq Cron Schedule
-# Only keep jobs that reference existing workers
