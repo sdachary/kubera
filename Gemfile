@@ -31,7 +31,6 @@ gem "omniauth-github", "~> 2.0"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "google-apis-sheets_v4", "~> 0.36"
 gem "googleauth", "~> 1.11"
-gem "rack-cors"
 
 group :development, :test do
   gem "rspec-rails"
