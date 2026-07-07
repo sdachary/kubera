@@ -1,5 +1,5 @@
-class ImportMarketDataWorker
-  include Sidekiq::Worker
+class ImportMarketDataJob
+  include Sidekiq::Job
   sidekiq_options queue: :market_data, retry: 3, backtrace: true
 
   def perform(*args)

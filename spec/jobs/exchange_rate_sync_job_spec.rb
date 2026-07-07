@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ExchangeRateSyncWorker, type: :worker do
+RSpec.describe ExchangeRateSyncJob, type: :job do
   describe "#perform" do
     it "calls ExchangeRateService.sync_all" do
       expect(ExchangeRateService).to receive(:sync_all).with(base_currency: "USD")

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ImportMarketDataWorker, type: :worker do
+RSpec.describe ImportMarketDataJob, type: :job do
   describe "#perform" do
     it "updates investments with fresh quotes" do
       user = create(:user)

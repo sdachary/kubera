@@ -7,8 +7,8 @@ if defined?(Sidekiq::Cron)
   end
 
   jobs = [
-    { name: "Import Market Data — daily after market close", cron: "30 21 * * 1-5", class: "ImportMarketDataWorker" },
-    { name: "Exchange Rate Sync — every 6 hours", cron: "0 */6 * * *", class: "ExchangeRateSyncWorker" },
+    { name: "Import Market Data — daily after market close", cron: "30 21 * * 1-5", class: "ImportMarketDataJob" },
+    { name: "Exchange Rate Sync — every 6 hours", cron: "0 */6 * * *", class: "ExchangeRateSyncJob" },
     { name: "Security Health Check — daily 2 AM", cron: "0 2 * * *", class: "SecurityHealthCheckJob" },
     { name: "Sync Cleaner — every hour", cron: "0 * * * *", class: "SyncCleanerJob" },
     { name: "Expense Reminder Check — daily 9 AM", cron: "0 9 * * *", class: "ExpenseReminderCheckJob" },

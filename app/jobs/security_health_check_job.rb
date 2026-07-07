@@ -1,5 +1,5 @@
 class SecurityHealthCheckJob
-  include Sidekiq::Worker
+  include Sidekiq::Job
   sidekiq_options queue: :maintenance, retry: 2
 
   def perform(*args)
@@ -13,7 +13,7 @@ class SecurityHealthCheckJob
     missing_prices = Investment.where(current_price: nil).where.not(symbol: nil)
     if missing_prices.any?
       Rails.logger.warn "[SecurityHealthCheck] #{missing_prices.count} investments missing prices"
-      ImportMarketDataWorker.perform_async
+      ImportMarketDataJob.perform_async
     end
   end
 end

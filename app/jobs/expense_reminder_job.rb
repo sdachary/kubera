@@ -6,12 +6,12 @@ class ExpenseReminderJob < ApplicationJob
     when "debt"
       debt = Debt.find_by(id: expense_id)
       return unless debt&.active?
-      ExpenseNotifier.emi_reminder(debt)
+      NotificationService.new(debt.user).notify_debt_milestone(debt, "EMI Reminder")
       self.class.set(wait: 1.month).perform_later("debt", expense_id)
     when "recurring_expense"
       expense = RecurringExpense.find_by(id: expense_id)
       return unless expense&.active?
-      ExpenseNotifier.recurring_reminder(expense)
+      NotificationService.new(expense.user).notify_sip_reminder(expense)
       schedule_next(expense)
     end
   end
