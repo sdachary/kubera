@@ -15,7 +15,7 @@ ENV RAILS_ENV=production \
     SECRET_KEY_BASE=${SECRET_KEY_BUILD}
 
 COPY Gemfile Gemfile.lock .ruby-version ./
-RUN bundle install
+RUN bundle install && rm -rf .bundle
 
 COPY . .
 
