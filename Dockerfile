@@ -1,4 +1,4 @@
-FROM ruby:3.3.8-slim-bookworm AS builder
+FROM ruby:4.0.5-slim-bookworm AS builder
 
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
@@ -25,7 +25,7 @@ RUN bundle exec rails assets:precompile
 
 RUN rm -rf tmp/cache spec/ test/
 
-FROM ruby:3.3.8-slim-bookworm
+FROM ruby:4.0.5-slim-bookworm
 
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
