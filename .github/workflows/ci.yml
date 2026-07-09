@@ -29,7 +29,7 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
       - name: gitleaks
-        run: npx gitleaks@latest detect -c .gitleaks.toml
+        run: docker run -v ${{ github.workspace }}:/repo ghcr.io/gitleaks/gitleaks:latest detect -c /repo/.gitleaks.toml -s /repo
         continue-on-error: true
       - name: Run RuboCop
         run: bundle exec rubocop --parallel
@@ -84,6 +84,9 @@ jobs:
           REDIS_URL: redis://localhost:6379/1
           SECRET_KEY_BASE: test_secret_key_base_for_ci
         run: bundle exec rspec
+      - name: gitleaks
+        run: docker run -v ${{ github.workspace }}:/repo ghcr.io/gitleaks/gitleaks:latest detect -c /repo/.gitleaks.toml -s /repo
+        continue-on-error: true
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
