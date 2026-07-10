@@ -22,20 +22,23 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4">
-      <div className="max-w-sm w-full">
-        <h1 className="text-2xl font-semibold text-stone-900 mb-1">Welcome back</h1>
-        <p className="text-stone-500 text-sm mb-8">Sign in to Kubera</p>
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
-            className="w-full px-4 py-2.5 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" required />
-          <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}
-            className="w-full px-4 py-2.5 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" required />
-          <button type="submit" className="w-full bg-emerald-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-emerald-800 transition-colors">Sign in</button>
-        </form>
-        <p className="text-center text-sm text-stone-500 mt-6">
-          Don't have an account? <Link to="/register" className="text-emerald-700 hover:underline">Register</Link>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
+      <div style={{ width: '100%', maxWidth: 360 }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Link to="/" style={{ fontFamily: 'var(--sans)', fontWeight: 700, fontSize: 20, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Kubera</Link>
+        </div>
+        <div className="card" style={{ padding: 32 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', marginBottom: 4 }}>Welcome back</h1>
+          <p style={{ fontSize: 13.5, color: 'var(--ink-mute)', marginBottom: 24 }}>Sign in to your account</p>
+          {error && <p style={{ fontSize: 13, color: 'var(--coral)', marginBottom: 16 }}>{error}</p>}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="input" required />
+            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="input" required />
+            <button type="submit" className="btn btn-primary" style={{ justifyContent: 'center', marginTop: 6 }}>Sign in</button>
+          </form>
+        </div>
+        <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--ink-mute)', marginTop: 20 }}>
+          No account? <Link to="/register" style={{ color: 'var(--coral)' }}>Register</Link>
         </p>
       </div>
     </div>
