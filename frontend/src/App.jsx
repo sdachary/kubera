@@ -4,6 +4,21 @@ import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import Debts from './pages/Debts'
+import PayoffSimulator from './pages/PayoffSimulator'
+import Transactions from './pages/Transactions'
+import Budgets from './pages/Budgets'
+import Recurring from './pages/Recurring'
+import Portfolios from './pages/Portfolios'
+import Investments from './pages/Investments'
+import Sips from './pages/Sips'
+import Journey from './pages/Journey'
+import Households from './pages/Households'
+import Conversations from './pages/Conversations'
+import Reports from './pages/Reports'
+import Exports from './pages/Exports'
+import Settings from './pages/Settings'
+import Privacy from './pages/Privacy'
 import Layout from './pages/Layout'
 
 function ProtectedRoute({ children }) {
@@ -20,6 +35,21 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
+        <Route path="debts" element={<Debts />} />
+        <Route path="debt-payoffs" element={<PayoffSimulator />} />
+        <Route path="transactions" element={<Transactions />} />
+        <Route path="budgets" element={<Budgets />} />
+        <Route path="recurring" element={<Recurring />} />
+        <Route path="portfolios" element={<Portfolios />} />
+        <Route path="investments" element={<Investments />} />
+        <Route path="sips" element={<Sips />} />
+        <Route path="journey" element={<Journey />} />
+        <Route path="households" element={<Households />} />
+        <Route path="conversations" element={<Conversations />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="exports" element={<Exports />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="privacy" element={<Privacy />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

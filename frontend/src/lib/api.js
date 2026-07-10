@@ -11,6 +11,7 @@ async function request(path, options = {}) {
 }
 
 export const api = {
+  request: (path, opts) => request(path, opts),
   register: (data) => request('/api/v1/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data) => request('/api/v1/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   me: () => request('/api/v1/auth/me'),

@@ -78,3 +78,56 @@ input, button, textarea { font-family: var(--body); }
 }
 .input:focus { border-color: var(--ink); }
 .input::placeholder { color: var(--ink-faint); }
+
+/* app layout */
+.app-layout { display: flex; min-height: 100dvh; }
+.sidebar {
+  width: 220px; flex-shrink: 0; background: var(--paper-warm); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; position: sticky; top: 0; height: 100dvh;
+}
+.main-area { flex: 1; padding: 28px 32px; max-width: 960px; min-width: 0; }
+
+/* mobile bottom nav */
+.bottom-nav { display: none; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .bottom-nav {
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--paper-warm); border-top: 1px solid var(--line);
+    justify-content: space-around; padding: 4px 0 env(safe-area-inset-bottom);
+    z-index: 100;
+  }
+  .app-layout { padding-bottom: 52px; }
+  .main-area { padding: 20px 16px; max-width: 100%; }
+}
+
+/* tabular nums on financial data */
+.fin { font-variant-numeric: tabular-nums; }
+
+/* progress bar */
+.progress { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; background: var(--coral); transition: width 0.4s ease; }
+.progress-fill.green { background: var(--emerald, #2d7d6a); }
+
+/* skeleton */
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton {
+  background: linear-gradient(90deg, var(--line) 25%, var(--line-soft) 37%, var(--line) 63%);
+  background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* tag/chip */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+  border-radius: 999px; font-size: 11px; font-weight: 500;
+  background: var(--line-soft); color: var(--ink-mute);
+}
+.tag.coral { background: rgba(237,111,92,0.12); color: var(--coral); }
+.tag.green { background: rgba(45,125,106,0.12); color: #2d7d6a; }
+
+/* empty state */
+.empty-state { text-align: center; padding: 48px 24px; color: var(--ink-mute); }
+.empty-state p { font-size: 14px; margin-bottom: 16px; }
+.empty-state .emoji { font-size: 32px; margin-bottom: 12px; display: block; }
