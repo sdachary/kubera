@@ -1,57 +1,17 @@
 services:
-  postgres:
-    image: postgres:16
-    restart: unless-stopped
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-kubera}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-      POSTGRES_DB: ${POSTGRES_DB:-kubera_production}
-    ports:
-      - "127.0.0.1:5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kubera}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   app:
-    build:
-      context: .
-      args:
-        SECRET_KEY_BUILD: ${SECRET_KEY_BUILD:-dummy-build-key-not-for-production}
+    build: .
     image: kubera:latest
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     ports:
-      - "3000:3000"
+      - "3002:3000"
     env_file:
       - .env
     environment:
       RAILS_ENV: production
-      PORT: 3000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      REDIS_URL: redis://redis:6379/0
-      RAILS_FORCE_SSL: "false"
-      RAILS_ASSUME_SSL: "false"
-      BINDING: 0.0.0.0
+      DB_HOST: ${DB_HOST:-10.0.1.46}
+      DB_PORT: ${DB_PORT:-5432}
+      REDIS_URL: redis://${REDIS_HOST:-10.0.1.46}:6379/0
     volumes:
       - kubera-storage:/rails/storage
 
@@ -59,22 +19,17 @@ services:
     image: kubera:latest
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - app
     command: ["bundle", "exec", "sidekiq"]
     env_file:
       - .env
     environment:
       RAILS_ENV: production
-      DB_HOST: postgres
-      DB_PORT: 5432
-      REDIS_URL: redis://redis:6379/0
-      BINDING: 0.0.0.0
+      DB_HOST: ${DB_HOST:-10.0.1.46}
+      DB_PORT: ${DB_PORT:-5432}
+      REDIS_URL: redis://${REDIS_HOST:-10.0.1.46}:6379/0
     volumes:
       - kubera-storage:/rails/storage
 
 volumes:
-  pgdata:
   kubera-storage:

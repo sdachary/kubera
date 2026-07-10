@@ -1,8 +1,0 @@
-<%= turbo_stream.append "messages" do %>
-  <%= render partial: "messages/message", locals: { message: @user_message } %>
-  <%= render partial: "messages/message", locals: { message: @ai_message } %>
-<% end %>
-
-<%= turbo_stream.replace "messages-empty" do %>
-  <div id="messages-empty"></div>
-<% end %>

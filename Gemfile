@@ -5,14 +5,7 @@ gem "rails", "~> 7.2.2"
 gem "pg"
 gem "puma", ">= 5.0"
 
-gem "importmap-rails"
-gem "propshaft"
-gem "tailwindcss-rails"
-gem "lucide-rails"
-gem "stimulus-rails"
-gem "turbo-rails"
-gem "view_component"
-gem "jbuilder"
+gem "rack-cors"
 gem "bcrypt", "~> 3.1"
 gem "argon2", "~> 2.2"
 gem "bootsnap", require: false
@@ -45,7 +38,6 @@ group :test do
 end
 
 group :development do
-  gem "web-console"
   gem "rubocop", require: false
   gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
