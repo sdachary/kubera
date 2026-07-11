@@ -100,5 +100,11 @@ Rails.application.routes.draw do
         get :dashboard
       end
     end
+
+    resources :trips, only: [:index, :show, :create, :update, :destroy] do
+      resources :trip_members, only: [:index, :create, :destroy], controller: 'trip_members'
+      resources :trip_expenses, only: [:index, :create, :destroy], controller: 'trip_expenses'
+      resources :trip_settlements, only: [:index, :create], controller: 'trip_settlements'
+    end
   end
 end

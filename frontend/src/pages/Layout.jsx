@@ -19,6 +19,7 @@ const groups = [
   ]},
   { name: 'Journey', path: '/dashboard/journey', icon: '→' },
   { name: 'More', children: [
+    { name: 'Trip Mode', path: '/dashboard/trips', icon: '✈' },
     { name: 'Households', path: '/dashboard/households', icon: '◈' },
     { name: 'Conversations', path: '/dashboard/conversations', icon: '◉' },
     { name: 'Reports', path: '/dashboard/reports', icon: '▤' },
@@ -86,7 +87,7 @@ export default function Layout() {
           { name: 'Money', path: '/dashboard/transactions', icon: '↗' },
           { name: 'Debt', path: '/dashboard/debts', icon: '○' },
           { name: 'Invest', path: '/dashboard/portfolios', icon: '◐' },
-          { name: 'More', path: '/dashboard/settings', icon: '⚙' },
+          { name: 'More', path: '/dashboard/trips', icon: '✈' },
         ].map(item => {
           const active = location.pathname === item.path
           return (

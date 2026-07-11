@@ -13,6 +13,7 @@ import Portfolios from './pages/Portfolios'
 import Investments from './pages/Investments'
 import Sips from './pages/Sips'
 import Journey from './pages/Journey'
+import Trips from './pages/Trips'
 import Households from './pages/Households'
 import Conversations from './pages/Conversations'
 import Reports from './pages/Reports'
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="investments" element={<Investments />} />
         <Route path="sips" element={<Sips />} />
         <Route path="journey" element={<Journey />} />
+        <Route path="trips" element={<Trips />} />
         <Route path="households" element={<Households />} />
         <Route path="conversations" element={<Conversations />} />
         <Route path="reports" element={<Reports />} />
