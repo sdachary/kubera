@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     post 'auth/login', to: 'auth#login'
     get 'auth/me', to: 'auth#me'
     post 'auth/logout', to: 'auth#logout'
+    post 'auth/forgot-password', to: 'auth#forgot_password'
+    post 'auth/reset-password', to: 'auth#reset_password'
   end
 
   # DPDP

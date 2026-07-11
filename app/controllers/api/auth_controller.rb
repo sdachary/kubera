@@ -19,9 +19,32 @@ class Api::AuthController < ActionController::API
     end
   end
 
-  def login
+  def forgot_password
     user = User.find_by(email: params[:email])
-    if user&.authenticate(params[:password])
+    if user
+      token = user.generate_password_reset_token
+      UserMailer.password_reset(user, token).deliver_later
+    end
+    render json: { message: "If the email exists, a reset link has been sent." }
+  end
+
+  def reset_password
+    user = User.find_by_password_reset_token(params[:token])
+    return render json: { error: "Invalid or expired reset token" }, status: :unprocessable_entity unless user
+    return render json: { error: "Reset token has expired" }, status: :unprocessable_entity if user.password_reset_expired?
+
+    user.password = params[:password]
+    user.password_confirmation = params[:password_confirmation]
+    if user.save
+      user.sessions.where.not(id: user.sessions.select(:id).last).destroy_all
+      user.update!(password_reset_token: nil, password_reset_sent_at: nil)
+      render json: { message: "Password reset successfully." }
+    else
+      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def login
       session = user.sessions.create!(
         ip_address: request.remote_ip,
         user_agent: request.user_agent

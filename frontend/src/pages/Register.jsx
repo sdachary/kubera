@@ -2,10 +2,16 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 
+import { useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useAuth } from '../lib/auth'
+
 export default function Register() {
   const { user, register } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '', password_confirmation: '', first_name: '', last_name: '' })
+  const [showPw, setShowPw] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState('')
 
   if (user) return <Navigate to="/dashboard" replace />
@@ -23,6 +29,12 @@ export default function Register() {
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
+  const PwToggle = ({ show, setShow }) => (
+    <button type="button" onClick={() => setShow(!show)} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--ink-mute)', padding: 4 }} aria-label={show ? 'Hide password' : 'Show password'}>
+      {show ? '◔' : '◑'}
+    </button>
+  )
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
       <div style={{ width: '100%', maxWidth: 360 }}>
@@ -39,8 +51,14 @@ export default function Register() {
               <input type="text" placeholder="Last name" value={form.last_name} onChange={set('last_name')} className="input" />
             </div>
             <input type="email" placeholder="Email" value={form.email} onChange={set('email')} className="input" required />
-            <input type="password" placeholder="Password" value={form.password} onChange={set('password')} className="input" required />
-            <input type="password" placeholder="Confirm password" value={form.password_confirmation} onChange={set('password_confirmation')} className="input" required />
+            <div style={{ position: 'relative' }}>
+              <input type={showPw ? 'text' : 'password'} placeholder="Password" value={form.password} onChange={set('password')} className="input" required style={{ width: '100%' }} />
+              <PwToggle show={showPw} setShow={setShowPw} />
+            </div>
+            <div style={{ position: 'relative' }}>
+              <input type={showConfirm ? 'text' : 'password'} placeholder="Confirm password" value={form.password_confirmation} onChange={set('password_confirmation')} className="input" required style={{ width: '100%' }} />
+              <PwToggle show={showConfirm} setShow={setShowConfirm} />
+            </div>
             <button type="submit" className="btn btn-primary" style={{ justifyContent: 'center', marginTop: 6 }}>Create account</button>
           </form>
         </div>
