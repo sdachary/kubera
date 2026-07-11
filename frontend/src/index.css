@@ -74,7 +74,7 @@ input, button, textarea { font-family: var(--body); }
 .input {
   width: 100%; padding: 11px 16px;
   background: #faf9f7; border: 1px solid var(--line); border-radius: var(--radius-sm);
-  font-size: 14px; color: var(--ink); outline: none; transition: border-color 0.18s ease;
+  font-size: 16px; color: var(--ink); outline: none; transition: border-color 0.18s ease;
 }
 .input:focus { border-color: var(--ink); }
 .input::placeholder { color: var(--ink-faint); }
@@ -95,11 +95,18 @@ input, button, textarea { font-family: var(--body); }
   .bottom-nav {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--paper-warm); border-top: 1px solid var(--line);
-    justify-content: space-around; padding: 4px 0 env(safe-area-inset-bottom);
+    justify-content: space-around; padding: 6px 0 env(safe-area-inset-bottom);
     z-index: 100;
   }
-  .app-layout { padding-bottom: 52px; }
+  .bottom-nav a {
+    padding: 8px 0; min-width: 56px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10px; text-decoration: none;
+  }
+  .app-layout { padding-bottom: 60px; }
   .main-area { padding: 20px 16px; max-width: 100%; }
+  /* prevent iOS zoom on inputs */
+  input, select, textarea { font-size: 16px !important; }
 }
 
 /* tabular nums on financial data */

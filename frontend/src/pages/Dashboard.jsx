@@ -6,10 +6,15 @@ import { useAuth } from '../lib/auth'
 export default function Dashboard() {
   const { user } = useAuth()
   const [data, setData] = useState(null)
+  const [projection, setProjection] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.dashboard().then(setData).catch(() => {}).finally(() => setLoading(false))
+    Promise.all([
+      api.dashboard(),
+      api.request('/api/v1/dashboard/projection'),
+    ]).then(([d, p]) => { setData(d); setProjection(p) })
+      .catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   if (loading) return (
@@ -75,21 +80,80 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* snapshot chart */}
-      {snapshots.length > 1 && (
-        <div className="card" style={{ padding: 20, marginBottom: 20 }}>
-          <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Net worth trend</p>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 64 }}>
-            {snapshots.map((s, i) => (
-              <div key={i} style={{
-                flex: 1, background: 'var(--coral)', borderRadius: '2px 2px 0 0',
-                opacity: 0.35 + (i / snapshots.length) * 0.65,
-                height: `${Math.max(6, (s.net_worth / Math.max(...snapshots.map(x => x.net_worth))) * 100)}%`,
-              }} title={`${s.date}: ₹${(+s.net_worth).toLocaleString('en-IN')}`} />
-            ))}
+      {/* net worth area chart */}
+      {snapshots.length > 1 && (() => {
+        const values = snapshots.map(s => +s.net_worth)
+        const max = Math.max(...values)
+        const min = Math.min(...values)
+        const range = max - min || 1
+        const w = snapshots.length * 48
+        const h = 160
+        const pad = { top: 8, bottom: 20, left: 4, right: 44 }
+        const iw = w - pad.left - pad.right
+        const ih = h - pad.top - pad.bottom
+        const xStep = iw / (snapshots.length - 1)
+        const pts = snapshots.map((s, i) => {
+          const x = pad.left + i * xStep
+          const y = pad.top + ih - ((+s.net_worth - min) / range) * ih
+          return { x, y, date: s.date, val: +s.net_worth }
+        })
+        const areaPts = pts.map(p => `${p.x},${p.y}`).join(' ') + ` ${pts[pts.length-1].x},${pad.top+ih} ${pts[0].x},${pad.top+ih}`
+        const linePts = pts.map(p => `${p.x},${p.y}`).join(' ')
+        const midY = pad.top + ih / 2
+        return (
+          <div className="card" style={{ padding: '16px 16px 8px', marginBottom: 20 }}>
+            <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Net worth trend</p>
+            <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: h, display: 'block' }}>
+              <polygon points={areaPts} fill="url(#nw-grad)" />
+              <polyline points={linePts} fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinejoin="round" />
+              {pts.filter((_, i) => i % Math.max(1, Math.floor(pts.length / 6)) === 0 || i === pts.length - 1).map((p, i) => (
+                <text key={i} x={p.x} y={h - 4} textAnchor="middle" fill="var(--ink-faint)" fontSize="9">{p.date.slice(5)}</text>
+              ))}
+              <text x={w - 2} y={pad.top + 10} textAnchor="end" fill="var(--ink-mute)" fontSize="9">₹{(+max).toLocaleString('en-IN')}</text>
+              <text x={w - 2} y={pad.top + ih + 4} textAnchor="end" fill="var(--ink-mute)" fontSize="9">₹{(+min).toLocaleString('en-IN')}</text>
+              <line x1={pad.left} y1={midY} x2={w - pad.right} y2={midY} stroke="var(--line)" strokeWidth="0.5" strokeDasharray="3,3" />
+              <defs><linearGradient id="nw-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--coral)" stopOpacity="0.2" /><stop offset="100%" stopColor="var(--coral)" stopOpacity="0.02" /></linearGradient></defs>
+            </svg>
           </div>
-        </div>
-      )}
+        )
+      })()}
+
+      {/* projection chart */}
+      {projection?.projection?.length > 0 && (() => {
+        const proj = projection.projection
+        const maxVal = Math.max(...proj.flatMap(p => [+p.debt, +p.investments, +p.net_worth]))
+        const w = 720; const h = 180
+        const pad = { top: 8, bottom: 24, left: 44, right: 8 }
+        const iw = w - pad.left - pad.right; const ih = h - pad.top - pad.bottom
+        const toY = v => pad.top + ih - (v / maxVal) * ih
+        const toX = i => pad.left + (i / (proj.length - 1)) * iw
+        const lines = [
+          { key: 'debt', color: 'var(--coral)', label: 'Debt' },
+          { key: 'investments', color: 'var(--emerald)', label: 'Investments' },
+          { key: 'net_worth', color: 'var(--ink)', label: 'Net Worth' },
+        ]
+        return (
+          <div className="card" style={{ padding: '16px 16px 8px', marginBottom: 20 }}>
+            <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>60-month projection</p>
+            <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: h, display: 'block' }}>
+              {[0, 0.25, 0.5, 0.75, 1].map(f => (
+                <line key={f} x1={pad.left} y1={toY(maxVal * f)} x2={w - pad.right} y2={toY(maxVal * f)} stroke="var(--line)" strokeWidth="0.5" strokeDasharray="2,2" />
+              ))}
+              {lines.map(l => {
+                const pts = proj.map((p, i) => `${toX(i)},${toY(+p[l.key])}`).join(' ')
+                return <polyline key={l.key} points={pts} fill="none" stroke={l.color} strokeWidth="1.5" strokeLinejoin="round" />
+              })}
+              {[0, 12, 24, 36, 48, 59].map(i => (
+                <text key={i} x={toX(i)} y={h - 4} textAnchor="middle" fill="var(--ink-faint)" fontSize="9">{proj[i]?.month || ''}m</text>
+              ))}
+              <text x={pad.left - 4} y={toY(maxVal) + 3} textAnchor="end" fill="var(--ink-faint)" fontSize="9">₹{(+maxVal).toLocaleString('en-IN')}</text>
+              {lines.map((l, i) => (
+                <text key={l.key} x={w - pad.right + 4} y={pad.top + 12 + i * 14} fill={l.color} fontSize="10">{l.label}</text>
+              ))}
+            </svg>
+          </div>
+        )
+      })()}
 
       {/* quick actions */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
