@@ -48,3 +48,6 @@ docs-installer/
 
 # Local agent config
 .claude/
+
+# AI assistant cache
+.superpowers/

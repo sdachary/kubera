@@ -1,3 +1,0 @@
-{"type":"click","text":"A\n    \n      Refactor AiService\n      Break down the monolith into specialized components.","choice":"refactor_ai","id":null,"timestamp":1778860644298}
-{"type":"click","text":"B\n    \n      Simplify API Controllers\n      Standardize responses and move business logic to services.","choice":"simplify_controllers","id":null,"timestamp":1778860645442}
-{"type":"click","text":"C\n    \n      Fix Local Environment\n      Resolve gem build issues to enable local testing.","choice":"fix_local_env","id":null,"timestamp":1778860646970}
