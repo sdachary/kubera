@@ -124,7 +124,7 @@ export default function PayoffSimulator() {
                 </div>
               </div>
 
-              <div className="card" style={{ padding: '16px 18px', borderLeft: '3px solid var(--emerald)' }}>
+              <div className="card" style={{ padding: '16px 18px', borderTop: '2px solid var(--success)' }}>
                 <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8, letterSpacing: '-0.01em' }}>You save</p>
                 <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                   <div>

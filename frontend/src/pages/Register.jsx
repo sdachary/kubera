@@ -2,10 +2,6 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 
-import { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { useAuth } from '../lib/auth'
-
 export default function Register() {
   const { user, register } = useAuth()
   const navigate = useNavigate()

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 
@@ -50,8 +51,11 @@ export default function Layout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = async () => { await logout(); navigate('/') }
+  const initials = user ? (user.first_name?.[0] || '') + (user.last_name?.[0] || '') : '?'
+  const isActive = (path) => location.pathname === path
 
   return (
     <div className="app-layout">
@@ -74,9 +78,60 @@ export default function Layout() {
             </div>
           ))}
         </nav>
-        <div style={{ padding: '10px 14px', borderTop: '1px solid var(--line)', fontSize: 12, color: 'var(--ink-faint)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</span>
-          <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-mute)', fontSize: 12, padding: 4, borderRadius: 4 }}>×</button>
+
+        {/* user menu */}
+        <div style={{ position: 'relative', borderTop: '1px solid var(--line)' }}>
+          <button onClick={() => setMenuOpen(!menuOpen)}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink)', fontSize: 12,
+            }}>
+            <span style={{
+              width: 30, height: 30, borderRadius: '50%', background: 'var(--coral)', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 12, fontWeight: 600, flexShrink: 0,
+            }}>{initials}</span>
+            <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user?.first_name || user?.email}
+            </span>
+            <span style={{ fontSize: 10, color: 'var(--ink-faint)', transform: menuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
+          </button>
+
+          {menuOpen && (
+            <div style={{
+              position: 'absolute', bottom: '100%', left: 8, right: 8,
+              background: '#faf9f7', border: '1px solid var(--line)', borderRadius: 10,
+              boxShadow: '0 -8px 30px rgba(21,20,15,0.1)', padding: 6, marginBottom: 4,
+            }}>
+              {[
+                { name: 'Settings', path: '/dashboard/settings', icon: '⚙' },
+                { name: 'Privacy', path: '/dashboard/privacy', icon: '▣' },
+                { name: 'Logout', action: handleLogout, icon: '↩' },
+              ].map(item => (
+                item.action ? (
+                  <button key={item.name} onClick={() => { setMenuOpen(false); item.action() }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%',
+                      borderRadius: 6, border: 'none', background: 'none', cursor: 'pointer',
+                      fontSize: 13, color: item.name === 'Logout' ? 'var(--coral)' : 'var(--ink)', textAlign: 'left',
+                    }}>
+                    <span style={{ fontSize: 12, opacity: 0.6 }}>{item.icon}</span>
+                    <span>{item.name}</span>
+                  </button>
+                ) : (
+                  <Link key={item.name} to={item.path} onClick={() => setMenuOpen(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+                      borderRadius: 6, fontSize: 13, color: isActive(item.path) ? 'var(--coral)' : 'var(--ink)', textDecoration: 'none',
+                      background: isActive(item.path) ? 'rgba(237,111,92,0.08)' : 'transparent',
+                    }}>
+                    <span style={{ fontSize: 12, opacity: 0.6 }}>{item.icon}</span>
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              ))}
+            </div>
+          )}
         </div>
       </aside>
 
@@ -87,7 +142,7 @@ export default function Layout() {
           { name: 'Money', path: '/dashboard/transactions', icon: '↗' },
           { name: 'Debt', path: '/dashboard/debts', icon: '○' },
           { name: 'Invest', path: '/dashboard/portfolios', icon: '◐' },
-          { name: 'More', path: '/dashboard/trips', icon: '✈' },
+          { name: 'More', path: '/dashboard/settings', icon: '⚙' },
         ].map(item => {
           const active = location.pathname === item.path
           return (

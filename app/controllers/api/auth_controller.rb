@@ -1,5 +1,5 @@
 class Api::AuthController < ActionController::API
-  before_action :authenticate, only: [:me, :logout]
+  before_action :authenticate, only: [:me, :update_profile, :logout]
 
   def register
     user = User.new(registration_params)
@@ -62,6 +62,14 @@ class Api::AuthController < ActionController::API
     render json: { user: user_response(current_user) }
   end
 
+  def update_profile
+    if current_user.update(profile_params)
+      render json: { user: user_response(current_user) }
+    else
+      render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   def logout
     current_session&.revoke!
     head :no_content
@@ -102,5 +110,9 @@ class Api::AuthController < ActionController::API
 
   def registration_params
     params.permit(:email, :first_name, :last_name)
+  end
+
+  def profile_params
+    params.permit(:first_name, :last_name, :currency) # ponytail: model-level validations only, no custom validation needed yet
   end
 end
