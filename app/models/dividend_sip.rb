@@ -1,4 +1,4 @@
-class DividendSip < ApplicationRecord
+class DividendSip < TenantRecord
   belongs_to :portfolio
 
   attribute :monthly_investment, :decimal

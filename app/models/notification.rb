@@ -1,4 +1,4 @@
-class Notification < ApplicationRecord
+class Notification < TenantRecord
   belongs_to :user
 
   validates :notification_type, :message, presence: true

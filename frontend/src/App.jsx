@@ -7,6 +7,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Debts from './pages/Debts'
+import DebtDetail from './pages/DebtDetail'
+import PayoffPlans from './pages/PayoffPlans'
 import PayoffSimulator from './pages/PayoffSimulator'
 import Transactions from './pages/Transactions'
 import Budgets from './pages/Budgets'
@@ -41,6 +43,8 @@ export default function App() {
       <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="debts" element={<Debts />} />
+        <Route path="debts/:id" element={<DebtDetail />} />
+        <Route path="payoff-plans" element={<PayoffPlans />} />
         <Route path="debt-payoffs" element={<PayoffSimulator />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="budgets" element={<Budgets />} />

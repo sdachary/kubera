@@ -1,4 +1,4 @@
-class Budget < ApplicationRecord
+class Budget < TenantRecord
   belongs_to :user
   belongs_to :budget_category
   belongs_to :household, optional: true

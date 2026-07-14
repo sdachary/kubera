@@ -11,7 +11,8 @@ const groups = [
   ]},
   { name: 'Debt', children: [
     { name: 'Debts', path: '/dashboard/debts', icon: '○' },
-    { name: 'Payoff Simulator', path: '/dashboard/debt-payoffs', icon: '◎' },
+    { name: 'Payoff Plans', path: '/dashboard/payoff-plans', icon: '⬡' },
+    { name: 'Simulator', path: '/dashboard/debt-payoffs', icon: '◎' },
   ]},
   { name: 'Investments', children: [
     { name: 'Portfolios', path: '/dashboard/portfolios', icon: '◐' },

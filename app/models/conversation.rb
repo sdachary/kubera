@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Conversation < ApplicationRecord
+class Conversation < TenantRecord
   belongs_to :user
   has_many :messages, dependent: :destroy
 

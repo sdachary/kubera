@@ -1,4 +1,4 @@
-class TripMember < ApplicationRecord
+class TripMember < TenantRecord
   belongs_to :trip
   has_many :paid_expenses, class_name: "TripExpense", foreign_key: :trip_member_id, dependent: :nullify
   has_many :settlements_paid, class_name: "TripSettlement", foreign_key: :from_trip_member_id, dependent: :nullify

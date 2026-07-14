@@ -1,4 +1,4 @@
-class RecurringExpense < ApplicationRecord
+class RecurringExpense < TenantRecord
   belongs_to :user
 
   validates :name, :amount, :frequency, presence: true

@@ -1,4 +1,4 @@
-class Investment < ApplicationRecord
+class Investment < TenantRecord
   belongs_to :portfolio
 
   validates :investment_type, inclusion: {

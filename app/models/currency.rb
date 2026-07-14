@@ -1,4 +1,4 @@
-class Currency < ApplicationRecord
+class Currency < TenantRecord
   validates :code, presence: true, uniqueness: true
   validates :name, presence: true
 

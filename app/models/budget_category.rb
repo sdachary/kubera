@@ -1,4 +1,4 @@
-class BudgetCategory < ApplicationRecord
+class BudgetCategory < TenantRecord
   belongs_to :user
   has_many :transactions, dependent: :nullify
   has_many :budgets, dependent: :destroy

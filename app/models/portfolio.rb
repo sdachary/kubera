@@ -1,4 +1,4 @@
-class Portfolio < ApplicationRecord
+class Portfolio < TenantRecord
   belongs_to :user
   has_many :investments, dependent: :destroy
   has_many :dividend_sips, dependent: :destroy

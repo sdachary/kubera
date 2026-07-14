@@ -1,4 +1,4 @@
-class Household < ApplicationRecord
+class Household < TenantRecord
   has_many :household_memberships, dependent: :destroy
   has_many :members, through: :household_memberships, source: :user
   has_many :debts, dependent: :nullify

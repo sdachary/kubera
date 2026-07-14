@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /forgot-password
+Disallow: /reset-password/
+
+Sitemap: https://kubera-d4k.pages.dev/sitemap.xml

@@ -1,4 +1,4 @@
-class HouseholdMembership < ApplicationRecord
+class HouseholdMembership < TenantRecord
   belongs_to :household
   belongs_to :user
 

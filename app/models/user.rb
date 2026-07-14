@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password validations: false
 
+  has_one :tenant, dependent: :destroy
+  has_many :api_credentials, dependent: :destroy
   has_many :conversations, dependent: :destroy
   has_many :sessions, dependent: :destroy
   has_many :consent_records, dependent: :destroy

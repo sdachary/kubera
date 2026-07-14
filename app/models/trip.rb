@@ -1,4 +1,4 @@
-class Trip < ApplicationRecord
+class Trip < TenantRecord
   belongs_to :user
   has_many :trip_members, dependent: :destroy
   has_many :trip_categories, dependent: :destroy

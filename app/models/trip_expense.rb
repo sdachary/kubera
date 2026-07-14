@@ -1,4 +1,4 @@
-class TripExpense < ApplicationRecord
+class TripExpense < TenantRecord
   belongs_to :trip
   belongs_to :trip_member, foreign_key: :trip_member_id
   belongs_to :trip_category, optional: true

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Setting < ApplicationRecord
+class Setting < TenantRecord
   belongs_to :user
 
   validates :key, presence: true, uniqueness: { scope: :user_id }

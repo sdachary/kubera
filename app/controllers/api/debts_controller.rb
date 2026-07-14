@@ -5,6 +5,11 @@ class Api::DebtsController < Api::BaseController
     render_success(debts.map { |d| debt_json(d) })
   end
 
+  def show
+    debt = current_user.debts.find(params[:id])
+    render_success(debt_json(debt))
+  end
+
   def create
     debt = current_user.debts.create!(debt_params)
     render_success(debt_json(debt), status: :created)

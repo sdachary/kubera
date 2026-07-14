@@ -1,4 +1,4 @@
-class ResearchAnalysis < ApplicationRecord
+class ResearchAnalysis < TenantRecord
   belongs_to :portfolio
 
   validates :ticker, presence: true

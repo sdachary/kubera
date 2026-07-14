@@ -1,4 +1,4 @@
-class ExchangeRate < ApplicationRecord
+class ExchangeRate < TenantRecord
   validates :from_currency, :to_currency, :rate, :fetched_at, presence: true
   validates :rate, numericality: { greater_than: 0 }
 

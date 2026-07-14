@@ -1,4 +1,4 @@
-class DebtPayoff < ApplicationRecord
+class DebtPayoff < TenantRecord
   belongs_to :user
   has_many :debt_payoff_debts, dependent: :destroy
   has_many :debts, through: :debt_payoff_debts

@@ -31,12 +31,13 @@ Rails.application.routes.draw do
 
   # API v1
   scope '/api/v1', module: 'api', as: 'api' do
-    resources :debts, only: [:index, :create, :update, :destroy]
+    resources :debts, only: [:index, :show, :create, :update, :destroy]
     resources :debt_payoffs do
       member do
         post :simulate
       end
     end
+    resources :payoff_plans
     resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
       member do
         post :rebalance
@@ -109,5 +110,7 @@ Rails.application.routes.draw do
       resources :trip_expenses, only: [:index, :create, :destroy], controller: 'trip_expenses'
       resources :trip_settlements, only: [:index, :create], controller: 'trip_settlements'
     end
+
+    resources :api_credentials, only: [:index, :create, :update, :destroy]
   end
 end

@@ -1,4 +1,4 @@
-class Journey < ApplicationRecord
+class Journey < TenantRecord
   belongs_to :user
 
   validates :phase, inclusion: { in: %w[negative zero positive] }

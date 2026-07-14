@@ -1,4 +1,4 @@
-class NetWorthSnapshot < ApplicationRecord
+class NetWorthSnapshot < TenantRecord
   belongs_to :user
 
   validates :snapshot_date, presence: true

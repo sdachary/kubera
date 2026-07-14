@@ -28,9 +28,15 @@ class Api::DebtPayoffsController < Api::BaseController
 
   def simulate
     debt = current_user.debts.find(params[:id])
-    service = DebtPayoffService.new([{ id: debt.id, balance: debt.amount, interest_rate: debt.interest_rate, min_payment: debt.emi_amount }], extra_payment: (params[:extra_monthly_payment] || 0).to_f)
+    service = DebtPayoffService.new(
+      [{ id: debt.id, balance: debt.amount, interest_rate: debt.interest_rate, min_payment: debt.emi_amount }],
+      extra_payment: (params[:extra_monthly_payment] || 0).to_f,
+      lump_sum_amount: (params[:lump_sum_amount] || 0).to_f,
+      annual_extra: (params[:annual_extra] || 0).to_f,
+      custom_extra_payments: params[:custom_extra_payments] || []
+    )
     plan = service.avalanche_plan
-    render_success({ months: plan[:months], total_interest: plan[:total_interest] })
+    render_success(plan)
   end
 
   private

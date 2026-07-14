@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import DebtFormModal from '../components/DebtFormModal'
 
 function DebtCard({ debt, onEdit, onDelete }) {
+  const navigate = useNavigate()
   const pct = debt.amount > 0 ? Math.round(((+debt.paid_amount || 0) / debt.amount) * 100) : 0
 
   return (
-    <div className="card" style={{ padding: '18px 20px' }}>
+    <div className="card" style={{ padding: '18px 20px', cursor: 'pointer' }} onClick={() => navigate(`/dashboard/debts/${debt.id}`)}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-        <div onClick={() => onEdit(debt)} style={{ cursor: 'pointer', flex: 1 }}>
+        <div style={{ flex: 1 }}>
           <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{debt.name}</p>
           <p style={{ fontSize: 12, color: 'var(--ink-mute)' }}>{debt.category || 'Loan'} · {debt.interest_rate}% APR</p>
         </div>
@@ -25,7 +26,7 @@ function DebtCard({ debt, onEdit, onDelete }) {
           {debt.status !== 'active' && <span className="tag" style={{ marginLeft: 8 }}>{debt.status.replace('_', ' ')}</span>}
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--line-soft)', paddingTop: 10 }}>
+      <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--line-soft)', paddingTop: 10 }} onClick={e => e.stopPropagation()}>
         <button onClick={() => onEdit(debt)} className="btn btn-ghost" style={{ fontSize: 11.5, padding: '4px 12px' }}>Edit</button>
         <button onClick={() => onDelete(debt)} style={{ fontSize: 11.5, padding: '4px 12px', background: 'none', border: 'none', borderRadius: 999, color: 'var(--ink-faint)', cursor: 'pointer' }}>Delete</button>
       </div>
