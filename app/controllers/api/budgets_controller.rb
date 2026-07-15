@@ -47,6 +47,11 @@ class Api::BudgetsController < Api::BaseController
   end
 
   def budget_detail(b)
-    budget_json(b).merge(spent: 0.0, remaining: b.monthly_limit.to_f, usage_pct: 0.0, on_track: true)
+    budget_json(b).merge(
+      spent: b.spent_this_month.to_f,
+      remaining: b.remaining.to_f,
+      usage_pct: b.usage_percentage,
+      on_track: b.on_track?
+    )
   end
 end

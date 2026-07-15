@@ -66,3 +66,101 @@ User.find_each do |user|
   BudgetCategory.seed_for(user)
 end
 puts "✅ #{BudgetCategory.count} budget categories seeded."
+
+# ── Demo User ──
+demo_email = "demo@kubera.app"
+demo = User.find_or_initialize_by(email: demo_email)
+if demo.new_record?
+  demo.assign_attributes(
+    first_name: "Demo",
+    last_name: "User",
+    password: "demo123!",
+    currency: "INR",
+    onboarded: true
+  )
+  demo.save!
+  BudgetCategory.seed_for(demo)
+  puts "👤 Demo user created: #{demo_email} / demo123!"
+else
+  puts "👤 Demo user already exists."
+end
+
+# Budget envelopes for demo user
+demo.reload
+envelopes = [
+  { category: "Food", limit: 15000 },
+  { category: "Transport", limit: 5000 },
+  { category: "Rent", limit: 25000 },
+  { category: "Entertainment", limit: 5000 },
+  { category: "Healthcare", limit: 8000 },
+  { category: "Shopping", limit: 10000 },
+  { category: "Savings", limit: 20000 },
+]
+cat_map = demo.budget_categories.ordered.index_by(&:name)
+envelopes.each do |e|
+  cat = cat_map[e[:category]]
+  next unless cat
+  Budget.find_or_create_by!(user: demo, budget_category: cat, period: "monthly") do |b|
+    b.monthly_limit = e[:limit]
+  end
+end
+puts "📂 #{Budget.where(user: demo).count} budget envelopes seeded."
+
+# Sample transactions for demo (current month, various amounts)
+cats = demo.budget_categories.ordered.to_a
+tx_descs = {
+  "Food" => ["Groceries", "Zomato order", "Lunch", "Dinner out", "Cafe"],
+  "Transport" => ["Fuel", "Metro pass", "Auto ride", "Cab"],
+  "Rent" => ["Monthly rent"],
+  "Entertainment" => ["Netflix", "Movie tickets", "Game purchase", "Concert"],
+  "Healthcare" => ["Pharmacy", "Doctor visit", "Health checkup"],
+  "Shopping" => ["Amazon order", "Clothes", "Electronics", "Home decor"],
+  "Savings" => ["Monthly savings transfer"],
+}
+cats.each do |cat|
+  descs = tx_descs[cat.name] || ["Misc #{cat.name}"]
+  descs.each do |desc|
+    next if demo.transactions.exists?(description: desc, transaction_date: Date.today.beginning_of_month..Date.today)
+    demo.transactions.create!(
+      budget_category: cat,
+      description: desc,
+      amount: rand(200..3000),
+      transaction_type: "expense",
+      transaction_date: Date.today.beginning_of_month + rand(0..[Date.today.day - 1, 1].max).days,
+    )
+  end
+end
+puts "💳 #{Transaction.where(user_id: demo.id).count} sample transactions seeded."
+
+# Sample portfolio + investments
+port = demo.portfolios.find_or_create_by!(name: "Growth Portfolio") do |p|
+  p.goal = "growth"
+  p.risk_tolerance = 7
+end
+sample_stocks = [
+  { symbol: "RELIANCE.NS", name: "Reliance Industries", exchange: "NSE", shares: 10, buy_price: 2500, investment_type: "stock" },
+  { symbol: "TCS.NS", name: "Tata Consultancy", exchange: "NSE", shares: 5, buy_price: 3800, investment_type: "stock" },
+  { symbol: "HDFCBANK.NS", name: "HDFC Bank", exchange: "NSE", shares: 20, buy_price: 1600, investment_type: "stock" },
+  { symbol: "AAPL", name: "Apple Inc", exchange: "NASDAQ", shares: 3, buy_price: 180, investment_type: "stock", currency_code: "USD" },
+]
+sample_stocks.each do |s|
+  next if port.investments.exists?(symbol: s[:symbol])
+  port.investments.create!(s.merge(current_price: s[:buy_price] * 1.1))
+end
+puts "📈 #{port.investments.count} sample investments seeded."
+
+# Demo journey
+demo.journeys.find_or_create_by!(phase: "positive") do |j|
+  j.monthly_sip_goal = 50000
+  j.zero_day_target = Date.today + 365
+end
+puts "🎯 Demo journey seeded."
+
+# Net worth snapshot
+NetWorthSnapshot.find_or_create_by!(user: demo, snapshot_date: Date.today) do |n|
+  n.total_assets = 2500000
+  n.total_liabilities = 500000
+  n.net_worth = 2000000
+  n.breakdown = { cash: 500000, stocks: 1200000, mutual_funds: 800000, property: 0, liabilities: { credit_card: 100000, loan: 400000 } }
+end
+puts "💰 Demo net worth snapshot seeded."

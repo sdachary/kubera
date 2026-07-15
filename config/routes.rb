@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       member do
         post :rebalance
         post :research
+        get :prices
       end
     end
     resources :investments, only: [:index, :create, :update, :destroy]

@@ -36,8 +36,11 @@ export default function Journey() {
   const d = journey.debt || {}
   const s = journey.sip || {}
   const nw = journey.net_worth || {}
-  const milestones = journey.milestones || progress?.milestones || []
-  const sipProgress = progress?.sip_progress || s
+  const p = progress || {}
+  const dp = p.debt_progress || {}
+  const sp = p.sip_progress || {}
+  const nwp = p.net_worth_progress || {}
+  const milestones = journey.milestones || p?.milestones || []
 
   return (
     <div>
@@ -60,9 +63,45 @@ export default function Journey() {
         </div>
         <div className="card" style={{ padding: '16px' }}>
           <p style={{ fontSize: 10, color: 'var(--ink-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>SIP Progress</p>
-          <p className="fin" style={{ fontSize: 20, fontWeight: 600, color: 'var(--emerald)' }}>{sipProgress.progress || 0}%</p>
-          <p style={{ fontSize: 11, color: 'var(--ink-mute)' }}>Goal: ₹{(+s.monthly_goal || 0).toLocaleString('en-IN')}/mo</p>
+          <p className="fin" style={{ fontSize: 20, fontWeight: 600, color: 'var(--emerald)' }}>{sp.progress || 0}%</p>
+          <p style={{ fontSize: 11, color: 'var(--ink-mute)' }}>Goal: ₹{(+sp.monthly_goal || 0).toLocaleString('en-IN')}/mo</p>
         </div>
+      </div>
+
+      {/* Goal Progress Bars */}
+      <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, letterSpacing: '-0.01em' }}>Goals</h2>
+
+      <div className="card" style={{ padding: '16px', marginBottom: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+          <span style={{ fontSize: 13, fontWeight: 500 }}>Net Worth Target</span>
+          <span className="fin" style={{ fontSize: 12, color: 'var(--ink-mute)' }}>₹{(+nwp.current || 0).toLocaleString('en-IN')} / ₹{(+nwp.target || 0).toLocaleString('en-IN')}</span>
+        </div>
+        <div className="progress" style={{ height: 8 }}>
+          <div className="progress-fill green" style={{ width: `${nwp.progress_pct || 0}%` }} />
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--ink-faint)', marginTop: 4 }}>{nwp.progress_pct || 0}% of ₹50L goal</p>
+      </div>
+
+      <div className="card" style={{ padding: '16px', marginBottom: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+          <span style={{ fontSize: 13, fontWeight: 500 }}>Debt Reduction</span>
+          <span className="fin" style={{ fontSize: 12, color: 'var(--ink-mute)' }}>₹{(+dp.paid_debt || 0).toLocaleString('en-IN')} / ₹{(+dp.original_debt || 0).toLocaleString('en-IN')}</span>
+        </div>
+        <div className="progress" style={{ height: 8 }}>
+          <div className="progress-fill" style={{ width: `${dp.reduction_pct || 0}%`, background: 'var(--coral)' }} />
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--ink-faint)', marginTop: 4 }}>{dp.reduction_pct || 0}% paid off · ₹{(+dp.total_debt || 0).toLocaleString('en-IN')} remaining</p>
+      </div>
+
+      <div className="card" style={{ padding: '16px', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+          <span style={{ fontSize: 13, fontWeight: 500 }}>Monthly SIP Goal</span>
+          <span className="fin" style={{ fontSize: 12, color: 'var(--ink-mute)' }}>{sp.progress || 0}%</span>
+        </div>
+        <div className="progress" style={{ height: 8 }}>
+          <div className="progress-fill green" style={{ width: `${sp.progress || 0}%`, background: '#a855f7' }} />
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--ink-faint)', marginTop: 4 }}>Goal: ₹{(+sp.monthly_goal || 0).toLocaleString('en-IN')}/mo</p>
       </div>
 
       {milestones.length > 0 && (
@@ -77,11 +116,11 @@ export default function Journey() {
         </div>
       )}
 
-      {progress?.net_worth_trajectory?.length > 0 && (
+      {p?.net_worth_trajectory?.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, letterSpacing: '-0.01em' }}>Net Worth Trajectory</h2>
           <div className="card" style={{ padding: '16px' }}>
-            {progress.net_worth_trajectory.slice(0, 12).map((pt, i) => (
+            {p.net_worth_trajectory.slice(0, 12).map((pt, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '3px 0', borderBottom: i < 11 ? '1px solid var(--line-soft)' : 'none' }}>
                 <span style={{ color: 'var(--ink-mute)' }}>{pt.date || pt.month}</span>
                 <span className="fin" style={{ fontWeight: 500 }}>₹{(+pt.net_worth || 0).toLocaleString('en-IN')}</span>
