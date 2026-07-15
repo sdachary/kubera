@@ -45,6 +45,8 @@ class Api::AuthController < ActionController::API
   end
 
   def login
+    user = User.find_by(email: params[:email])
+    if user&.authenticate(params[:password])
       session = user.sessions.create!(
         ip_address: request.remote_ip,
         user_agent: request.user_agent
