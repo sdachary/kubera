@@ -1,6 +1,4 @@
-class DpdpController < ActionController::API
-  before_action :authenticate
-
+class DpdpController < Api::BaseController
   def consent
     record = current_user.consent_records.create!(
       feature: params[:feature],
@@ -113,20 +111,5 @@ class DpdpController < ActionController::API
     }
   rescue ActiveRecord::RecordInvalid => e
     render json: { error: e.message }, status: :unprocessable_entity
-  end
-
-  private
-
-  def current_user
-    @current_user ||= begin
-      token = request.headers['Authorization']&.delete_prefix('Bearer ')
-      return nil unless token
-      session = Session.active.includes(:user).find_by(token: token)
-      session&.user
-    end
-  end
-
-  def authenticate
-    render json: { error: 'Not authenticated' }, status: :unauthorized unless current_user
   end
 end

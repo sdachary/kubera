@@ -15,7 +15,8 @@ class TenantMiddleware
     else
       @app.call(env)
     end
-  rescue
+  rescue => e
+    Rails.logger.warn "[TenantMiddleware] #{e.class}: #{e.message}"
     @app.call(env)
   end
 end

@@ -13,8 +13,8 @@ class Api::TransactionsController < Api::BaseController
     records = records.uncategorized if params[:uncategorized]
     page = (params[:page] || 1).to_i
     per = (params[:per] || 50).to_i
-    total = records.size
-    records = records.drop((page - 1) * per).take(per)
+    total = records.count
+    records = records.limit(per).offset((page - 1) * per)
 
     render_success({
       transactions: records.map { |t| transaction_json(t) },
@@ -40,17 +40,25 @@ class Api::TransactionsController < Api::BaseController
 
   def monthly_totals
     months = (params[:months] || 6).to_i
-    transactions = current_user.transactions
+    start_date = (months - 1).months.ago.beginning_of_month
+    txns = current_user.transactions
+      .where(transaction_date: start_date..)
+      .group("date_trunc('month', transaction_date)")
+      .select("date_trunc('month', transaction_date) as month,
+               sum(case when transaction_type = 'expense' then amount else 0 end) as expenses,
+               sum(case when transaction_type = 'income' then amount else 0 end) as income")
+      .order("month")
+    grouped = txns.index_by { |t| t.month.strftime("%Y-%m") }
     result = (0...months).map do |i|
       date = Date.today - i.months
-      month_txns = transactions.select do |t|
-        d = t.respond_to?(:transaction_date) ? t.transaction_date : t["transaction_date"]
-        d.present? && Date.parse(d.to_s).year == date.year && Date.parse(d.to_s).month == date.month
+      key = date.strftime("%Y-%m")
+      if grouped[key]
+        { month: key, label: date.strftime("%b %Y"),
+          expenses: grouped[key].expenses.to_f, income: grouped[key].income.to_f,
+          net: (grouped[key].income.to_f - grouped[key].expenses.to_f).round(2) }
+      else
+        { month: key, label: date.strftime("%b %Y"), expenses: 0, income: 0, net: 0 }
       end
-      expenses = month_txns.select { |t| t.transaction_type.to_s == "expense" }.sum { |t| t.amount.to_f }
-      income = month_txns.select { |t| t.transaction_type.to_s == "income" }.sum { |t| t.amount.to_f }
-      { month: date.strftime("%Y-%m"), label: date.strftime("%b %Y"),
-        expenses: expenses, income: income, net: (income - expenses).round(2) }
     end
     render_success(result)
   end
