@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../lib/auth'
+import { StatCard } from '../components/ui'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -60,24 +61,10 @@ export default function Dashboard() {
 
       {/* stat grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px,1fr))', gap: 12, marginBottom: 20 }}>
-        <div className="card" style={{ padding: '18px 20px' }}>
-          <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Total debt</p>
-          <p className="fin" style={{ fontFamily: 'var(--sans)', fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--coral)' }}>₹{debt.toLocaleString('en-IN')}</p>
-          {data?.debt_count > 0 && <p style={{ fontSize: 12, color: 'var(--ink-faint)', marginTop: 2 }}>{data.debt_count} loan{data.debt_count > 1 ? 's' : ''}</p>}
-        </div>
-        <div className="card" style={{ padding: '18px 20px' }}>
-          <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Investments</p>
-          <p className="fin" style={{ fontFamily: 'var(--sans)', fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--success)' }}>₹{inv.toLocaleString('en-IN')}</p>
-          {data?.portfolio_count > 0 && <p style={{ fontSize: 12, color: 'var(--ink-faint)', marginTop: 2 }}>{data.portfolio_count} portfolio{data.portfolio_count > 1 ? 's' : ''}</p>}
-        </div>
-        <div className="card" style={{ padding: '18px 20px' }}>
-          <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Monthly expenses</p>
-          <p className="fin" style={{ fontFamily: 'var(--sans)', fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>₹{(data?.monthly_expenses || 0).toLocaleString('en-IN')}</p>
-        </div>
-        <div className="card" style={{ padding: '18px 20px' }}>
-          <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Wealth score</p>
-          <p className="fin" style={{ fontFamily: 'var(--sans)', fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>{(data?.wealth_score || 0).toFixed(1)}</p>
-        </div>
+        <StatCard label="Total debt" value={`₹${debt.toLocaleString('en-IN')}`} color="var(--coral)" subtext={data?.debt_count > 0 ? `${data.debt_count} loan${data.debt_count > 1 ? 's' : ''}` : null} />
+        <StatCard label="Investments" value={`₹${inv.toLocaleString('en-IN')}`} color="var(--success)" subtext={data?.portfolio_count > 0 ? `${data.portfolio_count} portfolio${data.portfolio_count > 1 ? 's' : ''}` : null} />
+        <StatCard label="Monthly expenses" value={`₹${(data?.monthly_expenses || 0).toLocaleString('en-IN')}`} />
+        <StatCard label="Wealth score" value={(data?.wealth_score || 0).toFixed(1)} tooltip="Composite score (0–10) based on debt-to-income ratio, savings rate, investment diversity, and emergency fund coverage" />
       </div>
 
       {/* net worth area chart */}
@@ -103,7 +90,7 @@ export default function Dashboard() {
         return (
           <div className="card" style={{ padding: '16px 16px 8px', marginBottom: 20 }}>
             <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Net worth trend</p>
-            <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: h, display: 'block' }}>
+            <svg role="img" aria-label="Net worth trend chart" viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: h, display: 'block' }}>
               <polygon points={areaPts} fill="url(#nw-grad)" />
               <polyline points={linePts} fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinejoin="round" />
               {pts.filter((_, i) => i % Math.max(1, Math.floor(pts.length / 6)) === 0 || i === pts.length - 1).map((p, i) => (
@@ -135,7 +122,7 @@ export default function Dashboard() {
         return (
           <div className="card" style={{ padding: '16px 16px 8px', marginBottom: 20 }}>
             <p style={{ fontSize: 10.5, color: 'var(--ink-faint)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>60-month projection</p>
-            <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: h, display: 'block' }}>
+            <svg role="img" aria-label="60-month financial projection chart showing debt, investments, and net worth over time" viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: h, display: 'block' }}>
               {[0, 0.25, 0.5, 0.75, 1].map(f => (
                 <line key={f} x1={pad.left} y1={toY(maxVal * f)} x2={w - pad.right} y2={toY(maxVal * f)} stroke="var(--line)" strokeWidth="0.5" strokeDasharray="2,2" />
               ))}

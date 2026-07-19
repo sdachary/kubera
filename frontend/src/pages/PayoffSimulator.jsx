@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import { Field } from '../components/ui'
 
 function LineChart({ baseline, accelerated }) {
   if (!baseline?.schedule?.length || !accelerated?.schedule?.length) return null
@@ -20,7 +21,7 @@ function LineChart({ baseline, accelerated }) {
   for (let i = 0; i < baseline.schedule.length; i += step) xTicks.push(i)
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', maxHeight: h, display: 'block' }}>
+    <svg role="img" aria-label="Debt payoff comparison chart: baseline vs accelerated" viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', maxHeight: h, display: 'block' }}>
       <line x1={px} y1={py} x2={px} y2={py + ph} stroke="var(--border)" strokeWidth={1} />
       <line x1={px} y1={py + ph} x2={px + pw} y2={py + ph} stroke="var(--border)" strokeWidth={1} />
       {[0, 0.5].map(r => (
@@ -105,16 +106,17 @@ export default function PayoffSimulator() {
       ) : (
         <div>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 12, color: 'var(--ink-mute)', display: 'block', marginBottom: 6 }}>Select Debt</label>
+            <Field label="Select Debt" style={{ marginBottom: 6 }}>
+              <select value={selectedId} onChange={e => { setSelectedId(e.target.value); setBaseline(null); setResult(null) }}
+                className="input" style={{ maxWidth: 360, padding: '9px 12px' }}>
+                <option value="">Choose a debt…</option>
+                {filtered.map(d => (
+                  <option key={d.id} value={d.id}>{d.name} — ₹{(+d.amount || 0).toLocaleString('en-IN')} @ {d.interest_rate}%</option>
+                ))}
+              </select>
+            </Field>
             <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search debts…" className="input" style={{ maxWidth: 360, padding: '9px 12px', marginBottom: 6, fontSize: 14 }} />
-            <select id="debt-select" value={selectedId} onChange={e => { setSelectedId(e.target.value); setBaseline(null); setResult(null) }}
-              className="input" style={{ maxWidth: 360, padding: '9px 12px' }}>
-              <option value="">Choose a debt…</option>
-              {filtered.map(d => (
-                <option key={d.id} value={d.id}>{d.name} — ₹{(+d.amount || 0).toLocaleString('en-IN')} @ {d.interest_rate}%</option>
-              ))}
-            </select>
+              placeholder="Search debts…" className="input" style={{ maxWidth: 360, padding: '9px 12px', fontSize: 14 }} />
             {search && filtered.length === 0 && <p style={{ fontSize: 11, color: 'var(--ink-faint)', marginTop: 4 }}>No debts match "{search}"</p>}
           </div>
 
@@ -128,21 +130,18 @@ export default function PayoffSimulator() {
           )}
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--ink-mute)', display: 'block', marginBottom: 4 }}>Extra Monthly (₹)</label>
+            <Field label="Extra Monthly (₹)" style={{ display: 'inline-block' }}>
               <input type="number" value={extraPayment} onChange={e => setExtraPayment(e.target.value)}
                 className="input" style={{ maxWidth: 160, padding: '9px 12px' }} placeholder="0" min="0" />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--ink-mute)', display: 'block', marginBottom: 4 }}>Lump Sum (₹)</label>
+            </Field>
+            <Field label="Lump Sum (₹)" style={{ display: 'inline-block' }}>
               <input type="number" value={lumpSum} onChange={e => setLumpSum(e.target.value)}
                 className="input" style={{ maxWidth: 160, padding: '9px 12px' }} placeholder="0" min="0" />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--ink-mute)', display: 'block', marginBottom: 4 }}>Annual Extra (₹)</label>
+            </Field>
+            <Field label="Annual Extra (₹)" style={{ display: 'inline-block' }}>
               <input type="number" value={annualExtra} onChange={e => setAnnualExtra(e.target.value)}
                 className="input" style={{ maxWidth: 160, padding: '9px 12px' }} placeholder="0" min="0" />
-            </div>
+            </Field>
           </div>
 
           <button onClick={simulate} disabled={!selectedId || simulating} className="btn btn-primary" style={{ fontSize: 13, padding: '9px 24px' }}>

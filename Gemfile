@@ -16,6 +16,8 @@ gem "sidekiq-cron"
 gem "ruby-openai"
 gem "rack-attack"
 gem "redis", "~> 5.0"
+gem "sentry-ruby"
+gem "sentry-rails"
 
 # Phase 14: Auth + DPDP
 gem "omniauth", "~> 2.1"

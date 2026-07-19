@@ -135,7 +135,7 @@ puts "💳 #{Transaction.where(user_id: demo.id).count} sample transactions seed
 # Sample portfolio + investments
 port = demo.portfolios.find_or_create_by!(name: "Growth Portfolio") do |p|
   p.goal = "growth"
-  p.risk_tolerance = 7
+  p.risk_tolerance = 0.7
 end
 sample_stocks = [
   { symbol: "RELIANCE.NS", name: "Reliance Industries", exchange: "NSE", shares: 10, buy_price: 2500, investment_type: "stock" },

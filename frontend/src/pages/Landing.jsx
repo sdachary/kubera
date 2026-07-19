@@ -78,6 +78,7 @@ export default function Landing() {
           <Link to="/register" className="btn btn-primary">Start free</Link>
           <Link to="/login" className="btn btn-ghost">Sign in</Link>
         </div>
+        <img src="/dashboard-preview.png" alt="Kubera dashboard showing net worth, budget envelopes, and investment portfolio" style={{ marginTop: 48, borderRadius: 12, border: '1px solid var(--line-soft)', maxWidth: '100%', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }} />
       </section>
 
       {/* stats */}

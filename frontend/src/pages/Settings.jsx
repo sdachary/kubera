@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../lib/auth'
 import { api } from '../lib/api'
 import { useNavigate } from 'react-router-dom'
+import { Field } from '../components/ui'
 
 const PROVIDERS = [
   { value: 'zerodha', label: 'Zerodha' },
@@ -114,23 +115,20 @@ export default function Settings() {
         {editing ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div>
-                <label style={{ fontSize: 11, color: 'var(--ink-mute)', display: 'block', marginBottom: 4 }}>First Name</label>
+              <Field label="First Name" labelStyle={{ fontSize: 11 }}>
                 <input className="input" value={form.first_name} onChange={set('first_name')} />
-              </div>
-              <div>
-                <label style={{ fontSize: 11, color: 'var(--ink-mute)', display: 'block', marginBottom: 4 }}>Last Name</label>
+              </Field>
+              <Field label="Last Name" labelStyle={{ fontSize: 11 }}>
                 <input className="input" value={form.last_name} onChange={set('last_name')} />
-              </div>
+              </Field>
             </div>
-            <div>
-              <label style={{ fontSize: 11, color: 'var(--ink-mute)', display: 'block', marginBottom: 4 }}>Currency</label>
+            <Field label="Currency" labelStyle={{ fontSize: 11 }}>
               <select className="input" value={form.currency} onChange={set('currency')}>
                 <option value="INR">INR (₹)</option>
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
               </select>
-            </div>
+            </Field>
             <button onClick={handleSave} className="btn btn-primary" style={{ alignSelf: 'flex-start', fontSize: 13, padding: '8px 20px' }}>Save</button>
           </div>
         ) : (

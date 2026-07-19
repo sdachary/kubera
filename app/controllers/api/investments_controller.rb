@@ -1,26 +1,34 @@
 class Api::InvestmentsController < Api::BaseController
   def index
-    investments = current_user.investments.order(created_at: :desc)
+    investments = Investment.joins(:portfolio)
+      .where(portfolios: { user_id: current_user.id })
+      .order(created_at: :desc)
     render_success(investments.map { |i| investment_json(i) })
   end
 
   def create
     portfolio = current_user.portfolios.find(params[:portfolio_id])
-    investment = current_user.investments.create!(investment_params.merge(portfolio_id: params[:portfolio_id]))
+    investment = portfolio.investments.create!(investment_params)
     if %w[stock etf].include?(investment.investment_type.to_s)
-      DexterResearchJob.perform_async(params[:portfolio_id], investment.symbol, investment.respond_to?(:exchange) ? (investment.exchange || "US") : "US")
+      DexterResearchJob.perform_async(params[:portfolio_id], investment.symbol,
+        investment.respond_to?(:exchange) ? (investment.exchange || "US") : "US")
     end
     render_success(investment_json(investment), status: :created)
   end
 
   def update
-    investment = current_user.investments.find(params[:id])
+    investment = Investment.joins(:portfolio)
+      .where(portfolios: { user_id: current_user.id })
+      .find(params[:id])
     investment.update!(investment_params)
     render_success(investment_json(investment))
   end
 
   def destroy
-    current_user.investments.find(params[:id]).destroy!
+    investment = Investment.joins(:portfolio)
+      .where(portfolios: { user_id: current_user.id })
+      .find(params[:id])
+    investment.destroy!
     render_success({}, message: "Investment deleted")
   end
 
