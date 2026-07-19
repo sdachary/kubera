@@ -1,33 +1,66 @@
 import { useState } from 'react'
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import {
+  LayoutDashboard, ArrowRightLeft, Wallet, RefreshCw,
+  CircleDollarSign, Target, Calculator, Briefcase, TrendingUp,
+  Clock, Map, Plane, Users, MessageSquare, BarChart3,
+  Download, Settings, Shield, LogOut, ChevronUp,
+} from 'lucide-react'
+
+const iconMap = {
+  'dashboard': LayoutDashboard,
+  'transactions': ArrowRightLeft,
+  'budgets': Wallet,
+  'recurring': RefreshCw,
+  'debt': CircleDollarSign,
+  'payoff': Target,
+  'simulator': Calculator,
+  'portfolio': Briefcase,
+  'investments': TrendingUp,
+  'sip': Clock,
+  'journey': Map,
+  'trip': Plane,
+  'household': Users,
+  'conversations': MessageSquare,
+  'reports': BarChart3,
+  'exports': Download,
+  'settings': Settings,
+  'privacy': Shield,
+  'logout': LogOut,
+}
+
+function NavIcon({ name, size }) {
+  const Icon = iconMap[name]
+  return Icon ? <Icon size={size || 14} aria-hidden="true" /> : null
+}
 
 const groups = [
-  { name: 'Dashboard', path: '/dashboard', icon: '◇' },
+  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
   { name: 'Money', children: [
-    { name: 'Transactions', path: '/dashboard/transactions', icon: '↗' },
-    { name: 'Budgets', path: '/dashboard/budgets', icon: '□' },
-    { name: 'Recurring', path: '/dashboard/recurring', icon: '↻' },
+    { name: 'Transactions', path: '/dashboard/transactions', icon: 'transactions' },
+    { name: 'Budgets', path: '/dashboard/budgets', icon: 'budgets' },
+    { name: 'Recurring', path: '/dashboard/recurring', icon: 'recurring' },
   ]},
   { name: 'Debt', children: [
-    { name: 'Debts', path: '/dashboard/debts', icon: '○' },
-    { name: 'Payoff Plans', path: '/dashboard/payoff-plans', icon: '⬡' },
-    { name: 'Simulator', path: '/dashboard/debt-payoffs', icon: '◎' },
+    { name: 'Debts', path: '/dashboard/debts', icon: 'debt' },
+    { name: 'Payoff Plans', path: '/dashboard/payoff-plans', icon: 'payoff' },
+    { name: 'Simulator', path: '/dashboard/debt-payoffs', icon: 'simulator' },
   ]},
   { name: 'Investments', children: [
-    { name: 'Portfolios', path: '/dashboard/portfolios', icon: '◐' },
-    { name: 'Investments', path: '/dashboard/investments', icon: '◑' },
-    { name: 'SIPs', path: '/dashboard/sips', icon: '◒' },
+    { name: 'Portfolios', path: '/dashboard/portfolios', icon: 'portfolio' },
+    { name: 'Investments', path: '/dashboard/investments', icon: 'investments' },
+    { name: 'SIPs', path: '/dashboard/sips', icon: 'sip' },
   ]},
-  { name: 'Journey', path: '/dashboard/journey', icon: '→' },
+  { name: 'Journey', path: '/dashboard/journey', icon: 'journey' },
   { name: 'More', children: [
-    { name: 'Trip Mode', path: '/dashboard/trips', icon: '✈' },
-    { name: 'Households', path: '/dashboard/households', icon: '◈' },
-    { name: 'Conversations', path: '/dashboard/conversations', icon: '◉' },
-    { name: 'Reports', path: '/dashboard/reports', icon: '▤' },
-    { name: 'Exports', path: '/dashboard/exports', icon: '▥' },
-    { name: 'Settings', path: '/dashboard/settings', icon: '⚙' },
-    { name: 'Privacy', path: '/dashboard/privacy', icon: '▣' },
+    { name: 'Trip Mode', path: '/dashboard/trips', icon: 'trip' },
+    { name: 'Households', path: '/dashboard/households', icon: 'household' },
+    { name: 'Conversations', path: '/dashboard/conversations', icon: 'conversations' },
+    { name: 'Reports', path: '/dashboard/reports', icon: 'reports' },
+    { name: 'Exports', path: '/dashboard/exports', icon: 'exports' },
+    { name: 'Settings', path: '/dashboard/settings', icon: 'settings' },
+    { name: 'Privacy', path: '/dashboard/privacy', icon: 'privacy' },
   ]},
 ]
 
@@ -42,7 +75,7 @@ function NavLink({ item, current, depth, onNav }) {
         background: active ? 'rgba(237,111,92,0.08)' : 'transparent',
         transition: 'all 0.15s ease',
       }}>
-      <span style={{ fontSize: 12, opacity: 0.6, flexShrink: 0 }}>{item.icon}</span>
+      <NavIcon name={item.icon} />
       <span>{item.name}</span>
     </Link>
   )
@@ -95,7 +128,9 @@ export default function Layout() {
             <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user?.first_name || user?.email}
             </span>
-            <span style={{ fontSize: 10, color: 'var(--ink-faint)', transform: menuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
+            <ChevronUp size={12} aria-hidden="true"
+              style={{ color: 'var(--ink-faint)', transform: menuOpen ? 'rotate(180deg)' : undefined, transition: 'transform 0.2s' }}
+            />
           </button>
 
           {menuOpen && (
@@ -105,9 +140,9 @@ export default function Layout() {
               boxShadow: '0 -8px 30px rgba(21,20,15,0.1)', padding: 6, marginBottom: 4,
             }}>
               {[
-                { name: 'Settings', path: '/dashboard/settings', icon: '⚙' },
-                { name: 'Privacy', path: '/dashboard/privacy', icon: '▣' },
-                { name: 'Logout', action: handleLogout, icon: '↩' },
+                { name: 'Settings', path: '/dashboard/settings', icon: 'settings' },
+                { name: 'Privacy', path: '/dashboard/privacy', icon: 'privacy' },
+                { name: 'Logout', action: handleLogout, icon: 'logout' },
               ].map(item => (
                 item.action ? (
                   <button key={item.name} onClick={() => { setMenuOpen(false); item.action() }}
@@ -116,7 +151,7 @@ export default function Layout() {
                       borderRadius: 6, border: 'none', background: 'none', cursor: 'pointer',
                       fontSize: 13, color: item.name === 'Logout' ? 'var(--coral)' : 'var(--ink)', textAlign: 'left',
                     }}>
-                    <span style={{ fontSize: 12, opacity: 0.6 }}>{item.icon}</span>
+                    <NavIcon name={item.icon} />
                     <span>{item.name}</span>
                   </button>
                 ) : (
@@ -126,7 +161,7 @@ export default function Layout() {
                       borderRadius: 6, fontSize: 13, color: isActive(item.path) ? 'var(--coral)' : 'var(--ink)', textDecoration: 'none',
                       background: isActive(item.path) ? 'rgba(237,111,92,0.08)' : 'transparent',
                     }}>
-                    <span style={{ fontSize: 12, opacity: 0.6 }}>{item.icon}</span>
+                    <NavIcon name={item.icon} />
                     <span>{item.name}</span>
                   </Link>
                 )
@@ -139,17 +174,17 @@ export default function Layout() {
       {/* mobile bottom nav */}
       <nav className="bottom-nav">
         {[
-          { name: 'Home', path: '/dashboard', icon: '◇' },
-          { name: 'Money', path: '/dashboard/transactions', icon: '↗' },
-          { name: 'Debt', path: '/dashboard/debts', icon: '○' },
-          { name: 'Invest', path: '/dashboard/portfolios', icon: '◐' },
-          { name: 'More', path: '/dashboard/settings', icon: '⚙' },
+          { name: 'Home', path: '/dashboard', icon: 'dashboard' },
+          { name: 'Money', path: '/dashboard/transactions', icon: 'transactions' },
+          { name: 'Debt', path: '/dashboard/debts', icon: 'debt' },
+          { name: 'Invest', path: '/dashboard/portfolios', icon: 'portfolio' },
+          { name: 'More', path: '/dashboard/settings', icon: 'settings' },
         ].map(item => {
           const active = location.pathname === item.path
           return (
             <Link key={item.path} to={item.path}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '4px 0', fontSize: 10, color: active ? 'var(--coral)' : 'var(--ink-mute)', textDecoration: 'none' }}>
-              <span style={{ fontSize: 16 }}>{item.icon}</span>
+              <NavIcon name={item.icon} size={18} />
               <span>{item.name}</span>
             </Link>
           )
