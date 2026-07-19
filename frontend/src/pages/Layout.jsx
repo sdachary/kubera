@@ -5,7 +5,7 @@ import {
   LayoutDashboard, ArrowRightLeft, Wallet, RefreshCw,
   CircleDollarSign, Target, Calculator, Briefcase, TrendingUp,
   Clock, Map, Plane, Users, MessageSquare, BarChart3,
-  Download, Settings, Shield, LogOut, ChevronUp,
+  Download, Settings, Shield, LogOut, ChevronUp, X,
 } from 'lucide-react'
 
 const iconMap = {
@@ -36,7 +36,10 @@ function NavIcon({ name, size }) {
 }
 
 const groups = [
-  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+  { name: 'Overview', children: [
+    { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+    { name: 'Journey', path: '/dashboard/journey', icon: 'journey' },
+  ]},
   { name: 'Money', children: [
     { name: 'Transactions', path: '/dashboard/transactions', icon: 'transactions' },
     { name: 'Budgets', path: '/dashboard/budgets', icon: 'budgets' },
@@ -47,12 +50,11 @@ const groups = [
     { name: 'Payoff Plans', path: '/dashboard/payoff-plans', icon: 'payoff' },
     { name: 'Simulator', path: '/dashboard/debt-payoffs', icon: 'simulator' },
   ]},
-  { name: 'Investments', children: [
+  { name: 'Invest', children: [
     { name: 'Portfolios', path: '/dashboard/portfolios', icon: 'portfolio' },
     { name: 'Investments', path: '/dashboard/investments', icon: 'investments' },
     { name: 'SIPs', path: '/dashboard/sips', icon: 'sip' },
   ]},
-  { name: 'Journey', path: '/dashboard/journey', icon: 'journey' },
   { name: 'More', children: [
     { name: 'Trip Mode', path: '/dashboard/trips', icon: 'trip' },
     { name: 'Households', path: '/dashboard/households', icon: 'household' },
@@ -62,6 +64,16 @@ const groups = [
     { name: 'Settings', path: '/dashboard/settings', icon: 'settings' },
     { name: 'Privacy', path: '/dashboard/privacy', icon: 'privacy' },
   ]},
+]
+
+const moreItems = [
+  { name: 'Trip Mode', path: '/dashboard/trips', icon: 'trip' },
+  { name: 'Households', path: '/dashboard/households', icon: 'household' },
+  { name: 'Conversations', path: '/dashboard/conversations', icon: 'conversations' },
+  { name: 'Reports', path: '/dashboard/reports', icon: 'reports' },
+  { name: 'Exports', path: '/dashboard/exports', icon: 'exports' },
+  { name: 'Privacy', path: '/dashboard/privacy', icon: 'privacy' },
+  { name: 'Settings', path: '/dashboard/settings', icon: 'settings' },
 ]
 
 function NavLink({ item, current, depth, onNav }) {
@@ -86,10 +98,13 @@ export default function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   const handleLogout = async () => { await logout(); navigate('/') }
   const initials = user ? (user.first_name?.[0] || '') + (user.last_name?.[0] || '') : '?'
   const isActive = (path) => location.pathname === path
+
+  const closeMore = () => setMoreOpen(false)
 
   return (
     <div className="app-layout">
@@ -178,9 +193,22 @@ export default function Layout() {
           { name: 'Money', path: '/dashboard/transactions', icon: 'transactions' },
           { name: 'Debt', path: '/dashboard/debts', icon: 'debt' },
           { name: 'Invest', path: '/dashboard/portfolios', icon: 'portfolio' },
-          { name: 'More', path: '/dashboard/settings', icon: 'settings' },
+          { name: 'More', action: () => setMoreOpen(true), icon: 'settings' },
         ].map(item => {
-          const active = location.pathname === item.path
+          const active = item.path ? location.pathname === item.path : false
+          if (item.action) {
+            return (
+              <button key={item.name} onClick={item.action}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '4px 0',
+                  fontSize: 10, color: moreOpen ? 'var(--coral)' : 'var(--ink-mute)',
+                  background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                }}>
+                <NavIcon name={item.icon} size={18} />
+                <span>{item.name}</span>
+              </button>
+            )
+          }
           return (
             <Link key={item.path} to={item.path}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '4px 0', fontSize: 10, color: active ? 'var(--coral)' : 'var(--ink-mute)', textDecoration: 'none' }}>
@@ -190,6 +218,43 @@ export default function Layout() {
           )
         })}
       </nav>
+
+      {/* mobile More sheet */}
+      {moreOpen && (
+        <div onClick={closeMore}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column',
+            background: 'var(--bg)', padding: '24px 16px', overflow: 'auto',
+          }}>
+          <div onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>More</span>
+              <button onClick={closeMore}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-mute)', padding: 4 }}>
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {moreItems.map(item => {
+                const active = location.pathname === item.path
+                return (
+                  <Link key={item.path} to={item.path} onClick={closeMore}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 12px',
+                      borderRadius: 8, fontSize: 14, fontWeight: active ? 500 : 400,
+                      color: active ? 'var(--coral)' : 'var(--ink)',
+                      background: active ? 'rgba(237,111,92,0.08)' : 'transparent',
+                      textDecoration: 'none',
+                    }}>
+                    <NavIcon name={item.icon} size={20} />
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* main */}
       <main className="main-area"><Outlet /></main>
